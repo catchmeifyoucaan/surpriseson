@@ -7,6 +7,7 @@ import type {
   MissionControlMessageRecord,
   MissionControlDocumentRecord,
   MissionControlBudgetLedgerRecord,
+  MissionControlRunLedgerRecord,
 } from "../types";
 import { formatAgo } from "../format";
 
@@ -36,7 +37,7 @@ export type MissionControlViewProps = {
   onToggleQuick: (force?: boolean) => void;
   onPageChange: (section: "tasks" | "activities", direction: -1 | 1) => void;
   onPageJump: (section: "tasks" | "activities", page: number) => void;
-  onCursorChange: (section: "incidents" | "budget-ledger", cursor: string | null) => void;
+  onCursorChange: (section: "incidents" | "budget-ledger" | "run-ledger", cursor: string | null) => void;
 };
 
 const TASK_LIMIT = 80;
@@ -153,6 +154,37 @@ function renderBudgetRows(entries: MissionControlBudgetLedgerRecord[]) {
   `;
 }
 
+function renderRunRows(entries: MissionControlRunLedgerRecord[]) {
+  if (entries.length === 0) {
+    return html`<div class="muted">No run ledger entries.</div>`;
+  }
+  return html`
+    <div class="mc-table">
+      <div class="table-head">
+        <div>ts</div>
+        <div>status</div>
+        <div>job</div>
+        <div>agent</div>
+        <div>task</div>
+        <div>exit</div>
+      </div>
+      ${entries.map(
+        (entry) => html`
+          <div class="table-row">
+            <div class="mono">${entry.ts}</div>
+            <div>${entry.status ?? "—"}</div>
+            <div class="mono">${entry.jobType ?? "—"}</div>
+            <div class="mono">${entry.agentId ?? "—"}</div>
+            <div class="mono">${entry.taskId ?? "—"}</div>
+            <div class="mono">${entry.exitCode ?? "—"}</div>
+          </div>
+        `,
+      )}
+    </div>
+  `;
+}
+
+
 function renderPager(
   label: string,
   offset: number,
@@ -224,6 +256,7 @@ export function renderMissionControl(props: MissionControlViewProps) {
   const messages = snapshot?.messages ?? [];
   const documents = snapshot?.documents ?? [];
   const budgetLedger = snapshot?.budgetLedger ?? [];
+  const runLedger = snapshot?.runLedger ?? [];
   const incidents = snapshot?.incidents ?? [];
 
   const filteredTasks = tasks.filter((task) => taskMatches(task, props.filters));
@@ -274,6 +307,11 @@ export function renderMissionControl(props: MissionControlViewProps) {
   const ledgerPage = pageInfo.ledger ?? { limit: props.paging.ledger.limit };
   const budgetPage = ledgerPage.budget ?? {
     cursor: props.paging.ledger.budgetCursor ?? null,
+    nextCursor: null,
+    hasMore: false,
+  };
+  const runPage = ledgerPage.run ?? {
+    cursor: props.paging.ledger.runCursor ?? null,
     nextCursor: null,
     hasMore: false,
   };
@@ -573,6 +611,21 @@ export function renderMissionControl(props: MissionControlViewProps) {
           <div class="mc-list-meta">Showing latest ${Math.min(blockedBudgets.length, BUDGET_LIMIT)} entries</div>
           <div class="mc-scroll" style="margin-top: 10px;">
             ${renderBudgetRows(blockedBudgets.slice(0, BUDGET_LIMIT))}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Run Ledger</div>
+          <div class="card-sub">Latest job runs and exit statuses.</div>
+          ${renderCursorPager(
+            "Run Ledger",
+            runPage,
+            (cursor) => props.onCursorChange("run-ledger", cursor),
+            () => props.onCursorChange("run-ledger", null),
+          )}
+          <div class="mc-list-meta">Showing latest ${Math.min(runLedger.length, BUDGET_LIMIT)} entries</div>
+          <div class="mc-scroll" style="margin-top: 10px;">
+            ${renderRunRows(runLedger.slice(0, BUDGET_LIMIT))}
           </div>
         </div>
       </section>

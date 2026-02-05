@@ -581,12 +581,17 @@ export class SurprisebotApp extends LitElement {
     await this.handleLoadMissionControl();
   }
 
-  async handleMissionControlCursorChange(section: "incidents" | "budget-ledger", cursor: string | null) {
+  async handleMissionControlCursorChange(section: "incidents" | "budget-ledger" | "run-ledger", cursor: string | null) {
     const paging = this.missionControlPaging;
     if (section === "incidents") {
       this.missionControlPaging = {
         ...paging,
         incidents: { ...paging.incidents, cursor },
+      } as any;
+    } else if (section === "run-ledger") {
+      this.missionControlPaging = {
+        ...paging,
+        ledger: { ...paging.ledger, runCursor: cursor },
       } as any;
     } else {
       this.missionControlPaging = {
