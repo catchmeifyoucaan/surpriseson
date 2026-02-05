@@ -13,7 +13,7 @@ import {
   normalizeUsageDisplay,
   supportsXHighThinking,
 } from "../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { SessionEntry } from "../config/sessions.js";
 import { isSubagentSessionKey } from "../routing/session-key.js";
 import { applyVerboseOverride, parseVerboseOverride } from "../sessions/level-overrides.js";
@@ -31,7 +31,7 @@ function invalid(message: string): { ok: false; error: ErrorShape } {
 }
 
 export async function applySessionsPatchToStore(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   store: Record<string, SessionEntry>;
   storeKey: string;
   patch: SessionsPatchParams;

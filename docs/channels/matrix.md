@@ -12,23 +12,23 @@ Matrix ships as a plugin and is not bundled with the core install.
 
 Install via CLI (npm registry):
 ```bash
-clawdbot plugins install @clawdbot/matrix
+surprisebot plugins install @surprisebot/matrix
 ```
 
 Local checkout (when running from a git repo):
 ```bash
-clawdbot plugins install ./extensions/matrix
+surprisebot plugins install ./extensions/matrix
 ```
 
 If you choose Matrix during configure/onboarding and a git checkout is detected,
-Clawdbot will offer the local install path automatically.
+Surprisebot will offer the local install path automatically.
 
 Details: [Plugins](/plugin)
 
 ## Quick setup (beginner)
 1) Install the Matrix plugin:
-   - From npm: `clawdbot plugins install @clawdbot/matrix`
-   - From a local checkout: `clawdbot plugins install ./extensions/matrix`
+   - From npm: `surprisebot plugins install @surprisebot/matrix`
+   - From a local checkout: `surprisebot plugins install ./extensions/matrix`
 2) Configure credentials:
    - Env: `MATRIX_HOMESERVER`, `MATRIX_USER_ID`, `MATRIX_ACCESS_TOKEN` (or `MATRIX_PASSWORD`)
    - Or config: `channels.matrix.*`
@@ -44,7 +44,7 @@ Minimal config:
     matrix: {
       enabled: true,
       homeserver: "https://matrix.example.org",
-      userId: "@clawdbot:example.org",
+      userId: "@surprisebot:example.org",
       accessToken: "syt_***",
       dm: { policy: "pairing" }
     }
@@ -58,7 +58,7 @@ End-to-end encrypted rooms are **not** supported.
 - If a room is E2EE, the bot will receive encrypted events and won’t reply.
 
 ## What it is
-Matrix is an open messaging protocol. Clawdbot connects as a Matrix user and listens to DMs and rooms.
+Matrix is an open messaging protocol. Surprisebot connects as a Matrix user and listens to DMs and rooms.
 - A Matrix user account owned by the Gateway.
 - Deterministic routing: replies go back to Matrix.
 - DMs share the agent's main session; rooms map to group sessions.
@@ -66,8 +66,8 @@ Matrix is an open messaging protocol. Clawdbot connects as a Matrix user and lis
 ## Access control (DMs)
 - Default: `channels.matrix.dm.policy = "pairing"`. Unknown senders get a pairing code.
 - Approve via:
-  - `clawdbot pairing list matrix`
-  - `clawdbot pairing approve matrix <CODE>`
+  - `surprisebot pairing list matrix`
+  - `surprisebot pairing approve matrix <CODE>`
 - Public DMs: `channels.matrix.dm.policy="open"` plus `channels.matrix.dm.allowFrom=["*"]`.
 
 ## Rooms (groups)

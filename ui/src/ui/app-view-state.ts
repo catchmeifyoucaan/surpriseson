@@ -16,6 +16,7 @@ import type {
   SessionsListResult,
   SkillStatusReport,
   StatusSummary,
+  MissionControlSnapshot,
 } from "./types";
 import type {
   ChatQueueItem,
@@ -135,6 +136,11 @@ export type AppViewState = {
   logsLevelFilters: Record<LogLevel, boolean>;
   logsAutoFollow: boolean;
   logsTruncated: boolean;
+  missionControlLoading: boolean;
+  missionControlError: string | null;
+  missionControlSnapshot: MissionControlSnapshot | null;
+  missionControlSelectedTaskId: string | null;
+  missionControlFilters: { query: string; status: string; severity: string; trustTier: string };
   client: GatewayBrowserClient | null;
   connect: () => void;
   setTab: (tab: Tab) => void;
@@ -174,6 +180,14 @@ export type AppViewState = {
   handleLoadSkills: () => Promise<void>;
   handleLoadDebug: () => Promise<void>;
   handleLoadLogs: () => Promise<void>;
+  handleLoadMissionControl: () => Promise<void>;
+  handleMissionControlSelectTask: (taskId: string | null) => void;
+  handleMissionControlFiltersUpdate: (next: { query: string; status: string; severity: string; trustTier: string }) => void;
+  handleMissionControlTaskUpdate: (taskId: string, patch: Record<string, unknown>) => Promise<void>;
+  handleMissionControlQa: (taskId: string, action: "approve" | "deny") => Promise<void>;
+  handleMissionControlRequeue: (taskId: string) => Promise<void>;
+  handleMissionControlKillSwitch: (enabled: boolean) => Promise<void>;
+  handleMissionControlBudgetMode: (mode: "soft" | "hard") => Promise<void>;
   handleDebugCall: () => Promise<void>;
   handleRunUpdate: () => Promise<void>;
   setPassword: (next: string) => void;

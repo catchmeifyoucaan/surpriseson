@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { resolveChannelCapabilities } from "./channel-capabilities.js";
-import type { ClawdbotConfig } from "./config.js";
+import type { SurprisebotConfig } from "./config.js";
 
 describe("resolveChannelCapabilities", () => {
   it("returns undefined for missing inputs", () => {
     expect(resolveChannelCapabilities({})).toBeUndefined();
-    expect(resolveChannelCapabilities({ cfg: {} as ClawdbotConfig })).toBeUndefined();
-    expect(resolveChannelCapabilities({ cfg: {} as ClawdbotConfig, channel: "" })).toBeUndefined();
+    expect(resolveChannelCapabilities({ cfg: {} as SurprisebotConfig })).toBeUndefined();
+    expect(resolveChannelCapabilities({ cfg: {} as SurprisebotConfig, channel: "" })).toBeUndefined();
   });
 
   it("normalizes and prefers per-account capabilities", () => {
@@ -21,11 +21,11 @@ describe("resolveChannelCapabilities", () => {
           },
         },
       },
-    } satisfies Partial<ClawdbotConfig>;
+    } satisfies Partial<SurprisebotConfig>;
 
     expect(
       resolveChannelCapabilities({
-        cfg: cfg as ClawdbotConfig,
+        cfg: cfg as SurprisebotConfig,
         channel: "telegram",
         accountId: "default",
       }),
@@ -42,11 +42,11 @@ describe("resolveChannelCapabilities", () => {
           },
         },
       },
-    } satisfies Partial<ClawdbotConfig>;
+    } satisfies Partial<SurprisebotConfig>;
 
     expect(
       resolveChannelCapabilities({
-        cfg: cfg as ClawdbotConfig,
+        cfg: cfg as SurprisebotConfig,
         channel: "telegram",
         accountId: "default",
       }),
@@ -62,11 +62,11 @@ describe("resolveChannelCapabilities", () => {
           },
         },
       },
-    } satisfies Partial<ClawdbotConfig>;
+    } satisfies Partial<SurprisebotConfig>;
 
     expect(
       resolveChannelCapabilities({
-        cfg: cfg as ClawdbotConfig,
+        cfg: cfg as SurprisebotConfig,
         channel: "slack",
         accountId: "family",
       }),
@@ -76,11 +76,11 @@ describe("resolveChannelCapabilities", () => {
   it("supports msteams capabilities", () => {
     const cfg = {
       channels: { msteams: { capabilities: [" polls ", ""] } },
-    } satisfies Partial<ClawdbotConfig>;
+    } satisfies Partial<SurprisebotConfig>;
 
     expect(
       resolveChannelCapabilities({
-        cfg: cfg as ClawdbotConfig,
+        cfg: cfg as SurprisebotConfig,
         channel: "msteams",
       }),
     ).toEqual(["polls"]);

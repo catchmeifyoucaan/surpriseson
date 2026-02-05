@@ -1,12 +1,12 @@
 import type { App } from "@slack/bolt";
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { createSlackMonitorContext, normalizeSlackChannelType } from "./context.js";
 
 const baseParams = () => ({
-  cfg: {} as ClawdbotConfig,
+  cfg: {} as SurprisebotConfig,
   accountId: "default",
   botToken: "token",
   app: { client: {} } as App,
@@ -30,7 +30,7 @@ const baseParams = () => ({
   replyToMode: "off" as const,
   slashCommand: {
     enabled: false,
-    name: "clawd",
+    name: "surprisebot",
     sessionPrefix: "slack:slash",
     ephemeral: true,
   },

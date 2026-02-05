@@ -16,10 +16,10 @@ describe("config discord", () => {
 
   it("loads discord guild map + dm group settings", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".clawdbot");
+      const configDir = path.join(home, ".surprisebot");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
-        path.join(configDir, "clawdbot.json"),
+        path.join(configDir, "surprisebot.json"),
         JSON.stringify(
           {
             channels: {
@@ -29,11 +29,11 @@ describe("config discord", () => {
                   enabled: true,
                   allowFrom: ["steipete"],
                   groupEnabled: true,
-                  groupChannels: ["clawd-dm"],
+                  groupChannels: ["surprisebot-dm"],
                 },
                 guilds: {
                   "123": {
-                    slug: "friends-of-clawd",
+                    slug: "friends-of-surprisebot",
                     requireMention: false,
                     users: ["steipete"],
                     channels: {
@@ -56,8 +56,8 @@ describe("config discord", () => {
 
       expect(cfg.channels?.discord?.enabled).toBe(true);
       expect(cfg.channels?.discord?.dm?.groupEnabled).toBe(true);
-      expect(cfg.channels?.discord?.dm?.groupChannels).toEqual(["clawd-dm"]);
-      expect(cfg.channels?.discord?.guilds?.["123"]?.slug).toBe("friends-of-clawd");
+      expect(cfg.channels?.discord?.dm?.groupChannels).toEqual(["surprisebot-dm"]);
+      expect(cfg.channels?.discord?.guilds?.["123"]?.slug).toBe("friends-of-surprisebot");
       expect(cfg.channels?.discord?.guilds?.["123"]?.channels?.general?.allow).toBe(true);
     });
   });

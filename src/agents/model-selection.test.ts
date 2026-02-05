@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { DEFAULT_PROVIDER } from "./defaults.js";
 import {
   buildAllowedModelSet,
@@ -28,7 +28,7 @@ describe("buildAllowedModelSet", () => {
           },
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const allowed = buildAllowedModelSet({
       cfg,
@@ -45,7 +45,7 @@ describe("buildAllowedModelSet", () => {
   it("includes the default model when no allowlist is set", () => {
     const cfg = {
       agents: { defaults: {} },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const allowed = buildAllowedModelSet({
       cfg,
@@ -79,7 +79,7 @@ describe("buildAllowedModelSet", () => {
           },
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const allowed = buildAllowedModelSet({
       cfg,
@@ -123,7 +123,7 @@ describe("parseModelRef", () => {
 
 describe("resolveHooksGmailModel", () => {
   it("returns null when hooks.gmail.model is not set", () => {
-    const cfg = {} satisfies ClawdbotConfig;
+    const cfg = {} satisfies SurprisebotConfig;
     const result = resolveHooksGmailModel({
       cfg,
       defaultProvider: DEFAULT_PROVIDER,
@@ -134,7 +134,7 @@ describe("resolveHooksGmailModel", () => {
   it("returns null when hooks.gmail.model is empty", () => {
     const cfg = {
       hooks: { gmail: { model: "" } },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const result = resolveHooksGmailModel({
       cfg,
       defaultProvider: DEFAULT_PROVIDER,
@@ -145,7 +145,7 @@ describe("resolveHooksGmailModel", () => {
   it("parses provider/model from hooks.gmail.model", () => {
     const cfg = {
       hooks: { gmail: { model: "openrouter/meta-llama/llama-3.3-70b:free" } },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const result = resolveHooksGmailModel({
       cfg,
       defaultProvider: DEFAULT_PROVIDER,
@@ -166,7 +166,7 @@ describe("resolveHooksGmailModel", () => {
         },
       },
       hooks: { gmail: { model: "Sonnet" } },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const result = resolveHooksGmailModel({
       cfg,
       defaultProvider: DEFAULT_PROVIDER,
@@ -180,7 +180,7 @@ describe("resolveHooksGmailModel", () => {
   it("uses default provider when model omits provider", () => {
     const cfg = {
       hooks: { gmail: { model: "claude-haiku-3-5" } },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const result = resolveHooksGmailModel({
       cfg,
       defaultProvider: "anthropic",
@@ -202,7 +202,7 @@ describe("resolveAllowedModelRef", () => {
           },
         },
       },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const resolved = resolveAllowedModelRef({
       cfg,
       catalog: [
@@ -234,7 +234,7 @@ describe("resolveAllowedModelRef", () => {
           },
         },
       },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
     const resolved = resolveAllowedModelRef({
       cfg,
       catalog: [

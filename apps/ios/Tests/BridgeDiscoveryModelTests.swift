@@ -1,5 +1,5 @@
 import Testing
-@testable import Clawdbot
+@testable import Surprisebot
 
 @Suite(.serialized) struct BridgeDiscoveryModelTests {
     @Test @MainActor func debugLoggingCapturesLifecycleAndResets() {

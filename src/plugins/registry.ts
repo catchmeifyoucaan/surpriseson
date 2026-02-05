@@ -7,13 +7,13 @@ import type {
 } from "../gateway/server-methods/types.js";
 import { resolveUserPath } from "../utils.js";
 import type {
-  ClawdbotPluginApi,
-  ClawdbotPluginChannelRegistration,
-  ClawdbotPluginCliRegistrar,
-  ClawdbotPluginHttpHandler,
-  ClawdbotPluginService,
-  ClawdbotPluginToolContext,
-  ClawdbotPluginToolFactory,
+  SurprisebotPluginApi,
+  SurprisebotPluginChannelRegistration,
+  SurprisebotPluginCliRegistrar,
+  SurprisebotPluginHttpHandler,
+  SurprisebotPluginService,
+  SurprisebotPluginToolContext,
+  SurprisebotPluginToolFactory,
   PluginConfigUiHint,
   PluginDiagnostic,
   PluginLogger,
@@ -22,21 +22,21 @@ import type {
 
 export type PluginToolRegistration = {
   pluginId: string;
-  factory: ClawdbotPluginToolFactory;
+  factory: SurprisebotPluginToolFactory;
   names: string[];
   source: string;
 };
 
 export type PluginCliRegistration = {
   pluginId: string;
-  register: ClawdbotPluginCliRegistrar;
+  register: SurprisebotPluginCliRegistrar;
   commands: string[];
   source: string;
 };
 
 export type PluginHttpRegistration = {
   pluginId: string;
-  handler: ClawdbotPluginHttpHandler;
+  handler: SurprisebotPluginHttpHandler;
   source: string;
 };
 
@@ -49,7 +49,7 @@ export type PluginChannelRegistration = {
 
 export type PluginServiceRegistration = {
   pluginId: string;
-  service: ClawdbotPluginService;
+  service: SurprisebotPluginService;
   source: string;
 };
 
@@ -109,12 +109,12 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
 
   const registerTool = (
     record: PluginRecord,
-    tool: AnyAgentTool | ClawdbotPluginToolFactory,
+    tool: AnyAgentTool | SurprisebotPluginToolFactory,
     opts?: { name?: string; names?: string[] },
   ) => {
     const names = opts?.names ?? (opts?.name ? [opts.name] : []);
-    const factory: ClawdbotPluginToolFactory =
-      typeof tool === "function" ? tool : (_ctx: ClawdbotPluginToolContext) => tool;
+    const factory: SurprisebotPluginToolFactory =
+      typeof tool === "function" ? tool : (_ctx: SurprisebotPluginToolContext) => tool;
 
     if (typeof tool !== "function") {
       names.push(tool.name);
@@ -152,7 +152,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     record.gatewayMethods.push(trimmed);
   };
 
-  const registerHttpHandler = (record: PluginRecord, handler: ClawdbotPluginHttpHandler) => {
+  const registerHttpHandler = (record: PluginRecord, handler: SurprisebotPluginHttpHandler) => {
     record.httpHandlers += 1;
     registry.httpHandlers.push({
       pluginId: record.id,
@@ -163,11 +163,11 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
 
   const registerChannel = (
     record: PluginRecord,
-    registration: ClawdbotPluginChannelRegistration | ChannelPlugin,
+    registration: SurprisebotPluginChannelRegistration | ChannelPlugin,
   ) => {
     const normalized =
-      typeof (registration as ClawdbotPluginChannelRegistration).plugin === "object"
-        ? (registration as ClawdbotPluginChannelRegistration)
+      typeof (registration as SurprisebotPluginChannelRegistration).plugin === "object"
+        ? (registration as SurprisebotPluginChannelRegistration)
         : { plugin: registration as ChannelPlugin };
     const plugin = normalized.plugin;
     const id = typeof plugin?.id === "string" ? plugin.id.trim() : String(plugin?.id ?? "").trim();
@@ -191,7 +191,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
 
   const registerCli = (
     record: PluginRecord,
-    registrar: ClawdbotPluginCliRegistrar,
+    registrar: SurprisebotPluginCliRegistrar,
     opts?: { commands?: string[] },
   ) => {
     const commands = (opts?.commands ?? []).map((cmd) => cmd.trim()).filter(Boolean);
@@ -204,7 +204,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
-  const registerService = (record: PluginRecord, service: ClawdbotPluginService) => {
+  const registerService = (record: PluginRecord, service: SurprisebotPluginService) => {
     const id = service.id.trim();
     if (!id) return;
     record.services.push(id);
@@ -225,10 +225,10 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
   const createApi = (
     record: PluginRecord,
     params: {
-      config: ClawdbotPluginApi["config"];
+      config: SurprisebotPluginApi["config"];
       pluginConfig?: Record<string, unknown>;
     },
-  ): ClawdbotPluginApi => {
+  ): SurprisebotPluginApi => {
     return {
       id: record.id,
       name: record.name,

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { normalizeMainKey } from "../../routing/session-key.js";
 
 export type SessionKind = "main" | "group" | "cron" | "hook" | "node" | "other";
@@ -8,7 +8,7 @@ function normalizeKey(value?: string) {
   return trimmed ? trimmed : undefined;
 }
 
-export function resolveMainSessionAlias(cfg: ClawdbotConfig) {
+export function resolveMainSessionAlias(cfg: SurprisebotConfig) {
   const mainKey = normalizeMainKey(cfg.session?.mainKey);
   const scope = cfg.session?.scope ?? "per-sender";
   const alias = scope === "global" ? "global" : mainKey;

@@ -117,11 +117,32 @@ export const ToolPolicySchema = z
 export const ToolsWebSearchSchema = z
   .object({
     enabled: z.boolean().optional(),
-    provider: z.union([z.literal("brave")]).optional(),
+    provider: z.union([
+      z.literal("brave"),
+      z.literal("serper"),
+      z.literal("serpapi"),
+      z.literal("hybrid"),
+    ]).optional(),
     apiKey: z.string().optional(),
+    serperApiKey: z.string().optional(),
+    serpapiApiKey: z.string().optional(),
+    serpapiEngines: z.array(z.string()).optional(),
+    perplexityApiKey: z.string().optional(),
     maxResults: z.number().int().positive().optional(),
     timeoutSeconds: z.number().int().positive().optional(),
     cacheTtlMinutes: z.number().nonnegative().optional(),
+    hybrid: z
+      .object({
+        providers: z.array(z.union([z.literal("brave"), z.literal("serper"), z.literal("serpapi")])).optional(),
+        queryExpansion: z
+          .object({
+            enabled: z.boolean().optional(),
+            maxQueries: z.number().int().positive().optional(),
+            model: z.string().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   })
   .optional();
 
@@ -194,7 +215,7 @@ export const AgentToolsSchema = z
 export const MemorySearchSchema = z
   .object({
     enabled: z.boolean().optional(),
-    provider: z.union([z.literal("openai"), z.literal("local")]).optional(),
+    provider: z.union([z.literal("openai"), z.literal("local"), z.literal("google"), z.literal("gemini")]).optional(),
     remote: z
       .object({
         baseUrl: z.string().optional(),
@@ -202,7 +223,7 @@ export const MemorySearchSchema = z
         headers: z.record(z.string(), z.string()).optional(),
       })
       .optional(),
-    fallback: z.union([z.literal("openai"), z.literal("none")]).optional(),
+    fallback: z.union([z.literal("openai"), z.literal("google"), z.literal("gemini"), z.literal("none")]).optional(),
     model: z.string().optional(),
     local: z
       .object({
@@ -239,6 +260,31 @@ export const MemorySearchSchema = z
       .optional(),
   })
   .optional();
+
+export const MemoryGraphSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    url: z.string().optional(),
+    username: z.string().optional(),
+    password: z.string().optional(),
+    database: z.string().optional(),
+    sync: z
+      .object({
+        onSessionStart: z.boolean().optional(),
+        onSearch: z.boolean().optional(),
+        watch: z.boolean().optional(),
+        watchDebounceMs: z.number().int().nonnegative().optional(),
+        intervalMinutes: z.number().int().nonnegative().optional(),
+      })
+      .optional(),
+    query: z
+      .object({
+        maxResults: z.number().int().positive().optional(),
+        maxHops: z.number().int().positive().optional(),
+      })
+      .optional(),
+  })
+  .optional();
 export const AgentModelSchema = z.union([
   z.string(),
   z.object({
@@ -254,6 +300,24 @@ export const AgentEntrySchema = z.object({
   agentDir: z.string().optional(),
   model: AgentModelSchema.optional(),
   memorySearch: MemorySearchSchema,
+  memoryGraph: MemoryGraphSchema,
+  memoryCapture: z
+    .object({
+      enabled: z.boolean().optional(),
+      minIntervalMinutes: z.number().int().nonnegative().optional(),
+      minNewTokens: z.number().int().nonnegative().optional(),
+      prompt: z.string().optional(),
+      systemPrompt: z.string().optional(),
+    })
+    .optional(),
+  sharedMemory: z
+    .object({
+      enabled: z.boolean().optional(),
+      path: z.string().optional(),
+      pendingPath: z.string().optional(),
+      allowWriteAgents: z.array(z.string()).optional(),
+    })
+    .optional(),
   humanDelay: HumanDelaySchema.optional(),
   identity: IdentitySchema,
   groupChat: GroupChatSchema,
@@ -317,6 +381,17 @@ export const ToolsSchema = z
         backgroundMs: z.number().int().positive().optional(),
         timeoutSec: z.number().int().positive().optional(),
         cleanupMs: z.number().int().positive().optional(),
+      })
+      .optional(),
+    toolResults: z
+      .object({
+        strict: z.boolean().optional(),
+        retryOnce: z.boolean().optional(),
+        requireToolForQueries: z.boolean().optional(),
+        timeoutMs: z.number().int().positive().optional(),
+        heartbeatMs: z.number().int().positive().optional(),
+        warnOnMissing: z.boolean().optional(),
+        warnOnTimeout: z.boolean().optional(),
       })
       .optional(),
     subagents: z

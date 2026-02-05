@@ -1,7 +1,7 @@
 import { getOAuthApiKey, type OAuthCredentials, type OAuthProvider } from "@mariozechner/pi-ai";
 import lockfile from "proper-lockfile";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { refreshChutesTokens } from "../chutes-oauth.js";
 import { writeClaudeCliCredentials } from "../cli-credentials.js";
 import { AUTH_STORE_LOCK_OPTIONS, CLAUDE_CLI_PROFILE_ID } from "./constants.js";
@@ -67,7 +67,7 @@ async function refreshOAuthTokenWithLock(params: {
     saveAuthProfileStore(store, params.agentDir);
 
     // Sync refreshed credentials back to Claude Code CLI if this is the claude-cli profile
-    // This ensures Claude Code continues to work after ClawdBot refreshes the token
+    // This ensures Claude Code continues to work after Surprisebot refreshes the token
     if (params.profileId === CLAUDE_CLI_PROFILE_ID && cred.provider === "anthropic") {
       writeClaudeCliCredentials(result.newCredentials);
     }
@@ -85,7 +85,7 @@ async function refreshOAuthTokenWithLock(params: {
 }
 
 async function tryResolveOAuthProfile(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   store: AuthProfileStore;
   profileId: string;
   agentDir?: string;
@@ -118,7 +118,7 @@ async function tryResolveOAuthProfile(params: {
 }
 
 export async function resolveApiKeyForProfile(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   store: AuthProfileStore;
   profileId: string;
   agentDir?: string;

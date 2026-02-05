@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { SlackAccountConfig } from "../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 import { resolveSlackAppToken, resolveSlackBotToken } from "./token.js";
@@ -26,26 +26,26 @@ export type ResolvedSlackAccount = {
   channels?: SlackAccountConfig["channels"];
 };
 
-function listConfiguredAccountIds(cfg: ClawdbotConfig): string[] {
+function listConfiguredAccountIds(cfg: SurprisebotConfig): string[] {
   const accounts = cfg.channels?.slack?.accounts;
   if (!accounts || typeof accounts !== "object") return [];
   return Object.keys(accounts).filter(Boolean);
 }
 
-export function listSlackAccountIds(cfg: ClawdbotConfig): string[] {
+export function listSlackAccountIds(cfg: SurprisebotConfig): string[] {
   const ids = listConfiguredAccountIds(cfg);
   if (ids.length === 0) return [DEFAULT_ACCOUNT_ID];
   return ids.sort((a, b) => a.localeCompare(b));
 }
 
-export function resolveDefaultSlackAccountId(cfg: ClawdbotConfig): string {
+export function resolveDefaultSlackAccountId(cfg: SurprisebotConfig): string {
   const ids = listSlackAccountIds(cfg);
   if (ids.includes(DEFAULT_ACCOUNT_ID)) return DEFAULT_ACCOUNT_ID;
   return ids[0] ?? DEFAULT_ACCOUNT_ID;
 }
 
 function resolveAccountConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   accountId: string,
 ): SlackAccountConfig | undefined {
   const accounts = cfg.channels?.slack?.accounts;
@@ -53,7 +53,7 @@ function resolveAccountConfig(
   return accounts[accountId] as SlackAccountConfig | undefined;
 }
 
-function mergeSlackAccountConfig(cfg: ClawdbotConfig, accountId: string): SlackAccountConfig {
+function mergeSlackAccountConfig(cfg: SurprisebotConfig, accountId: string): SlackAccountConfig {
   const { accounts: _ignored, ...base } = (cfg.channels?.slack ?? {}) as SlackAccountConfig & {
     accounts?: unknown;
   };
@@ -62,7 +62,7 @@ function mergeSlackAccountConfig(cfg: ClawdbotConfig, accountId: string): SlackA
 }
 
 export function resolveSlackAccount(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   accountId?: string | null;
 }): ResolvedSlackAccount {
   const accountId = normalizeAccountId(params.accountId);
@@ -102,7 +102,7 @@ export function resolveSlackAccount(params: {
   };
 }
 
-export function listEnabledSlackAccounts(cfg: ClawdbotConfig): ResolvedSlackAccount[] {
+export function listEnabledSlackAccounts(cfg: SurprisebotConfig): ResolvedSlackAccount[] {
   return listSlackAccountIds(cfg)
     .map((accountId) => resolveSlackAccount({ cfg, accountId }))
     .filter((account) => account.enabled);

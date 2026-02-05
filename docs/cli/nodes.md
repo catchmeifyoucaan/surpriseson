@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot nodes` (list/status/approve/invoke, camera/canvas/screen)"
+summary: "CLI reference for `surprisebot nodes` (list/status/approve/invoke, camera/canvas/screen)"
 read_when:
   - You’re managing paired nodes (cameras, screen, canvas)
   - You need to approve requests or invoke node commands
 ---
 
-# `clawdbot nodes`
+# `surprisebot nodes`
 
 Manage paired nodes (devices) and invoke node capabilities.
 
@@ -17,16 +17,16 @@ Related:
 ## Common commands
 
 ```bash
-clawdbot nodes list
-clawdbot nodes pending
-clawdbot nodes approve <requestId>
-clawdbot nodes status
+surprisebot nodes list
+surprisebot nodes pending
+surprisebot nodes approve <requestId>
+surprisebot nodes status
 ```
 
 ## Invoke / run
 
 ```bash
-clawdbot nodes invoke --node <id|name|ip> --command <command> --params <json>
-clawdbot nodes run --node <id|name|ip> <command...>
+surprisebot nodes invoke --node <id|name|ip> --command <command> --params <json>
+surprisebot nodes run --node <id|name|ip> <command...>
 ```
 

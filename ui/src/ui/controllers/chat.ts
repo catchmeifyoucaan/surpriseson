@@ -114,7 +114,13 @@ export function handleChatEvent(
   payload?: ChatEventPayload,
 ) {
   if (!payload) return null;
-  if (payload.sessionKey !== state.sessionKey) return null;
+  const payloadKey = payload.sessionKey;
+  const stateKey = state.sessionKey;
+  const isMainAlias =
+    stateKey === "main" &&
+    typeof payloadKey === "string" &&
+    (payloadKey.endsWith(":main") || payloadKey === "global");
+  if (!isMainAlias && payloadKey !== stateKey) return null;
   if (payload.runId && state.chatRunId && payload.runId !== state.chatRunId)
     return null;
 

@@ -1,6 +1,6 @@
-# @clawdbot/voice-call
+# @surprisebot/voice-call
 
-Official Voice Call plugin for **Clawdbot**.
+Official Voice Call plugin for **Surprisebot**.
 
 Providers:
 - **Twilio** (Programmable Voice + Media Streams)
@@ -8,15 +8,15 @@ Providers:
 - **Plivo** (Voice API + XML transfer + GetInput speech)
 - **Mock** (dev/no network)
 
-Docs: `https://docs.clawd.bot/plugins/voice-call`
-Plugin system: `https://docs.clawd.bot/plugin`
+Docs: `https://docs.surprisebot.bot/plugins/voice-call`
+Plugin system: `https://docs.surprisebot.bot/plugin`
 
 ## Install (local dev)
 
-### Option A: install via Clawdbot (recommended)
+### Option A: install via Surprisebot (recommended)
 
 ```bash
-clawdbot plugins install @clawdbot/voice-call
+surprisebot plugins install @surprisebot/voice-call
 ```
 
 Restart the Gateway afterwards.
@@ -24,9 +24,9 @@ Restart the Gateway afterwards.
 ### Option B: copy into your global extensions folder (dev)
 
 ```bash
-mkdir -p ~/.clawdbot/extensions
-cp -R extensions/voice-call ~/.clawdbot/extensions/voice-call
-cd ~/.clawdbot/extensions/voice-call && pnpm install
+mkdir -p ~/.surprisebot/extensions
+cp -R extensions/voice-call ~/.surprisebot/extensions/voice-call
+cd ~/.surprisebot/extensions/voice-call && pnpm install
 ```
 
 ## Config
@@ -78,13 +78,13 @@ Notes:
 ## CLI
 
 ```bash
-clawdbot voicecall call --to "+15555550123" --message "Hello from Clawdbot"
-clawdbot voicecall continue --call-id <id> --message "Any questions?"
-clawdbot voicecall speak --call-id <id> --message "One moment"
-clawdbot voicecall end --call-id <id>
-clawdbot voicecall status --call-id <id>
-clawdbot voicecall tail
-clawdbot voicecall expose --mode funnel
+surprisebot voicecall call --to "+15555550123" --message "Hello from Surprisebot"
+surprisebot voicecall continue --call-id <id> --message "Any questions?"
+surprisebot voicecall speak --call-id <id> --message "One moment"
+surprisebot voicecall end --call-id <id>
+surprisebot voicecall status --call-id <id>
+surprisebot voicecall tail
+surprisebot voicecall expose --mode funnel
 ```
 
 ## Tool

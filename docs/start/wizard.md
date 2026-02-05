@@ -28,6 +28,18 @@ Recommended: set up a Brave Search API key so the agent can use `web_search`
 (`web_fetch` works without a key). Easiest path: `surprisebot configure --section web`
 which stores `tools.web.search.apiKey`. Docs: [Web tools](/tools/web).
 
+
+## Minimal mode (skip heavy deps)
+
+If you want the lightest install (no Docker/Neo4j/QMD), run:
+
+```bash
+surprisebot init --minimal
+```
+
+This skips skills + UI installs and avoids optional services.
+
+
 ## QuickStart vs Advanced
 
 The wizard starts with **QuickStart** (defaults) vs **Advanced** (full control).

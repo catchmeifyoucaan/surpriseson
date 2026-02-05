@@ -51,7 +51,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     const server = await startServerWithDefaultConfig(port);
     try {
       const res = await postChatCompletions(port, {
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(404);
@@ -67,7 +67,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     });
     try {
       const res = await postChatCompletions(port, {
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(404);
@@ -115,8 +115,8 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(
         port,
-        { model: "clawdbot", messages: [{ role: "user", content: "hi" }] },
-        { "x-clawdbot-agent-id": "beta" },
+        { model: "surprisebot", messages: [{ role: "user", content: "hi" }] },
+        { "x-surprisebot-agent-id": "beta" },
       );
       expect(res.status).toBe(200);
 
@@ -139,7 +139,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     const server = await startServer(port);
     try {
       const res = await postChatCompletions(port, {
-        model: "clawdbot:beta",
+        model: "surprisebot:beta",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(200);
@@ -165,10 +165,10 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
       const res = await postChatCompletions(
         port,
         {
-          model: "clawdbot:beta",
+          model: "surprisebot:beta",
           messages: [{ role: "user", content: "hi" }],
         },
-        { "x-clawdbot-agent-id": "alpha" },
+        { "x-surprisebot-agent-id": "alpha" },
       );
       expect(res.status).toBe(200);
 
@@ -182,7 +182,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     }
   });
 
-  it("honors x-clawdbot-session-key override", async () => {
+  it("honors x-surprisebot-session-key override", async () => {
     agentCommand.mockResolvedValueOnce({
       payloads: [{ text: "hello" }],
     } as never);
@@ -192,10 +192,10 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(
         port,
-        { model: "clawdbot", messages: [{ role: "user", content: "hi" }] },
+        { model: "surprisebot", messages: [{ role: "user", content: "hi" }] },
         {
-          "x-clawdbot-agent-id": "beta",
-          "x-clawdbot-session-key": "agent:beta:openai:custom",
+          "x-surprisebot-agent-id": "beta",
+          "x-surprisebot-session-key": "agent:beta:openai:custom",
         },
       );
       expect(res.status).toBe(200);
@@ -219,7 +219,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(port, {
         user: "alice",
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(200);
@@ -242,7 +242,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     const server = await startServer(port);
     try {
       const res = await postChatCompletions(port, {
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [
           {
             role: "user",
@@ -272,7 +272,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(port, {
         stream: false,
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(200);
@@ -293,7 +293,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     const server = await startServer(port);
     try {
       const res = await postChatCompletions(port, {
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "system", content: "yo" }],
       });
       expect(res.status).toBe(400);
@@ -319,7 +319,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(port, {
         stream: true,
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(200);
@@ -354,7 +354,7 @@ describe("OpenAI-compatible HTTP API (e2e)", () => {
     try {
       const res = await postChatCompletions(port, {
         stream: true,
-        model: "clawdbot",
+        model: "surprisebot",
         messages: [{ role: "user", content: "hi" }],
       });
       expect(res.status).toBe(200);

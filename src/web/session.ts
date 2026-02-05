@@ -113,7 +113,7 @@ export async function createWaSocket(
     version,
     logger,
     printQRInTerminal: false,
-    browser: ["clawdbot", "cli", VERSION],
+    browser: ["surprisebot", "cli", VERSION],
     syncFullHistory: false,
     markOnlineOnConnect: false,
   });
@@ -134,7 +134,7 @@ export async function createWaSocket(
         if (connection === "close") {
           const status = getStatusCode(lastDisconnect?.error);
           if (status === DisconnectReason.loggedOut) {
-            console.error(danger("WhatsApp session logged out. Run: clawdbot channels login"));
+            console.error(danger("WhatsApp session logged out. Run: surprisebot channels login"));
           }
         }
         if (connection === "open" && verbose) {

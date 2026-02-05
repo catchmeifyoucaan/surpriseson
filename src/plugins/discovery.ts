@@ -25,7 +25,7 @@ type PackageManifest = {
   name?: string;
   version?: string;
   description?: string;
-  clawdbot?: {
+  surprisebot?: {
     extensions?: string[];
   };
 };
@@ -48,7 +48,7 @@ function readPackageManifest(dir: string): PackageManifest | null {
 }
 
 function resolvePackageExtensions(manifest: PackageManifest): string[] {
-  const raw = manifest.clawdbot?.extensions;
+  const raw = manifest.surprisebot?.extensions;
   if (!Array.isArray(raw)) return [];
   return raw.map((entry) => (typeof entry === "string" ? entry.trim() : "")).filter(Boolean);
 }
@@ -63,7 +63,7 @@ function deriveIdHint(params: {
   if (!rawPackageName) return base;
 
   // Prefer the unscoped name so config keys stay stable even when the npm
-  // package is scoped (example: @clawdbot/voice-call -> voice-call).
+  // package is scoped (example: @surprisebot/voice-call -> voice-call).
   const unscoped = rawPackageName.includes("/")
     ? (rawPackageName.split("/").pop() ?? rawPackageName)
     : rawPackageName;
@@ -264,7 +264,7 @@ function discoverFromPath(params: {
   }
 }
 
-export function discoverClawdbotPlugins(params: {
+export function discoverSurprisebotPlugins(params: {
   workspaceDir?: string;
   extraPaths?: string[];
 }): PluginDiscoveryResult {
@@ -284,7 +284,7 @@ export function discoverClawdbotPlugins(params: {
   const workspaceDir = params.workspaceDir?.trim();
   if (workspaceDir) {
     const workspaceRoot = resolveUserPath(workspaceDir);
-    const workspaceExt = path.join(workspaceRoot, ".clawdbot", "extensions");
+    const workspaceExt = path.join(workspaceRoot, ".surprisebot", "extensions");
     discoverInDirectory({
       dir: workspaceExt,
       origin: "workspace",

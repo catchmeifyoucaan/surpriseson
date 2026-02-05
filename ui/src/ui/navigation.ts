@@ -2,7 +2,7 @@ export const TAB_GROUPS = [
   { label: "Chat", tabs: ["chat"] },
   {
     label: "Control",
-    tabs: ["overview", "connections", "instances", "sessions", "cron"],
+    tabs: ["overview", "mission-control", "connections", "instances", "sessions", "cron"],
   },
   { label: "Agent", tabs: ["skills", "nodes"] },
   { label: "Settings", tabs: ["config", "debug", "logs"] },
@@ -23,6 +23,7 @@ export type Tab =
 
 const TAB_PATHS: Record<Tab, string> = {
   overview: "/overview",
+  "mission-control": "/mission-control",
   connections: "/connections",
   instances: "/instances",
   sessions: "/sessions",
@@ -104,6 +105,8 @@ export function iconForTab(tab: Tab): string {
       return "💬";
     case "overview":
       return "📊";
+    case "mission-control":
+      return "🧭";
     case "connections":
       return "🔗";
     case "instances":
@@ -131,6 +134,8 @@ export function titleForTab(tab: Tab) {
   switch (tab) {
     case "overview":
       return "Overview";
+    case "mission-control":
+      return "Mission Control";
     case "connections":
       return "Connections";
     case "instances":
@@ -160,6 +165,8 @@ export function subtitleForTab(tab: Tab) {
   switch (tab) {
     case "overview":
       return "Gateway status, entry points, and a fast health read.";
+    case "mission-control":
+      return "Incidents, tasks, evidence, budgets, and QA gating.";
     case "connections":
       return "Link channels and keep transport settings in sync.";
     case "instances":
@@ -175,7 +182,7 @@ export function subtitleForTab(tab: Tab) {
     case "chat":
       return "Direct gateway chat session for quick interventions.";
     case "config":
-      return "Edit ~/.clawdbot/clawdbot.json safely.";
+      return "Edit ~/.surprisebot/surprisebot.json safely.";
     case "debug":
       return "Gateway snapshots, events, and manual RPC calls.";
     case "logs":

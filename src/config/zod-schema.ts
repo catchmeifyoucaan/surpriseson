@@ -1,12 +1,15 @@
 import { z } from "zod";
 import { ToolsSchema } from "./zod-schema.agent-runtime.js";
+import { ArtemisSchema } from "./zod-schema.artemis.js";
 import { AgentsSchema, AudioSchema, BindingsSchema, BroadcastSchema } from "./zod-schema.agents.js";
 import { HexColorSchema, ModelsConfigSchema } from "./zod-schema.core.js";
 import { HookMappingSchema, HooksGmailSchema } from "./zod-schema.hooks.js";
 import { ChannelsSchema } from "./zod-schema.providers.js";
+import { BudgetsSchema } from "./zod-schema.budgets.js";
+import { MissionControlSchema } from "./zod-schema.mission-control.js";
 import { CommandsSchema, MessagesSchema, SessionSchema } from "./zod-schema.session.js";
 
-export const ClawdbotSchema = z
+export const SurprisebotSchema = z
   .object({
     env: z
       .object({
@@ -82,7 +85,7 @@ export const ClawdbotSchema = z
               .object({
                 cdpPort: z.number().int().min(1).max(65535).optional(),
                 cdpUrl: z.string().optional(),
-                driver: z.union([z.literal("clawd"), z.literal("extension")]).optional(),
+                driver: z.union([z.literal("surprisebot"), z.literal("extension")]).optional(),
                 color: HexColorSchema,
               })
               .refine((value) => value.cdpPort || value.cdpUrl, {
@@ -123,6 +126,9 @@ export const ClawdbotSchema = z
     models: ModelsConfigSchema,
     agents: AgentsSchema,
     tools: ToolsSchema,
+    artemis: ArtemisSchema,
+    budgets: BudgetsSchema,
+    missionControl: MissionControlSchema,
     bindings: BindingsSchema,
     broadcast: BroadcastSchema,
     audio: AudioSchema,

@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
-import { ensureClawdbotModelsJson } from "./models-config.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { ensureSurprisebotModelsJson } from "./models-config.js";
 
 vi.mock("@mariozechner/pi-ai", async () => {
   const actual = await vi.importActual<typeof import("@mariozechner/pi-ai")>("@mariozechner/pi-ai");
@@ -108,10 +108,10 @@ const makeOpenAiConfig = (modelIds: string[]) =>
         },
       },
     },
-  }) satisfies ClawdbotConfig;
+  }) satisfies SurprisebotConfig;
 
-const ensureModels = (cfg: ClawdbotConfig, agentDir: string) =>
-  ensureClawdbotModelsJson(cfg, agentDir);
+const ensureModels = (cfg: SurprisebotConfig, agentDir: string) =>
+  ensureSurprisebotModelsJson(cfg, agentDir);
 
 const textFromContent = (content: unknown) => {
   if (typeof content === "string") return content;
@@ -139,8 +139,8 @@ const readSessionMessages = async (sessionFile: string) => {
 
 describe("runEmbeddedPiAgent", () => {
   it("writes models.json into the provided agentDir", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-agent-"));
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-workspace-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-agent-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-workspace-"));
     const sessionFile = path.join(workspaceDir, "session.jsonl");
 
     const cfg = {
@@ -164,7 +164,7 @@ describe("runEmbeddedPiAgent", () => {
           },
         },
       },
-    } satisfies ClawdbotConfig;
+    } satisfies SurprisebotConfig;
 
     await expect(
       runEmbeddedPiAgent({
@@ -184,8 +184,8 @@ describe("runEmbeddedPiAgent", () => {
     await expect(fs.stat(path.join(agentDir, "models.json"))).resolves.toBeTruthy();
   });
   it("persists the first user message before assistant output", { timeout: 15_000 }, async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-agent-"));
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-workspace-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-agent-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-workspace-"));
     const sessionFile = path.join(workspaceDir, "session.jsonl");
 
     const cfg = makeOpenAiConfig(["mock-1"]);
@@ -215,8 +215,8 @@ describe("runEmbeddedPiAgent", () => {
     }
   });
   it("persists the user message when prompt fails before assistant output", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-agent-"));
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-workspace-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-agent-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-workspace-"));
     const sessionFile = path.join(workspaceDir, "session.jsonl");
 
     const cfg = makeOpenAiConfig(["mock-error"]);

@@ -109,8 +109,8 @@ function buildAgentPrompt(messagesUnknown: unknown): {
 
 function resolveAgentIdFromHeader(req: IncomingMessage): string | undefined {
   const raw =
-    getHeader(req, "x-clawdbot-agent-id")?.trim() ||
-    getHeader(req, "x-clawdbot-agent")?.trim() ||
+    getHeader(req, "x-surprisebot-agent-id")?.trim() ||
+    getHeader(req, "x-surprisebot-agent")?.trim() ||
     "";
   if (!raw) return undefined;
   return normalizeAgentId(raw);
@@ -121,7 +121,7 @@ function resolveAgentIdFromModel(model: string | undefined): string | undefined 
   if (!raw) return undefined;
 
   const m =
-    raw.match(/^clawdbot[:/](?<agentId>[a-z0-9][a-z0-9_-]{0,63})$/i) ??
+    raw.match(/^surprisebot[:/](?<agentId>[a-z0-9][a-z0-9_-]{0,63})$/i) ??
     raw.match(/^agent:(?<agentId>[a-z0-9][a-z0-9_-]{0,63})$/i);
   const agentId = m?.groups?.agentId;
   if (!agentId) return undefined;
@@ -144,7 +144,7 @@ function resolveSessionKey(params: {
   agentId: string;
   user?: string | undefined;
 }): string {
-  const explicit = getHeader(params.req, "x-clawdbot-session-key")?.trim();
+  const explicit = getHeader(params.req, "x-surprisebot-session-key")?.trim();
   if (explicit) return explicit;
 
   // Default: stateless per-request session key, but stable if OpenAI "user" is provided.
@@ -197,7 +197,7 @@ export async function handleOpenAiHttpRequest(
 
   const payload = coerceRequest(body.value);
   const stream = Boolean(payload.stream);
-  const model = typeof payload.model === "string" ? payload.model : "clawdbot";
+  const model = typeof payload.model === "string" ? payload.model : "surprisebot";
   const user = typeof payload.user === "string" ? payload.user : undefined;
 
   const agentId = resolveAgentIdForRequest({ req, model });
@@ -239,7 +239,7 @@ export async function handleOpenAiHttpRequest(
               .map((p) => (typeof p.text === "string" ? p.text : ""))
               .filter(Boolean)
               .join("\n\n")
-          : "No response from Clawdbot.";
+          : "No response from Surprisebot.";
 
       sendJson(res, 200, {
         id: runId,
@@ -364,7 +364,7 @@ export async function handleOpenAiHttpRequest(
                 .map((p) => (typeof p.text === "string" ? p.text : ""))
                 .filter(Boolean)
                 .join("\n\n")
-            : "No response from Clawdbot.";
+            : "No response from Surprisebot.";
 
         sawAssistantDelta = true;
         writeSse(res, {

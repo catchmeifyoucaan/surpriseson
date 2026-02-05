@@ -13,6 +13,7 @@ import {
 import { DuplicateAgentDirError, findDuplicateAgentDirs } from "./agent-dirs.js";
 import {
   applyContextPruningDefaults,
+  applyIdentityDefaults,
   applyLoggingDefaults,
   applyMessageDefaults,
   applyModelDefaults,
@@ -24,9 +25,9 @@ import { applyLegacyMigrations, findLegacyConfigIssues } from "./legacy.js";
 import { normalizeConfigPaths } from "./normalize-paths.js";
 import { resolveConfigPath, resolveStateDir } from "./paths.js";
 import { applyConfigOverrides } from "./runtime-overrides.js";
-import type { ClawdbotConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
+import type { SurprisebotConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
 import { validateConfigObject } from "./validation.js";
-import { ClawdbotSchema } from "./zod-schema.js";
+import { SurprisebotSchema } from "./zod-schema.js";
 
 // Re-export for backwards compatibility
 export { CircularIncludeError, ConfigIncludeError } from "./includes.js";
@@ -45,8 +46,8 @@ const SHELL_ENV_EXPECTED_KEYS = [
   "DISCORD_BOT_TOKEN",
   "SLACK_BOT_TOKEN",
   "SLACK_APP_TOKEN",
-  "CLAWDBOT_GATEWAY_TOKEN",
-  "CLAWDBOT_GATEWAY_PASSWORD",
+  "SURPRISEBOT_GATEWAY_TOKEN",
+  "SURPRISEBOT_GATEWAY_PASSWORD",
 ];
 
 export type ParseConfigJson5Result = { ok: true; parsed: unknown } | { ok: false; error: string };
@@ -94,7 +95,7 @@ function formatLegacyMigrationLog(changes: string[]): string {
   return `Auto-migrated config:\n${changes.map((entry) => `- ${entry}`).join("\n")}`;
 }
 
-function applyConfigEnv(cfg: ClawdbotConfig, env: NodeJS.ProcessEnv): void {
+function applyConfigEnv(cfg: SurprisebotConfig, env: NodeJS.ProcessEnv): void {
   const envConfig = cfg.env;
   if (!envConfig) return;
 
@@ -150,7 +151,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
   const deps = normalizeDeps(overrides);
   const configPath = resolveConfigPathForDeps(deps);
 
-  const writeConfigFileSync = (cfg: ClawdbotConfig) => {
+  const writeConfigFileSync = (cfg: SurprisebotConfig) => {
     const dir = path.dirname(configPath);
     deps.fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     const json = JSON.stringify(applyModelDefaults(cfg), null, 2).trimEnd().concat("\n");
@@ -195,7 +196,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     }
   };
 
-  function loadConfig(): ClawdbotConfig {
+  function loadConfig(): SurprisebotConfig {
     try {
       if (!deps.fs.existsSync(configPath)) {
         if (shouldEnableShellEnvFallback(deps.env)) {
@@ -222,7 +223,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       const resolvedConfig = migrated.next ?? resolved;
       warnOnConfigMiskeys(resolvedConfig, deps.logger);
       if (typeof resolvedConfig !== "object" || resolvedConfig === null) return {};
-      const validated = ClawdbotSchema.safeParse(resolvedConfig);
+      const validated = SurprisebotSchema.safeParse(resolvedConfig);
       if (!validated.success) {
         deps.logger.error("Invalid config:");
         for (const iss of validated.error.issues) {
@@ -233,7 +234,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       if (migrated.next && migrated.changes.length > 0) {
         deps.logger.warn(formatLegacyMigrationLog(migrated.changes));
         try {
-          writeConfigFileSync(resolvedConfig as ClawdbotConfig);
+          writeConfigFileSync(resolvedConfig as SurprisebotConfig);
         } catch (err) {
           deps.logger.warn(`Failed to write migrated config at ${configPath}: ${String(err)}`);
         }
@@ -241,7 +242,9 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       const cfg = applyModelDefaults(
         applyContextPruningDefaults(
           applySessionDefaults(
-            applyLoggingDefaults(applyMessageDefaults(validated.data as ClawdbotConfig)),
+            applyIdentityDefaults(
+              applyLoggingDefaults(applyMessageDefaults(validated.data as SurprisebotConfig)),
+            ),
           ),
         ),
       );
@@ -283,11 +286,13 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     const exists = deps.fs.existsSync(configPath);
     if (!exists) {
       const hash = hashConfigRaw(null);
-      const config = applyTalkApiKey(
-        applyModelDefaults(
-          applyContextPruningDefaults(applySessionDefaults(applyMessageDefaults({}))),
-        ),
-      );
+        const config = applyTalkApiKey(
+          applyModelDefaults(
+            applyContextPruningDefaults(
+              applySessionDefaults(applyIdentityDefaults(applyMessageDefaults({}))),
+            ),
+          ),
+        );
       const legacyIssues: LegacyConfigIssue[] = [];
       return {
         path: configPath,
@@ -353,7 +358,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       if (!validated.ok) {
         const resolvedConfig =
           typeof resolvedConfigRaw === "object" && resolvedConfigRaw !== null
-            ? (resolvedConfigRaw as ClawdbotConfig)
+            ? (resolvedConfigRaw as SurprisebotConfig)
             : {};
         return {
           path: configPath,
@@ -407,7 +412,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     }
   }
 
-  async function writeConfigFile(cfg: ClawdbotConfig) {
+  async function writeConfigFile(cfg: SurprisebotConfig) {
     const dir = path.dirname(configPath);
     await deps.fs.promises.mkdir(dir, { recursive: true, mode: 0o700 });
     const json = JSON.stringify(applyModelDefaults(cfg), null, 2).trimEnd().concat("\n");
@@ -457,9 +462,9 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
 }
 
 // NOTE: These wrappers intentionally do *not* cache the resolved config path at
-// module scope. `CLAWDBOT_CONFIG_PATH` (and friends) are expected to work even
+// module scope. `SURPRISEBOT_CONFIG_PATH` (and friends) are expected to work even
 // when set after the module has been imported (tests, one-off scripts, etc.).
-export function loadConfig(): ClawdbotConfig {
+export function loadConfig(): SurprisebotConfig {
   return createConfigIO({ configPath: resolveConfigPath() }).loadConfig();
 }
 
@@ -469,6 +474,6 @@ export async function readConfigFileSnapshot(): Promise<ConfigFileSnapshot> {
   }).readConfigFileSnapshot();
 }
 
-export async function writeConfigFile(cfg: ClawdbotConfig): Promise<void> {
+export async function writeConfigFile(cfg: SurprisebotConfig): Promise<void> {
   await createConfigIO({ configPath: resolveConfigPath() }).writeConfigFile(cfg);
 }

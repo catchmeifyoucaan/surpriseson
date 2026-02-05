@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveAgentConfig, resolveAgentIdFromSessionKey } from "./agent-scope.js";
 import type { AnyAgentTool } from "./pi-tools.types.js";
 import type { SandboxToolPolicy } from "./sandbox.js";
@@ -11,7 +11,7 @@ const DEFAULT_SUBAGENT_TOOL_DENY = [
   "sessions_spawn",
 ];
 
-export function resolveSubagentToolPolicy(cfg?: ClawdbotConfig): SandboxToolPolicy {
+export function resolveSubagentToolPolicy(cfg?: SurprisebotConfig): SandboxToolPolicy {
   const configured = cfg?.tools?.subagents?.tools;
   const deny = [
     ...DEFAULT_SUBAGENT_TOOL_DENY,
@@ -92,7 +92,7 @@ function resolveProviderToolPolicy(params: {
 }
 
 export function resolveEffectiveToolPolicy(params: {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   sessionKey?: string;
   modelProvider?: string;
   modelId?: string;

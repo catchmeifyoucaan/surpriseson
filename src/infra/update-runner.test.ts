@@ -26,7 +26,7 @@ describe("runGatewayUpdate", () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-update-"));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-update-"));
   });
 
   afterEach(async () => {
@@ -37,7 +37,7 @@ describe("runGatewayUpdate", () => {
     await fs.mkdir(path.join(tempDir, ".git"));
     await fs.writeFile(
       path.join(tempDir, "package.json"),
-      JSON.stringify({ name: "clawdbot", version: "1.0.0" }),
+      JSON.stringify({ name: "surprisebot", version: "1.0.0" }),
       "utf-8",
     );
     const { runner, calls } = createRunner({
@@ -61,7 +61,7 @@ describe("runGatewayUpdate", () => {
     await fs.mkdir(path.join(tempDir, ".git"));
     await fs.writeFile(
       path.join(tempDir, "package.json"),
-      JSON.stringify({ name: "clawdbot", version: "1.0.0" }),
+      JSON.stringify({ name: "surprisebot", version: "1.0.0" }),
       "utf-8",
     );
     const { runner, calls } = createRunner({
@@ -90,7 +90,7 @@ describe("runGatewayUpdate", () => {
   it("skips update when no git root", async () => {
     await fs.writeFile(
       path.join(tempDir, "package.json"),
-      JSON.stringify({ name: "clawdbot", packageManager: "pnpm@8.0.0" }),
+      JSON.stringify({ name: "surprisebot", packageManager: "pnpm@8.0.0" }),
       "utf-8",
     );
     await fs.writeFile(path.join(tempDir, "pnpm-lock.yaml"), "", "utf-8");
@@ -111,7 +111,7 @@ describe("runGatewayUpdate", () => {
     expect(calls.some((call) => call.startsWith("bun "))).toBe(false);
   });
 
-  it("rejects git roots that are not a clawdbot checkout", async () => {
+  it("rejects git roots that are not a surprisebot checkout", async () => {
     await fs.mkdir(path.join(tempDir, ".git"));
     const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(tempDir);
     const { runner, calls } = createRunner({
@@ -127,7 +127,7 @@ describe("runGatewayUpdate", () => {
     cwdSpy.mockRestore();
 
     expect(result.status).toBe("error");
-    expect(result.reason).toBe("not-clawdbot-root");
+    expect(result.reason).toBe("not-surprisebot-root");
     expect(calls.some((call) => call.includes("status --porcelain"))).toBe(false);
   });
 });

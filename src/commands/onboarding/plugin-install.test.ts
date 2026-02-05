@@ -13,12 +13,12 @@ vi.mock("../../plugins/install.js", () => ({
 }));
 
 vi.mock("../../plugins/loader.js", () => ({
-  loadClawdbotPlugins: vi.fn(),
+  loadSurprisebotPlugins: vi.fn(),
 }));
 
 import fs from "node:fs";
 import type { ChannelPluginCatalogEntry } from "../../channels/plugins/catalog.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { WizardPrompter } from "../../wizard/prompts.js";
 import { makePrompter, makeRuntime } from "./__tests__/test-utils.js";
 import { ensureOnboardingPluginInstalled } from "./plugin-install.js";
@@ -34,7 +34,7 @@ const baseEntry: ChannelPluginCatalogEntry = {
     blurb: "Test",
   },
   install: {
-    npmSpec: "@clawdbot/zalo",
+    npmSpec: "@surprisebot/zalo",
     localPath: "extensions/zalo",
   },
 };
@@ -49,7 +49,7 @@ describe("ensureOnboardingPluginInstalled", () => {
     const prompter = makePrompter({
       select: vi.fn(async () => "npm") as WizardPrompter["select"],
     });
-    const cfg: ClawdbotConfig = { plugins: { allow: ["other"] } };
+    const cfg: SurprisebotConfig = { plugins: { allow: ["other"] } };
     vi.mocked(fs.existsSync).mockReturnValue(false);
     installPluginFromNpmSpec.mockResolvedValue({
       ok: true,
@@ -69,7 +69,7 @@ describe("ensureOnboardingPluginInstalled", () => {
     expect(result.cfg.plugins?.entries?.zalo?.enabled).toBe(true);
     expect(result.cfg.plugins?.allow).toContain("zalo");
     expect(installPluginFromNpmSpec).toHaveBeenCalledWith(
-      expect.objectContaining({ spec: "@clawdbot/zalo" }),
+      expect.objectContaining({ spec: "@surprisebot/zalo" }),
     );
   });
 
@@ -78,7 +78,7 @@ describe("ensureOnboardingPluginInstalled", () => {
     const prompter = makePrompter({
       select: vi.fn(async () => "local") as WizardPrompter["select"],
     });
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
     vi.mocked(fs.existsSync).mockImplementation((value) => {
       const raw = String(value);
       return (
@@ -108,7 +108,7 @@ describe("ensureOnboardingPluginInstalled", () => {
       note,
       confirm,
     });
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
     vi.mocked(fs.existsSync).mockImplementation((value) => {
       const raw = String(value);
       return (

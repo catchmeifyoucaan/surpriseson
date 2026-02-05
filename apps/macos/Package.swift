@@ -1,61 +1,61 @@
 // swift-tools-version: 6.2
-// Package manifest for the Clawdbot macOS companion (menu bar app + IPC library).
+// Package manifest for the Surprisebot macOS companion (menu bar app + IPC library).
 
 import PackageDescription
 
 let package = Package(
-    name: "Clawdbot",
+    name: "Surprisebot",
     platforms: [
         .macOS(.v15),
     ],
     products: [
-        .library(name: "ClawdbotIPC", targets: ["ClawdbotIPC"]),
-        .library(name: "ClawdbotDiscovery", targets: ["ClawdbotDiscovery"]),
-        .executable(name: "Clawdbot", targets: ["Clawdbot"]),
-        .executable(name: "clawdbot-mac-discovery", targets: ["ClawdbotDiscoveryCLI"]),
-        .executable(name: "clawdbot-mac-wizard", targets: ["ClawdbotWizardCLI"]),
+        .library(name: "SurprisebotIPC", targets: ["SurprisebotIPC"]),
+        .library(name: "SurprisebotDiscovery", targets: ["SurprisebotDiscovery"]),
+        .executable(name: "Surprisebot", targets: ["Surprisebot"]),
+        .executable(name: "surprisebot-mac-discovery", targets: ["SurprisebotDiscoveryCLI"]),
+        .executable(name: "surprisebot-mac-wizard", targets: ["SurprisebotWizardCLI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/orchetect/MenuBarExtraAccess", exact: "1.2.2"),
         .package(url: "https://github.com/swiftlang/swift-subprocess.git", from: "0.1.0"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.8.0"),
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.8.1"),
-        .package(path: "../shared/ClawdbotKit"),
+        .package(path: "../shared/SurprisebotKit"),
         .package(path: "../../Swabble"),
         .package(path: "../../Peekaboo/Core/PeekabooCore"),
         .package(path: "../../Peekaboo/Core/PeekabooAutomationKit"),
     ],
     targets: [
         .target(
-            name: "ClawdbotProtocol",
+            name: "SurprisebotProtocol",
             dependencies: [],
-            path: "Sources/ClawdbotProtocol",
+            path: "Sources/SurprisebotProtocol",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .target(
-            name: "ClawdbotIPC",
+            name: "SurprisebotIPC",
             dependencies: [],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .target(
-            name: "ClawdbotDiscovery",
+            name: "SurprisebotDiscovery",
             dependencies: [
-                .product(name: "ClawdbotKit", package: "ClawdbotKit"),
+                .product(name: "SurprisebotKit", package: "SurprisebotKit"),
             ],
-            path: "Sources/ClawdbotDiscovery",
+            path: "Sources/SurprisebotDiscovery",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .executableTarget(
-            name: "Clawdbot",
+            name: "Surprisebot",
             dependencies: [
-                "ClawdbotIPC",
-                "ClawdbotDiscovery",
-                "ClawdbotProtocol",
-                .product(name: "ClawdbotKit", package: "ClawdbotKit"),
-                .product(name: "ClawdbotChatUI", package: "ClawdbotKit"),
+                "SurprisebotIPC",
+                "SurprisebotDiscovery",
+                "SurprisebotProtocol",
+                .product(name: "SurprisebotKit", package: "SurprisebotKit"),
+                .product(name: "SurprisebotChatUI", package: "SurprisebotKit"),
                 .product(name: "SwabbleKit", package: "swabble"),
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess"),
                 .product(name: "Subprocess", package: "swift-subprocess"),
@@ -68,37 +68,37 @@ let package = Package(
                 "Resources/Info.plist",
             ],
             resources: [
-                .copy("Resources/Clawdbot.icns"),
+                .copy("Resources/Surprisebot.icns"),
                 .copy("Resources/DeviceModels"),
             ],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .executableTarget(
-            name: "ClawdbotDiscoveryCLI",
+            name: "SurprisebotDiscoveryCLI",
             dependencies: [
-                "ClawdbotDiscovery",
+                "SurprisebotDiscovery",
             ],
-            path: "Sources/ClawdbotDiscoveryCLI",
+            path: "Sources/SurprisebotDiscoveryCLI",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .executableTarget(
-            name: "ClawdbotWizardCLI",
+            name: "SurprisebotWizardCLI",
             dependencies: [
-                "ClawdbotProtocol",
+                "SurprisebotProtocol",
             ],
-            path: "Sources/ClawdbotWizardCLI",
+            path: "Sources/SurprisebotWizardCLI",
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
         .testTarget(
-            name: "ClawdbotIPCTests",
+            name: "SurprisebotIPCTests",
             dependencies: [
-                "ClawdbotIPC",
-                "Clawdbot",
-                "ClawdbotDiscovery",
-                "ClawdbotProtocol",
+                "SurprisebotIPC",
+                "Surprisebot",
+                "SurprisebotDiscovery",
+                "SurprisebotProtocol",
                 .product(name: "SwabbleKit", package: "swabble"),
             ],
             swiftSettings: [

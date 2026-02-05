@@ -128,7 +128,7 @@ export async function applyAuthChoiceOpenAI(
       spin.stop("OpenAI OAuth failed");
       params.runtime.error(String(err));
       await params.prompter.note(
-        "Trouble with OAuth? See https://docs.clawd.bot/start/faq",
+        "Trouble with OAuth? See https://docs.surprisebot.bot/start/faq",
         "OAuth help",
       );
     }

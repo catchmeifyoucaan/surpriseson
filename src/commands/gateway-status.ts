@@ -264,8 +264,8 @@ export async function gatewayStatusCommand(
   runtime.log(colorize(rich, theme.heading, "Discovery (this machine)"));
   runtime.log(
     discovery.length > 0
-      ? `Found ${discovery.length} gateway(s) via Bonjour (local. + clawdbot.internal.)`
-      : "Found 0 gateways via Bonjour (local. + clawdbot.internal.)",
+      ? `Found ${discovery.length} gateway(s) via Bonjour (local. + surprisebot.internal.)`
+      : "Found 0 gateways via Bonjour (local. + surprisebot.internal.)",
   );
   if (discovery.length === 0) {
     runtime.log(

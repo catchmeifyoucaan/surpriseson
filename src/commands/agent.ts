@@ -3,6 +3,7 @@ import {
   resolveAgentModelFallbacksOverride,
   resolveAgentModelPrimary,
   resolveAgentWorkspaceDir,
+  resolveDefaultAgentId,
 } from "../agents/agent-scope.js";
 import { ensureAuthProfileStore } from "../agents/auth-profiles.js";
 import { runCliAgent } from "../agents/cli-runner.js";
@@ -21,6 +22,7 @@ import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
 import { buildWorkspaceSkillSnapshot } from "../agents/skills.js";
 import { resolveAgentTimeoutMs } from "../agents/timeout.js";
 import { ensureAgentWorkspace } from "../agents/workspace.js";
+import { ensureSharedMemoryForWorkspace } from "../agents/shared-memory.js";
 import {
   formatThinkingLevels,
   formatXHighModelHint,
@@ -44,6 +46,9 @@ import {
   registerAgentRunContext,
 } from "../infra/agent-events.js";
 import { defaultRuntime, type RuntimeEnv } from "../runtime.js";
+import { registerJobContext, clearJobContext } from "../infra/job-context.js";
+import { evaluateBudget, resolveBudgetCaps } from "../infra/budget-manager.js";
+import { appendMissionControlRecord } from "../infra/mission-control/ledger.js";
 import { applyVerboseOverride } from "../sessions/level-overrides.js";
 import { resolveSendPolicy } from "../sessions/send-policy.js";
 import { resolveMessageChannel } from "../utils/message-channel.js";
@@ -73,6 +78,12 @@ export async function agentCommand(
     ensureBootstrapFiles: !agentCfg?.skipBootstrap,
   });
   const workspaceDir = workspace.dir;
+  try {
+    await ensureSharedMemoryForWorkspace({ cfg, agentId: sessionAgentId, workspaceDir });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`Shared memory init failed: ${message}`);
+  }
   const configuredModel = resolveConfiguredModelRef({
     cfg,
     defaultProvider: DEFAULT_PROVIDER,
@@ -106,6 +117,16 @@ export async function agentCommand(
     cfg,
     overrideSeconds: timeoutSecondsRaw,
   });
+  const jobType = (opts.lane?.trim() || "interactive").trim();
+  const agentIdForBudget = sessionAgentId ?? resolveDefaultAgentId(cfg) ?? "default";
+  const budgetCaps = resolveBudgetCaps({
+    cfg,
+    agentId: agentIdForBudget,
+    jobType,
+  });
+  const effectiveTimeoutMs = budgetCaps.maxRuntimeSeconds
+    ? Math.min(timeoutMs, budgetCaps.maxRuntimeSeconds * 1000)
+    : timeoutMs;
 
   const sessionResolution = resolveSession({
     cfg,
@@ -126,6 +147,20 @@ export async function agentCommand(
   } = sessionResolution;
   let sessionEntry = resolvedSessionEntry;
   const runId = opts.runId?.trim() || sessionId;
+  const runStartedAt = new Date().toISOString();
+  const runLedgerId = `run-${runId}`;
+  let runOutcome: "done" | "failed" = "done";
+  let runError: string | null = null;
+  let runEstimatedTokens: number | null = null;
+  const budgetDecision = await evaluateBudget({
+    cfg,
+    agentId: agentIdForBudget,
+    jobType,
+    runId,
+  });
+  if (budgetDecision.decision === "deny" || budgetDecision.decision === "defer") {
+    throw new Error(`Budget ${budgetDecision.decision}: ${budgetDecision.reason}`);
+  }
 
   try {
     if (opts.deliver === true) {
@@ -153,6 +188,11 @@ export async function agentCommand(
       registerAgentRunContext(runId, {
         sessionKey,
         verboseLevel: resolvedVerboseLevel,
+      });
+      registerJobContext({
+        sessionKey,
+        jobType,
+        runId,
       });
     }
 
@@ -321,6 +361,25 @@ export async function agentCommand(
     let fallbackProvider = provider;
     let fallbackModel = model;
     try {
+      await appendMissionControlRecord({
+        cfg,
+        kind: "run-ledger",
+        record: {
+          id: runLedgerId,
+          ts: runStartedAt,
+          source: "interactive",
+          version: 1,
+          agentId: agentIdForBudget,
+          status: "running",
+          command: "agentCommand",
+          startedAt: runStartedAt,
+          jobType,
+          meta: {
+            sessionKey,
+            runId,
+          },
+        },
+      }).catch(() => {});
       const messageChannel = resolveMessageChannel(opts.messageChannel, opts.channel);
       const fallbackResult = await runWithModelFallback({
         cfg,
@@ -340,7 +399,7 @@ export async function agentCommand(
               provider: providerOverride,
               model: modelOverride,
               thinkLevel: resolvedThinkLevel,
-              timeoutMs,
+              timeoutMs: effectiveTimeoutMs,
               runId,
               extraSystemPrompt: opts.extraSystemPrompt,
               cliSessionId,
@@ -362,7 +421,7 @@ export async function agentCommand(
             authProfileId: sessionEntry?.authProfileOverride,
             thinkLevel: resolvedThinkLevel,
             verboseLevel: resolvedVerboseLevel,
-            timeoutMs,
+            timeoutMs: effectiveTimeoutMs,
             runId,
             lane: opts.lane,
             abortSignal: opts.abortSignal,
@@ -413,6 +472,8 @@ export async function agentCommand(
           },
         });
       }
+      runOutcome = "failed";
+      runError = String(err);
       throw err;
     }
 
@@ -433,6 +494,17 @@ export async function agentCommand(
       });
     }
 
+    const usage = result.meta.agentMeta?.usage;
+    if (usage) {
+      const total = usage.total ?? 0;
+      const input = usage.input ?? 0;
+      const output = usage.output ?? 0;
+      const cacheRead = usage.cacheRead ?? 0;
+      const cacheWrite = usage.cacheWrite ?? 0;
+      const computed = total || input + output + cacheRead + cacheWrite;
+      runEstimatedTokens = computed || null;
+    }
+
     const payloads = result.payloads ?? [];
     return await deliverAgentCommandResult({
       cfg,
@@ -444,6 +516,32 @@ export async function agentCommand(
       payloads,
     });
   } finally {
+    if (sessionKey) {
+      await appendMissionControlRecord({
+        cfg,
+        kind: "run-ledger",
+        record: {
+          id: runLedgerId,
+          ts: new Date().toISOString(),
+          source: "interactive",
+          version: 1,
+          agentId: agentIdForBudget,
+          status: runOutcome,
+          command: "agentCommand",
+          startedAt: runStartedAt,
+          finishedAt: new Date().toISOString(),
+          exitCode: String(runOutcome) === "failed" ? 1 : 0,
+          jobType,
+          estimatedTokens: runEstimatedTokens ?? undefined,
+          meta: {
+            sessionKey,
+            runId,
+            error: runError ?? undefined,
+          },
+        },
+      }).catch(() => {});
+      clearJobContext(sessionKey);
+    }
     clearAgentRunContext(runId);
   }
 }

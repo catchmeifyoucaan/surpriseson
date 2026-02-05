@@ -1,5 +1,5 @@
 ---
-summary: "Clawdbot plugins/extensions: discovery, config, and safety"
+summary: "Surprisebot plugins/extensions: discovery, config, and safety"
 read_when:
   - Adding or modifying plugins/extensions
   - Documenting plugin install or load rules
@@ -8,11 +8,11 @@ read_when:
 
 ## Quick start (new to plugins?)
 
-A plugin is just a **small code module** that extends Clawdbot with extra
+A plugin is just a **small code module** that extends Surprisebot with extra
 features (commands, tools, and Gateway RPC).
 
 Most of the time, you’ll use plugins when you want a feature that’s not built
-into core Clawdbot yet (or you want to keep optional features out of your main
+into core Surprisebot yet (or you want to keep optional features out of your main
 install).
 
 Fast path:
@@ -20,13 +20,13 @@ Fast path:
 1) See what’s already loaded:
 
 ```bash
-clawdbot plugins list
+surprisebot plugins list
 ```
 
 2) Install an official plugin (example: Voice Call):
 
 ```bash
-clawdbot plugins install @clawdbot/voice-call
+surprisebot plugins install @surprisebot/voice-call
 ```
 
 3) Restart the Gateway, then configure under `plugins.entries.<id>.config`.
@@ -35,11 +35,11 @@ See [Voice Call](/plugins/voice-call) for a concrete example plugin.
 
 ## Available plugins (official)
 
-- [Voice Call](/plugins/voice-call) — `@clawdbot/voice-call`
-- [Matrix](/channels/matrix) — `@clawdbot/matrix`
-- [Zalo](/channels/zalo) — `@clawdbot/zalo`
+- [Voice Call](/plugins/voice-call) — `@surprisebot/voice-call`
+- [Matrix](/channels/matrix) — `@surprisebot/matrix`
+- [Zalo](/channels/zalo) — `@surprisebot/zalo`
 
-Clawdbot plugins are **TypeScript modules** loaded at runtime via jiti. They can
+Surprisebot plugins are **TypeScript modules** loaded at runtime via jiti. They can
 register:
 
 - Gateway RPC methods
@@ -53,27 +53,27 @@ Plugins run **in‑process** with the Gateway, so treat them as trusted code.
 
 ## Discovery & precedence
 
-Clawdbot scans, in order:
+Surprisebot scans, in order:
 
 1) Global extensions
-- `~/.clawdbot/extensions/*.ts`
-- `~/.clawdbot/extensions/*/index.ts`
+- `~/.surprisebot/extensions/*.ts`
+- `~/.surprisebot/extensions/*/index.ts`
 
 2) Workspace extensions
-- `<workspace>/.clawdbot/extensions/*.ts`
-- `<workspace>/.clawdbot/extensions/*/index.ts`
+- `<workspace>/.surprisebot/extensions/*.ts`
+- `<workspace>/.surprisebot/extensions/*/index.ts`
 
 3) Config paths
 - `plugins.load.paths` (file or directory)
 
 ### Package packs
 
-A plugin directory may include a `package.json` with `clawdbot.extensions`:
+A plugin directory may include a `package.json` with `surprisebot.extensions`:
 
 ```json
 {
   "name": "my-pack",
-  "clawdbot": {
+  "surprisebot": {
     "extensions": ["./src/safety.ts", "./src/tools.ts"]
   }
 }
@@ -92,7 +92,7 @@ Default plugin ids:
 - Package packs: `package.json` `name`
 - Standalone file: file base name (`~/.../voice-call.ts` → `voice-call`)
 
-If a plugin exports `id`, Clawdbot uses it but warns when it doesn’t match the
+If a plugin exports `id`, Surprisebot uses it but warns when it doesn’t match the
 configured id.
 
 ## Config
@@ -124,7 +124,7 @@ Config changes **require a gateway restart**.
 
 The Control UI uses `config.schema` (JSON Schema + `uiHints`) to render better forms.
 
-Clawdbot augments `uiHints` at runtime based on discovered plugins:
+Surprisebot augments `uiHints` at runtime based on discovered plugins:
 
 - Adds per-plugin labels for `plugins.entries.<id>` / `.enabled` / `.config`
 - Merges optional plugin-provided config field hints under:
@@ -152,18 +152,18 @@ export default {
 ## CLI
 
 ```bash
-clawdbot plugins list
-clawdbot plugins info <id>
-clawdbot plugins install <path>              # add a local file/dir to plugins.load.paths
-clawdbot plugins install ./extensions/voice-call # relative path ok
-clawdbot plugins install ./plugin.tgz        # install from a local tarball
-clawdbot plugins install @clawdbot/voice-call # install from npm
-clawdbot plugins enable <id>
-clawdbot plugins disable <id>
-clawdbot plugins doctor
+surprisebot plugins list
+surprisebot plugins info <id>
+surprisebot plugins install <path>              # add a local file/dir to plugins.load.paths
+surprisebot plugins install ./extensions/voice-call # relative path ok
+surprisebot plugins install ./plugin.tgz        # install from a local tarball
+surprisebot plugins install @surprisebot/voice-call # install from npm
+surprisebot plugins enable <id>
+surprisebot plugins disable <id>
+surprisebot plugins doctor
 ```
 
-Plugins may also register their own top‑level commands (example: `clawdbot voicecall`).
+Plugins may also register their own top‑level commands (example: `surprisebot voicecall`).
 
 ## Plugin API (overview)
 
@@ -356,14 +356,14 @@ it’s present in your workspace/managed skills locations.
 
 Recommended packaging:
 
-- Main package: `clawdbot` (this repo)
-- Plugins: separate npm packages under `@clawdbot/*` (example: `@clawdbot/voice-call`)
+- Main package: `surprisebot` (this repo)
+- Plugins: separate npm packages under `@surprisebot/*` (example: `@surprisebot/voice-call`)
 
 Publishing contract:
 
-- Plugin `package.json` must include `clawdbot.extensions` with one or more entry files.
+- Plugin `package.json` must include `surprisebot.extensions` with one or more entry files.
 - Entry files can be `.js` or `.ts` (jiti loads TS at runtime).
-- `clawdbot plugins install <npm-spec>` uses `npm pack`, extracts into `~/.clawdbot/extensions/<id>/`, and enables it in config.
+- `surprisebot plugins install <npm-spec>` uses `npm pack`, extracts into `~/.surprisebot/extensions/<id>/`, and enables it in config.
 - Config key stability: scoped packages are normalized to the **unscoped** id for `plugins.entries.*`.
 
 ## Example plugin: Voice Call
@@ -372,7 +372,7 @@ This repo includes a voice‑call plugin (Twilio or log fallback):
 
 - Source: `extensions/voice-call`
 - Skill: `skills/voice-call`
-- CLI: `clawdbot voicecall start|status`
+- CLI: `surprisebot voicecall start|status`
 - Tool: `voice_call`
 - RPC: `voicecall.start`, `voicecall.status`
 - Config (twilio): `provider: "twilio"` + `twilio.accountSid/authToken/from` (optional `statusCallbackUrl`, `twimlUrl`)
@@ -393,4 +393,4 @@ Plugins run in-process with the Gateway. Treat them as trusted code:
 Plugins can (and should) ship tests:
 
 - In-repo plugins can keep Vitest tests under `src/**` (example: `src/plugins/voice-call.plugin.test.ts`).
-- Separately published plugins should run their own CI (lint/build/test) and validate `clawdbot.extensions` points at the built entrypoint (`dist/index.js`).
+- Separately published plugins should run their own CI (lint/build/test) and validate `surprisebot.extensions` points at the built entrypoint (`dist/index.js`).

@@ -1,19 +1,19 @@
 ---
-summary: "Agent tool surface for Clawdbot (browser, canvas, nodes, message, cron) replacing legacy `clawdbot-*` skills"
+summary: "Agent tool surface for Surprisebot (browser, canvas, nodes, message, cron) replacing legacy `surprisebot-*` skills"
 read_when:
   - Adding or modifying agent tools
-  - Retiring or changing `clawdbot-*` skills
+  - Retiring or changing `surprisebot-*` skills
 ---
 
-# Tools (Clawdbot)
+# Tools (Surprisebot)
 
-Clawdbot exposes **first-class agent tools** for browser, canvas, nodes, and cron.
-These replace the old `clawdbot-*` skills: the tools are typed, no shelling,
+Surprisebot exposes **first-class agent tools** for browser, canvas, nodes, and cron.
+These replace the old `surprisebot-*` skills: the tools are typed, no shelling,
 and the agent should rely on them directly.
 
 ## Disabling tools
 
-You can globally allow/deny tools via `tools.allow` / `tools.deny` in `clawdbot.json`
+You can globally allow/deny tools via `tools.allow` / `tools.deny` in `surprisebot.json`
 (deny wins). This prevents disallowed tools from being sent to model providers.
 
 ```json5
@@ -136,7 +136,7 @@ Available groups:
 - `group:automation`: `cron`, `gateway`
 - `group:messaging`: `message`
 - `group:nodes`: `nodes`
-- `group:clawdbot`: all built-in Clawdbot tools (excludes provider plugins)
+- `group:surprisebot`: all built-in Surprisebot tools (excludes provider plugins)
 
 Example (allow only file tools + browser):
 ```json5
@@ -197,7 +197,7 @@ Core parameters:
 - `count` (1–10; default from `tools.web.search.maxResults`)
 
 Notes:
-- Requires a Brave API key (recommended: `clawdbot configure --section web`, or set `BRAVE_API_KEY`).
+- Requires a Brave API key (recommended: `surprisebot configure --section web`, or set `BRAVE_API_KEY`).
 - Enable via `tools.web.search.enabled`.
 - Responses are cached (default 15 min).
 - See [Web tools](/tools/web) for setup.
@@ -217,7 +217,7 @@ Notes:
 - See [Web tools](/tools/web) for setup.
 
 ### `browser`
-Control the dedicated clawd browser.
+Control the dedicated surprisebot browser.
 
 Core actions:
 - `status`, `start`, `stop`, `tabs`, `open`, `focus`, `close`
@@ -262,7 +262,7 @@ Notes:
 - Uses gateway `node.invoke` under the hood.
 - If no `node` is provided, the tool picks a default (single connected node or local mac node).
 - A2UI is v0.8 only (no `createSurface`); the CLI rejects v0.9 JSONL with line errors.
-- Quick smoke: `clawdbot nodes canvas a2ui push --node <id> --text "Hello from A2UI"`.
+- Quick smoke: `surprisebot nodes canvas a2ui push --node <id> --text "Hello from A2UI"`.
 
 ### `nodes`
 Discover and target paired nodes; send notifications; capture camera/screen.
@@ -349,7 +349,7 @@ Notes:
 Restart or apply updates to the running Gateway process (in-place).
 
 Core actions:
-- `restart` (sends `SIGUSR1` to the current process; `clawdbot gateway` restart in-place)
+- `restart` (sends `SIGUSR1` to the current process; `surprisebot gateway` restart in-place)
 - `config.get` / `config.schema`
 - `config.apply` (validate + write config + restart + wake)
 - `update.run` (run update + restart + wake)

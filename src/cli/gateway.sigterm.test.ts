@@ -77,8 +77,8 @@ describe("gateway SIGTERM", () => {
 
   it("exits 0 on SIGTERM", { timeout: 180_000 }, async () => {
     const port = await getFreePort();
-    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "clawdbot-gateway-test-"));
-    const configPath = path.join(stateDir, "clawdbot.json");
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "surprisebot-gateway-test-"));
+    const configPath = path.join(stateDir, "surprisebot.json");
     fs.writeFileSync(
       configPath,
       JSON.stringify({ gateway: { mode: "local", port } }, null, 2),
@@ -104,14 +104,14 @@ describe("gateway SIGTERM", () => {
         cwd: process.cwd(),
         env: {
           ...process.env,
-          CLAWDBOT_STATE_DIR: stateDir,
-          CLAWDBOT_CONFIG_PATH: configPath,
-          CLAWDBOT_SKIP_CHANNELS: "1",
-          CLAWDBOT_SKIP_BROWSER_CONTROL_SERVER: "1",
-          CLAWDBOT_SKIP_CANVAS_HOST: "1",
+          SURPRISEBOT_STATE_DIR: stateDir,
+          SURPRISEBOT_CONFIG_PATH: configPath,
+          SURPRISEBOT_SKIP_CHANNELS: "1",
+          SURPRISEBOT_SKIP_BROWSER_CONTROL_SERVER: "1",
+          SURPRISEBOT_SKIP_CANVAS_HOST: "1",
           // Avoid port collisions with other test processes that may also start a bridge server.
-          CLAWDBOT_BRIDGE_HOST: "127.0.0.1",
-          CLAWDBOT_BRIDGE_PORT: "0",
+          SURPRISEBOT_BRIDGE_HOST: "127.0.0.1",
+          SURPRISEBOT_BRIDGE_PORT: "0",
         },
         stdio: ["ignore", "pipe", "pipe"],
       },

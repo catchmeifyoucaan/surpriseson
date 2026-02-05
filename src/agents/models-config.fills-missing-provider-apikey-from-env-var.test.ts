@@ -2,13 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 
 async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "clawdbot-models-" });
+  return withTempHomeBase(fn, { prefix: "surprisebot-models-" });
 }
 
-const MODELS_CONFIG: ClawdbotConfig = {
+const MODELS_CONFIG: SurprisebotConfig = {
   models: {
     providers: {
       "custom-proxy": {
@@ -49,10 +49,10 @@ describe("models-config", () => {
       const prevKey = process.env.MINIMAX_API_KEY;
       process.env.MINIMAX_API_KEY = "sk-minimax-test";
       try {
-        const { ensureClawdbotModelsJson } = await import("./models-config.js");
-        const { resolveClawdbotAgentDir } = await import("./agent-paths.js");
+        const { ensureSurprisebotModelsJson } = await import("./models-config.js");
+        const { resolveSurprisebotAgentDir } = await import("./agent-paths.js");
 
-        const cfg: ClawdbotConfig = {
+        const cfg: SurprisebotConfig = {
           models: {
             providers: {
               minimax: {
@@ -74,9 +74,9 @@ describe("models-config", () => {
           },
         };
 
-        await ensureClawdbotModelsJson(cfg);
+        await ensureSurprisebotModelsJson(cfg);
 
-        const modelPath = path.join(resolveClawdbotAgentDir(), "models.json");
+        const modelPath = path.join(resolveSurprisebotAgentDir(), "models.json");
         const raw = await fs.readFile(modelPath, "utf8");
         const parsed = JSON.parse(raw) as {
           providers: Record<string, { apiKey?: string; models?: Array<{ id: string }> }>;
@@ -93,10 +93,10 @@ describe("models-config", () => {
   it("merges providers by default", async () => {
     await withTempHome(async () => {
       vi.resetModules();
-      const { ensureClawdbotModelsJson } = await import("./models-config.js");
-      const { resolveClawdbotAgentDir } = await import("./agent-paths.js");
+      const { ensureSurprisebotModelsJson } = await import("./models-config.js");
+      const { resolveSurprisebotAgentDir } = await import("./agent-paths.js");
 
-      const agentDir = resolveClawdbotAgentDir();
+      const agentDir = resolveSurprisebotAgentDir();
       await fs.mkdir(agentDir, { recursive: true });
       await fs.writeFile(
         path.join(agentDir, "models.json"),
@@ -128,7 +128,7 @@ describe("models-config", () => {
         "utf8",
       );
 
-      await ensureClawdbotModelsJson(MODELS_CONFIG);
+      await ensureSurprisebotModelsJson(MODELS_CONFIG);
 
       const raw = await fs.readFile(path.join(agentDir, "models.json"), "utf8");
       const parsed = JSON.parse(raw) as {

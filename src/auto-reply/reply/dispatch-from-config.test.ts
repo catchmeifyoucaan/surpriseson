@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { MsgContext } from "../templating.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
 import type { ReplyDispatcher } from "./reply-dispatcher.js";
@@ -49,7 +49,7 @@ describe("dispatchReplyFromConfig", () => {
       aborted: false,
     });
     mocks.routeReply.mockClear();
-    const cfg = {} as ClawdbotConfig;
+    const cfg = {} as SurprisebotConfig;
     const dispatcher = createDispatcher();
     const ctx: MsgContext = {
       Provider: "slack",
@@ -60,7 +60,7 @@ describe("dispatchReplyFromConfig", () => {
     const replyResolver = async (
       _ctx: MsgContext,
       _opts: GetReplyOptions | undefined,
-      _cfg: ClawdbotConfig,
+      _cfg: SurprisebotConfig,
     ) => ({ text: "hi" }) satisfies ReplyPayload;
     await dispatchReplyFromConfig({ ctx, cfg, dispatcher, replyResolver });
 
@@ -74,7 +74,7 @@ describe("dispatchReplyFromConfig", () => {
       aborted: false,
     });
     mocks.routeReply.mockClear();
-    const cfg = {} as ClawdbotConfig;
+    const cfg = {} as SurprisebotConfig;
     const dispatcher = createDispatcher();
     const ctx: MsgContext = {
       Provider: "slack",
@@ -87,7 +87,7 @@ describe("dispatchReplyFromConfig", () => {
     const replyResolver = async (
       _ctx: MsgContext,
       _opts: GetReplyOptions | undefined,
-      _cfg: ClawdbotConfig,
+      _cfg: SurprisebotConfig,
     ) => ({ text: "hi" }) satisfies ReplyPayload;
     await dispatchReplyFromConfig({ ctx, cfg, dispatcher, replyResolver });
 
@@ -107,7 +107,7 @@ describe("dispatchReplyFromConfig", () => {
       handled: true,
       aborted: true,
     });
-    const cfg = {} as ClawdbotConfig;
+    const cfg = {} as SurprisebotConfig;
     const dispatcher = createDispatcher();
     const ctx: MsgContext = {
       Provider: "telegram",
@@ -128,7 +128,7 @@ describe("dispatchReplyFromConfig", () => {
       handled: false,
       aborted: false,
     });
-    const cfg = {} as ClawdbotConfig;
+    const cfg = {} as SurprisebotConfig;
     const ctx: MsgContext = {
       Provider: "whatsapp",
       OriginatingChannel: "whatsapp",

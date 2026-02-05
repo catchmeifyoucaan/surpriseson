@@ -69,13 +69,13 @@ describe("node bridge server", () => {
   };
 
   beforeAll(async () => {
-    process.env.CLAWDBOT_ENABLE_BRIDGE_IN_TESTS = "1";
-    baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-bridge-test-"));
+    process.env.SURPRISEBOT_ENABLE_BRIDGE_IN_TESTS = "1";
+    baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-bridge-test-"));
   });
 
   afterAll(async () => {
     await fs.rm(baseDir, { recursive: true, force: true });
-    delete process.env.CLAWDBOT_ENABLE_BRIDGE_IN_TESTS;
+    delete process.env.SURPRISEBOT_ENABLE_BRIDGE_IN_TESTS;
   });
 
   it("supports invoke roundtrip to a connected node", async () => {

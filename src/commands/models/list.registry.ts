@@ -1,12 +1,12 @@
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { discoverAuthStorage, discoverModels } from "@mariozechner/pi-coding-agent";
 
-import { resolveClawdbotAgentDir } from "../../agents/agent-paths.js";
+import { resolveSurprisebotAgentDir } from "../../agents/agent-paths.js";
 import type { AuthProfileStore } from "../../agents/auth-profiles.js";
 import { listProfilesForProvider } from "../../agents/auth-profiles.js";
 import { getCustomProviderApiKey, resolveEnvApiKey } from "../../agents/model-auth.js";
-import { ensureClawdbotModelsJson } from "../../agents/models-config.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import { ensureSurprisebotModelsJson } from "../../agents/models-config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { ModelRow } from "./list.types.js";
 import { modelKey } from "./shared.js";
 
@@ -26,16 +26,16 @@ const isLocalBaseUrl = (baseUrl: string) => {
   }
 };
 
-const hasAuthForProvider = (provider: string, cfg: ClawdbotConfig, authStore: AuthProfileStore) => {
+const hasAuthForProvider = (provider: string, cfg: SurprisebotConfig, authStore: AuthProfileStore) => {
   if (listProfilesForProvider(authStore, provider).length > 0) return true;
   if (resolveEnvApiKey(provider)) return true;
   if (getCustomProviderApiKey(cfg, provider)) return true;
   return false;
 };
 
-export async function loadModelRegistry(cfg: ClawdbotConfig) {
-  await ensureClawdbotModelsJson(cfg);
-  const agentDir = resolveClawdbotAgentDir();
+export async function loadModelRegistry(cfg: SurprisebotConfig) {
+  await ensureSurprisebotModelsJson(cfg);
+  const agentDir = resolveSurprisebotAgentDir();
   const authStorage = discoverAuthStorage(agentDir);
   const registry = discoverModels(authStorage, agentDir);
   const models = registry.getAll() as Model<Api>[];
@@ -50,7 +50,7 @@ export function toModelRow(params: {
   tags: string[];
   aliases?: string[];
   availableKeys?: Set<string>;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   authStore?: AuthProfileStore;
 }): ModelRow {
   const { model, key, tags, aliases = [], availableKeys, cfg, authStore } = params;

@@ -19,12 +19,12 @@ installGatewayTestHooks();
 describe("gateway server models + voicewake", () => {
   const setTempHome = (homeDir: string) => {
     const prevHome = process.env.HOME;
-    const prevStateDir = process.env.CLAWDBOT_STATE_DIR;
+    const prevStateDir = process.env.SURPRISEBOT_STATE_DIR;
     const prevUserProfile = process.env.USERPROFILE;
     const prevHomeDrive = process.env.HOMEDRIVE;
     const prevHomePath = process.env.HOMEPATH;
     process.env.HOME = homeDir;
-    process.env.CLAWDBOT_STATE_DIR = path.join(homeDir, ".clawdbot");
+    process.env.SURPRISEBOT_STATE_DIR = path.join(homeDir, ".surprisebot");
     process.env.USERPROFILE = homeDir;
     if (process.platform === "win32") {
       const parsed = path.parse(homeDir);
@@ -38,9 +38,9 @@ describe("gateway server models + voicewake", () => {
         process.env.HOME = prevHome;
       }
       if (prevStateDir === undefined) {
-        delete process.env.CLAWDBOT_STATE_DIR;
+        delete process.env.SURPRISEBOT_STATE_DIR;
       } else {
-        process.env.CLAWDBOT_STATE_DIR = prevStateDir;
+        process.env.SURPRISEBOT_STATE_DIR = prevStateDir;
       }
       if (prevUserProfile === undefined) {
         delete process.env.USERPROFILE;
@@ -66,7 +66,7 @@ describe("gateway server models + voicewake", () => {
     "voicewake.get returns defaults and voicewake.set broadcasts",
     { timeout: 15_000 },
     async () => {
-      const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-home-"));
+      const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-home-"));
       const restoreHome = setTempHome(homeDir);
 
       const { server, ws } = await startServerWithClient();
@@ -74,7 +74,7 @@ describe("gateway server models + voicewake", () => {
 
       const initial = await rpcReq<{ triggers: string[] }>(ws, "voicewake.get");
       expect(initial.ok).toBe(true);
-      expect(initial.payload?.triggers).toEqual(["clawd", "claude", "computer"]);
+      expect(initial.payload?.triggers).toEqual(["surprisebot", "claude", "computer"]);
 
       const changedP = onceMessage<{
         type: "event";
@@ -100,7 +100,7 @@ describe("gateway server models + voicewake", () => {
       expect(after.payload?.triggers).toEqual(["hi", "there"]);
 
       const onDisk = JSON.parse(
-        await fs.readFile(path.join(homeDir, ".clawdbot", "settings", "voicewake.json"), "utf8"),
+        await fs.readFile(path.join(homeDir, ".surprisebot", "settings", "voicewake.json"), "utf8"),
       ) as { triggers?: unknown; updatedAtMs?: unknown };
       expect(onDisk.triggers).toEqual(["hi", "there"]);
       expect(typeof onDisk.updatedAtMs).toBe("number");
@@ -113,7 +113,7 @@ describe("gateway server models + voicewake", () => {
   );
 
   test("pushes voicewake.changed to nodes on connect and on updates", async () => {
-    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-home-"));
+    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-home-"));
     const restoreHome = setTempHome(homeDir);
 
     bridgeSendEvent.mockClear();
@@ -134,12 +134,12 @@ describe("gateway server models + voicewake", () => {
     const firstPayload = JSON.parse(String(first?.payloadJSON)) as {
       triggers?: unknown;
     };
-    expect(firstPayload.triggers).toEqual(["clawd", "claude", "computer"]);
+    expect(firstPayload.triggers).toEqual(["surprisebot", "claude", "computer"]);
 
     bridgeSendEvent.mockClear();
 
     const setRes = await rpcReq<{ triggers: string[] }>(ws, "voicewake.set", {
-      triggers: ["clawd", "computer"],
+      triggers: ["surprisebot", "computer"],
     });
     expect(setRes.ok).toBe(true);
 
@@ -150,7 +150,7 @@ describe("gateway server models + voicewake", () => {
     const broadcastPayload = JSON.parse(String(broadcast?.payloadJSON)) as {
       triggers?: unknown;
     };
-    expect(broadcastPayload.triggers).toEqual(["clawd", "computer"]);
+    expect(broadcastPayload.triggers).toEqual(["surprisebot", "computer"]);
 
     ws.close();
     await server.close();

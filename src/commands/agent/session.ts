@@ -7,7 +7,7 @@ import {
   type ThinkLevel,
   type VerboseLevel,
 } from "../../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   DEFAULT_IDLE_MINUTES,
   loadSessionStore,
@@ -30,7 +30,7 @@ export type SessionResolution = {
 };
 
 export function resolveSession(opts: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   to?: string;
   sessionId?: string;
   sessionKey?: string;

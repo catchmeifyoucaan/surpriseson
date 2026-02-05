@@ -140,7 +140,7 @@ export async function resolveMatrixAuth(params?: {
     type: "m.login.password",
     identifier: { type: "m.id.user", user: resolved.userId },
     password: resolved.password,
-    initial_device_display_name: resolved.deviceName ?? "Clawdbot Gateway",
+    initial_device_display_name: resolved.deviceName ?? "Surprisebot Gateway",
   });
   const accessToken = login.access_token?.trim();
   if (!accessToken) {

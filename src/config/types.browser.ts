@@ -3,25 +3,25 @@ export type BrowserProfileConfig = {
   cdpPort?: number;
   /** CDP URL for this profile (use for remote Chrome). */
   cdpUrl?: string;
-  /** Profile driver (default: clawd). */
-  driver?: "clawd" | "extension";
+  /** Profile driver (default: surprisebot). */
+  driver?: "surprisebot" | "extension";
   /** Profile color (hex). Auto-assigned at creation. */
   color: string;
 };
 export type BrowserConfig = {
   enabled?: boolean;
-  /** Base URL of the clawd browser control server. Default: http://127.0.0.1:18791 */
+  /** Base URL of the surprisebot browser control server. Default: http://127.0.0.1:18791 */
   controlUrl?: string;
   /**
    * Shared token for the browser control server.
    * If set, clients must send `Authorization: Bearer <token>`.
    *
-   * Prefer `CLAWDBOT_BROWSER_CONTROL_TOKEN` env for ephemeral setups; use this for "works after reboot".
+   * Prefer `SURPRISEBOT_BROWSER_CONTROL_TOKEN` env for ephemeral setups; use this for "works after reboot".
    */
   controlToken?: string;
   /** Base URL of the CDP endpoint. Default: controlUrl with port + 1. */
   cdpUrl?: string;
-  /** Accent color for the clawd browser profile (hex). Default: #FF4500 */
+  /** Accent color for the surprisebot browser profile (hex). Default: #FF4500 */
   color?: string;
   /** Override the browser executable path (macOS/Linux). */
   executablePath?: string;

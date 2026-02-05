@@ -15,6 +15,7 @@ Bootstrap state + workspace, then run onboarding (wizard) unless skipped.
 surprisebot init
 surprisebot init --workspace ~/surprisebot
 surprisebot init --skip-onboard
+surprisebot init --json
 ```
 
 ### Set a custom home/state root
@@ -30,6 +31,24 @@ surprisebot init --state-dir /srv/surprisebot/state
 ```bash
 surprisebot init --install-bun --install-qmd
 surprisebot init --install-docker
+```
+
+
+### Preseed agent roster (profiles)
+
+```bash
+surprisebot init --profile-template bug-hunter
+```
+
+Notes:
+- Applies a bundled roster from `profiles/<name>/agents.json5`.
+- Does not override existing `agents.list` entries.
+
+
+### JSON summary
+
+```bash
+surprisebot init --json
 ```
 
 ### Non-interactive

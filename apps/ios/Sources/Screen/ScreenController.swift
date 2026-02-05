@@ -1,4 +1,4 @@
-import ClawdbotKit
+import SurprisebotKit
 import Observation
 import SwiftUI
 import WebKit
@@ -13,7 +13,7 @@ final class ScreenController {
     var urlString: String = ""
     var errorText: String?
 
-    /// Callback invoked when a clawdbot:// deep link is tapped in the canvas
+    /// Callback invoked when a surprisebot:// deep link is tapped in the canvas
     var onDeepLink: ((URL) -> Void)?
 
     /// Callback invoked when the user clicks an A2UI action (e.g. button) inside the canvas web UI.
@@ -101,7 +101,7 @@ final class ScreenController {
         let js = """
         (() => {
           try {
-            const api = globalThis.__clawdbot;
+            const api = globalThis.__surprisebot;
             if (!api) return;
             if (typeof api.setDebugStatusEnabled === 'function') {
               api.setDebugStatusEnabled(\(enabled ? "true" : "false"));
@@ -124,7 +124,7 @@ final class ScreenController {
                 let res = try await self.eval(javaScript: """
                 (() => {
                   try {
-                    return !!globalThis.clawdbotA2UI && typeof globalThis.clawdbotA2UI.applyMessages === 'function';
+                    return !!globalThis.surprisebotA2UI && typeof globalThis.surprisebotA2UI.applyMessages === 'function';
                   } catch (_) { return false; }
                 })()
                 """)
@@ -184,7 +184,7 @@ final class ScreenController {
 
     func snapshotBase64(
         maxWidth: CGFloat? = nil,
-        format: ClawdbotCanvasSnapshotFormat,
+        format: SurprisebotCanvasSnapshotFormat,
         quality: Double? = nil) async throws -> String
     {
         let config = WKSnapshotConfiguration()
@@ -229,7 +229,7 @@ final class ScreenController {
         subdirectory: String)
         -> URL?
     {
-        let bundle = ClawdbotKitResources.bundle
+        let bundle = SurprisebotKitResources.bundle
         return bundle.url(forResource: name, withExtension: ext, subdirectory: subdirectory)
             ?? bundle.url(forResource: name, withExtension: ext)
     }
@@ -342,7 +342,7 @@ extension Double {
 
 // MARK: - Navigation Delegate
 
-/// Handles navigation policy to intercept clawdbot:// deep links from canvas
+/// Handles navigation policy to intercept surprisebot:// deep links from canvas
 @MainActor
 private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
     weak var controller: ScreenController?
@@ -357,8 +357,8 @@ private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
             return
         }
 
-        // Intercept clawdbot:// deep links
-        if url.scheme == "clawdbot" {
+        // Intercept surprisebot:// deep links
+        if url.scheme == "surprisebot" {
             decisionHandler(.cancel)
             self.controller?.onDeepLink?(url)
             return
@@ -386,7 +386,7 @@ private final class ScreenNavigationDelegate: NSObject, WKNavigationDelegate {
 }
 
 private final class CanvasA2UIActionMessageHandler: NSObject, WKScriptMessageHandler {
-    static let messageName = "clawdbotCanvasA2UIAction"
+    static let messageName = "surprisebotCanvasA2UIAction"
     static let legacyMessageNames = ["canvas", "a2ui", "userAction", "action"]
     static let handlerNames = [messageName] + legacyMessageNames
 

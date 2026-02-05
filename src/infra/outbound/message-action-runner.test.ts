@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { runMessageAction } from "./message-action-runner.js";
 
 const slackConfig = {
@@ -10,7 +10,7 @@ const slackConfig = {
       appToken: "xapp-test",
     },
   },
-} as ClawdbotConfig;
+} as SurprisebotConfig;
 
 const whatsappConfig = {
   channels: {
@@ -18,7 +18,7 @@ const whatsappConfig = {
       allowFrom: ["*"],
     },
   },
-} as ClawdbotConfig;
+} as SurprisebotConfig;
 
 describe("runMessageAction context isolation", () => {
   it("allows send when target matches current channel", async () => {

@@ -17,14 +17,14 @@ const noopAsync = async () => {};
 const noop = () => {};
 const authProfilePathFor = (agentDir: string) => path.join(agentDir, "auth-profiles.json");
 const requireAgentDir = () => {
-  const agentDir = process.env.CLAWDBOT_AGENT_DIR;
-  if (!agentDir) throw new Error("CLAWDBOT_AGENT_DIR not set");
+  const agentDir = process.env.SURPRISEBOT_AGENT_DIR;
+  if (!agentDir) throw new Error("SURPRISEBOT_AGENT_DIR not set");
   return agentDir;
 };
 
 describe("applyAuthChoice", () => {
-  const previousStateDir = process.env.CLAWDBOT_STATE_DIR;
-  const previousAgentDir = process.env.CLAWDBOT_AGENT_DIR;
+  const previousStateDir = process.env.SURPRISEBOT_STATE_DIR;
+  const previousAgentDir = process.env.SURPRISEBOT_AGENT_DIR;
   const previousPiAgentDir = process.env.PI_CODING_AGENT_DIR;
   const previousOpenrouterKey = process.env.OPENROUTER_API_KEY;
   const previousSshTty = process.env.SSH_TTY;
@@ -38,14 +38,14 @@ describe("applyAuthChoice", () => {
       tempStateDir = null;
     }
     if (previousStateDir === undefined) {
-      delete process.env.CLAWDBOT_STATE_DIR;
+      delete process.env.SURPRISEBOT_STATE_DIR;
     } else {
-      process.env.CLAWDBOT_STATE_DIR = previousStateDir;
+      process.env.SURPRISEBOT_STATE_DIR = previousStateDir;
     }
     if (previousAgentDir === undefined) {
-      delete process.env.CLAWDBOT_AGENT_DIR;
+      delete process.env.SURPRISEBOT_AGENT_DIR;
     } else {
-      process.env.CLAWDBOT_AGENT_DIR = previousAgentDir;
+      process.env.SURPRISEBOT_AGENT_DIR = previousAgentDir;
     }
     if (previousPiAgentDir === undefined) {
       delete process.env.PI_CODING_AGENT_DIR;
@@ -70,10 +70,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("prompts and writes MiniMax API key when selecting minimax-api", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
 
     const text = vi.fn().mockResolvedValue("sk-minimax-test");
     const select: WizardPrompter["select"] = vi.fn(
@@ -123,10 +123,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("prompts and writes Synthetic API key when selecting synthetic-api-key", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
 
     const text = vi.fn().mockResolvedValue("sk-synthetic-test");
     const select: WizardPrompter["select"] = vi.fn(
@@ -176,10 +176,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("sets default model when selecting github-copilot", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
 
     const prompter: WizardPrompter = {
       intro: vi.fn(noopAsync),
@@ -219,10 +219,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("does not override the default model when selecting opencode-zen without setDefaultModel", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
 
     const text = vi.fn().mockResolvedValue("sk-opencode-zen-test");
     const select: WizardPrompter["select"] = vi.fn(
@@ -270,10 +270,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("uses existing OPENROUTER_API_KEY when selecting openrouter-api-key", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
     process.env.OPENROUTER_API_KEY = "sk-openrouter-test";
 
     const text = vi.fn();
@@ -331,10 +331,10 @@ describe("applyAuthChoice", () => {
   });
 
   it("writes Chutes OAuth credentials when selecting chutes (remote/manual)", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-auth-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
-    process.env.CLAWDBOT_AGENT_DIR = path.join(tempStateDir, "agent");
-    process.env.PI_CODING_AGENT_DIR = process.env.CLAWDBOT_AGENT_DIR;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-auth-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
+    process.env.SURPRISEBOT_AGENT_DIR = path.join(tempStateDir, "agent");
+    process.env.PI_CODING_AGENT_DIR = process.env.SURPRISEBOT_AGENT_DIR;
     process.env.SSH_TTY = "1";
     process.env.CHUTES_CLIENT_ID = "cid_test";
 

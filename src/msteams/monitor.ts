@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { resolveTextChunkLimit } from "../auto-reply/chunk.js";
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import { getChildLogger } from "../logging.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { MSTeamsConversationStore } from "./conversation-store.js";
@@ -15,7 +15,7 @@ import { resolveMSTeamsCredentials } from "./token.js";
 const log = getChildLogger({ name: "msteams" });
 
 export type MonitorMSTeamsOpts = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   conversationStore?: MSTeamsConversationStore;

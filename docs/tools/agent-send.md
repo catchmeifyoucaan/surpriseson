@@ -1,11 +1,11 @@
 ---
-summary: "Direct `clawdbot agent` CLI runs (with optional delivery)"
+summary: "Direct `surprisebot agent` CLI runs (with optional delivery)"
 read_when:
   - Adding or modifying the agent CLI entrypoint
 ---
-# `clawdbot agent` (direct agent runs)
+# `surprisebot agent` (direct agent runs)
 
-`clawdbot agent` runs a single agent turn without needing an inbound chat message.
+`surprisebot agent` runs a single agent turn without needing an inbound chat message.
 By default it goes **through the Gateway**; add `--local` to force the embedded
 runtime on the current machine.
 
@@ -20,17 +20,17 @@ runtime on the current machine.
 - Output:
   - default: prints reply text (plus `MEDIA:<url>` lines)
   - `--json`: prints structured payload + metadata
-- Optional delivery back to a channel with `--deliver` + `--channel` (target formats match `clawdbot message --to`).
+- Optional delivery back to a channel with `--deliver` + `--channel` (target formats match `surprisebot message --to`).
 
 If the Gateway is unreachable, the CLI **falls back** to the embedded local run.
 
 ## Examples
 
 ```bash
-clawdbot agent --to +15555550123 --message "status update"
-clawdbot agent --session-id 1234 --message "Summarize inbox" --thinking medium
-clawdbot agent --to +15555550123 --message "Trace logs" --verbose on --json
-clawdbot agent --to +15555550123 --message "Summon reply" --deliver
+surprisebot agent --to +15555550123 --message "status update"
+surprisebot agent --session-id 1234 --message "Summarize inbox" --thinking medium
+surprisebot agent --to +15555550123 --message "Trace logs" --verbose on --json
+surprisebot agent --to +15555550123 --message "Summon reply" --deliver
 ```
 
 ## Flags

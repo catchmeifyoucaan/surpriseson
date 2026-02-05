@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   DEFAULT_IDLE_MINUTES,
   loadSessionStore,
@@ -9,7 +9,7 @@ import {
 } from "../../config/sessions.js";
 
 export function resolveCronSession(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sessionKey: string;
   nowMs: number;
   agentId: string;

@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Clawdbot",
+  "name": "Surprisebot",
   "theme": "mint",
   "logo": {
     "light": "/assets/pixel-lobster.svg",
@@ -13,11 +13,11 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/clawdbot/clawdbot"
+      "url": "https://github.com/surprisebot/surprisebot"
     },
     {
       "name": "Releases",
-      "url": "https://github.com/clawdbot/clawdbot/releases"
+      "url": "https://github.com/surprisebot/surprisebot/releases"
     }
   ],
   "redirects": [
@@ -100,6 +100,14 @@
     {
       "source": "/openrouter/",
       "destination": "/providers/openrouter"
+    },
+    {
+      "source": "/perplexity",
+      "destination": "/providers/perplexity"
+    },
+    {
+      "source": "/perplexity/",
+      "destination": "/providers/perplexity"
     },
     {
       "source": "/opencode",
@@ -314,12 +322,12 @@
       "destination": "/nodes/camera"
     },
     {
-      "source": "/clawd",
-      "destination": "/start/clawd"
+      "source": "/surprisebot",
+      "destination": "/start/surprisebot"
     },
     {
-      "source": "/clawdhub",
-      "destination": "/tools/clawdhub"
+      "source": "/surprisebothub",
+      "destination": "/tools/surprisebothub"
     },
     {
       "source": "/configuration",
@@ -542,6 +550,14 @@
       "destination": "/start/pairing"
     },
     {
+      "source": "/surprisebot-deploy",
+      "destination": "/start/surprisebot-deploy"
+    },
+    {
+      "source": "/surprisebot-deploy/",
+      "destination": "/start/surprisebot-deploy"
+    },
+    {
       "source": "/plans/cron-add-hardening",
       "destination": "/experiments/plans/cron-add-hardening"
     },
@@ -748,16 +764,22 @@
         "group": "Start Here",
         "pages": [
           "index",
+          "surprisebot",
+          "start/start-here",
+          "start/minimal",
+          "start/background",
+          "start/profiles",
           "start/getting-started",
           "start/wizard",
           "start/setup",
           "start/pairing",
           "start/faq",
-          "start/clawd",
+          "start/surprisebot",
           "start/showcase",
           "start/hubs",
           "start/onboarding",
-          "start/lore"
+          "start/lore",
+          "start/surprisebot-deploy"
         ]
       },
       {
@@ -859,6 +881,7 @@
           "gateway/gateway-lock",
           "environment",
           "gateway/configuration",
+          "gateway/budgets",
           "gateway/multiple-gateways",
           "gateway/configuration-examples",
           "gateway/authentication",
@@ -867,6 +890,7 @@
           "gateway/local-models",
           "gateway/background-process",
           "gateway/health",
+          "mission-control",
           "gateway/heartbeat",
           "gateway/doctor",
           "gateway/logging",
@@ -875,6 +899,8 @@
           "gateway/sandbox-vs-tool-policy-vs-elevated",
           "gateway/sandboxing",
           "gateway/troubleshooting",
+          "advanced/artemis",
+          "advanced/bug-hunter-stack",
           "debugging",
           "gateway/remote",
           "gateway/remote-gateway-readme",
@@ -923,6 +949,7 @@
           "providers/moonshot",
           "providers/minimax",
           "providers/openrouter",
+          "providers/perplexity",
           "providers/synthetic",
           "providers/opencode",
           "providers/glm",
@@ -932,6 +959,7 @@
       {
         "group": "Automation & Hooks",
         "pages": [
+          "research/pipeline",
           "automation/auth-monitoring",
           "automation/webhook",
           "automation/gmail-pubsub",
@@ -947,6 +975,7 @@
           "plugins/voice-call",
           "tools/exec",
           "tools/web",
+          "tools/qmd",
           "tools/apply-patch",
           "tools/elevated",
           "tools/browser",
@@ -961,7 +990,7 @@
           "tools/reactions",
           "tools/skills",
           "tools/skills-config",
-          "tools/clawdhub"
+          "tools/surprisebothub"
         ]
       },
       {

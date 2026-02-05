@@ -23,17 +23,22 @@ import { buildWorkspaceSkillSnapshot } from "../../agents/skills.js";
 import { resolveAgentTimeoutMs } from "../../agents/timeout.js";
 import { hasNonzeroUsage } from "../../agents/usage.js";
 import { ensureAgentWorkspace } from "../../agents/workspace.js";
+import { ensureSharedMemoryForWorkspace } from "../../agents/shared-memory.js";
 import {
   formatXHighModelHint,
   normalizeThinkLevel,
   supportsXHighThinking,
 } from "../../auto-reply/thinking.js";
 import type { CliDeps } from "../../cli/deps.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { resolveSessionTranscriptPath, saveSessionStore } from "../../config/sessions.js";
 import type { AgentDefaultsConfig } from "../../config/types.js";
 import { registerAgentRunContext } from "../../infra/agent-events.js";
+import { evaluateBudget, resolveBudgetCaps } from "../../infra/budget-manager.js";
+import { registerJobContext, clearJobContext } from "../../infra/job-context.js";
+import { appendMissionControlRecord } from "../../infra/mission-control/ledger.js";
 import { deliverOutboundPayloads } from "../../infra/outbound/deliver.js";
+import type { ReplyPayload } from "../../auto-reply/types.js";
 import { buildAgentMainSessionKey, normalizeAgentId } from "../../routing/session-key.js";
 import type { CronJob } from "../types.js";
 import { resolveDeliveryTarget } from "./delivery-target.js";
@@ -52,7 +57,7 @@ export type RunCronAgentTurnResult = {
 };
 
 export async function runCronIsolatedAgentTurn(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   deps: CliDeps;
   job: CronJob;
   message: string;
@@ -83,7 +88,7 @@ export async function runCronIsolatedAgentTurn(params: {
   } else if (overrideModel) {
     agentCfg.model = overrideModel;
   }
-  const cfgWithAgentDefaults: ClawdbotConfig = {
+  const cfgWithAgentDefaults: SurprisebotConfig = {
     ...params.cfg,
     agents: Object.assign({}, params.cfg.agents, { defaults: agentCfg }),
   };
@@ -94,12 +99,35 @@ export async function runCronIsolatedAgentTurn(params: {
     mainKey: baseSessionKey,
   });
 
+  const jobType = (params.job.jobType?.trim() || params.job.id).trim();
+  const budgetDecision = await evaluateBudget({
+    cfg: cfgWithAgentDefaults,
+    agentId,
+    jobType,
+  });
+  if (budgetDecision.decision === "deny" || budgetDecision.decision === "defer") {
+    return {
+      status: "skipped",
+      summary: `Budget ${budgetDecision.decision}: ${budgetDecision.reason}`.trim(),
+    };
+  }
+
   const workspaceDirRaw = resolveAgentWorkspaceDir(params.cfg, agentId);
   const workspace = await ensureAgentWorkspace({
     dir: workspaceDirRaw,
     ensureBootstrapFiles: !agentCfg?.skipBootstrap,
   });
   const workspaceDir = workspace.dir;
+  try {
+    await ensureSharedMemoryForWorkspace({
+      cfg: params.cfg,
+      agentId,
+      workspaceDir,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`Shared memory init failed: ${message}`);
+  }
 
   const resolvedDefault = resolveConfiguredModelRef({
     cfg: cfgWithAgentDefaults,
@@ -163,7 +191,45 @@ export async function runCronIsolatedAgentTurn(params: {
     nowMs: now,
   });
 
-  // Resolve thinking level - job thinking > hooks.gmail.thinking > agent default
+  registerJobContext({
+    sessionKey: agentSessionKey,
+    jobType,
+    runId: cronSession.sessionEntry.sessionId,
+  });
+
+  const budgetCaps = resolveBudgetCaps({
+    cfg: cfgWithAgentDefaults,
+    agentId,
+    jobType,
+  });
+
+  const runStartedAt = new Date().toISOString();
+  const runLedgerId = `run-${cronSession.sessionEntry.sessionId}`;
+  let runOutcome: "done" | "failed" | "cancelled" = "done";
+  let runError: string | null = null;
+
+  try {
+    await appendMissionControlRecord({
+      cfg: cfgWithAgentDefaults,
+      kind: "run-ledger",
+      record: {
+        id: runLedgerId,
+        ts: runStartedAt,
+        source: "cron",
+        version: 1,
+        agentId,
+        status: "running",
+        command: `cron:${params.job.id}`,
+        startedAt: runStartedAt,
+        jobType,
+        meta: {
+          jobId: params.job.id,
+          sessionKey: agentSessionKey,
+        },
+      },
+    }).catch(() => {});
+
+    // Resolve thinking level - job thinking > hooks.gmail.thinking > agent default
   const hooksGmailThinking = isGmailHook
     ? normalizeThinkLevel(params.cfg.hooks?.gmail?.thinking)
     : undefined;
@@ -182,7 +248,7 @@ export async function runCronIsolatedAgentTurn(params: {
     });
   }
   if (thinkLevel === "xhigh" && !supportsXHighThinking(provider, model)) {
-    throw new Error(`Thinking level "xhigh" is only supported for ${formatXHighModelHint()}.`);
+    thinkLevel = "high";
   }
 
   const timeoutMs = resolveAgentTimeoutMs({
@@ -190,6 +256,9 @@ export async function runCronIsolatedAgentTurn(params: {
     overrideSeconds:
       params.job.payload.kind === "agentTurn" ? params.job.payload.timeoutSeconds : undefined,
   });
+  const effectiveTimeoutMs = budgetCaps.maxRuntimeSeconds
+    ? Math.min(timeoutMs, budgetCaps.maxRuntimeSeconds * 1000)
+    : timeoutMs;
 
   const delivery = params.job.payload.kind === "agentTurn" && params.job.payload.deliver === true;
   const bestEffortDeliver =
@@ -256,7 +325,7 @@ export async function runCronIsolatedAgentTurn(params: {
             provider: providerOverride,
             model: modelOverride,
             thinkLevel,
-            timeoutMs,
+            timeoutMs: effectiveTimeoutMs,
             runId: cronSession.sessionEntry.sessionId,
             cliSessionId,
           });
@@ -275,7 +344,7 @@ export async function runCronIsolatedAgentTurn(params: {
           model: modelOverride,
           thinkLevel,
           verboseLevel: resolvedVerboseLevel,
-          timeoutMs,
+          timeoutMs: effectiveTimeoutMs,
           runId: cronSession.sessionEntry.sessionId,
         });
       },
@@ -284,10 +353,12 @@ export async function runCronIsolatedAgentTurn(params: {
     fallbackProvider = fallbackResult.provider;
     fallbackModel = fallbackResult.model;
   } catch (err) {
+    runOutcome = "failed";
+    runError = String(err);
     return { status: "error", error: String(err) };
   }
 
-  const payloads = runResult.payloads ?? [];
+  const payloads = applyOutputBudget(runResult.payloads ?? [], budgetCaps.maxOutputChars);
 
   // Update token+model fields in the session store.
   {
@@ -319,7 +390,10 @@ export async function runCronIsolatedAgentTurn(params: {
     await saveSessionStore(cronSession.storePath, cronSession.store);
   }
   const firstText = payloads[0]?.text ?? "";
-  const summary = pickSummaryFromPayloads(payloads) ?? pickSummaryFromOutput(firstText);
+  const summaryRaw = pickSummaryFromPayloads(payloads) ?? pickSummaryFromOutput(firstText) ?? "";
+  const summary = budgetCaps.maxOutputChars
+    ? clampText(summaryRaw, budgetCaps.maxOutputChars)
+    : summaryRaw;
 
   // Skip delivery for heartbeat-only responses (HEARTBEAT_OK with no real content).
   const ackMaxChars = resolveHeartbeatAckMaxChars(agentCfg);
@@ -330,12 +404,15 @@ export async function runCronIsolatedAgentTurn(params: {
       const reason =
         resolvedDelivery.error?.message ?? "Cron delivery requires a recipient (--to).";
       if (!bestEffortDeliver) {
+        runOutcome = "failed";
+        runError = reason;
         return {
           status: "error",
           summary,
           error: reason,
         };
       }
+      runOutcome = "cancelled";
       return {
         status: "skipped",
         summary: `Delivery skipped (${reason}).`,
@@ -369,6 +446,8 @@ export async function runCronIsolatedAgentTurn(params: {
       });
     } catch (err) {
       if (!bestEffortDeliver) {
+        runOutcome = "failed";
+        runError = String(err);
         return { status: "error", summary, error: String(err) };
       }
       return { status: "ok", summary };
@@ -376,4 +455,45 @@ export async function runCronIsolatedAgentTurn(params: {
   }
 
   return { status: "ok", summary };
+
+  } finally {
+    await appendMissionControlRecord({
+      cfg: cfgWithAgentDefaults,
+      kind: "run-ledger",
+      record: {
+        id: runLedgerId,
+        ts: new Date().toISOString(),
+        source: "cron",
+        version: 1,
+        agentId,
+        status: runOutcome,
+        command: `cron:${params.job.id}`,
+        startedAt: runStartedAt,
+        finishedAt: new Date().toISOString(),
+        exitCode: runOutcome === "failed" ? 1 : 0,
+        jobType,
+        meta: {
+          jobId: params.job.id,
+          sessionKey: agentSessionKey,
+          error: runError ?? undefined,
+        },
+      },
+    }).catch(() => {});
+    clearJobContext(agentSessionKey);
+  }
 }
+function clampText(text: string, maxChars?: number): string {
+  if (!maxChars || maxChars <= 0) return text;
+  if (text.length <= maxChars) return text;
+  const trimmed = text.slice(0, Math.max(0, maxChars - 3)).trimEnd();
+  return `${trimmed}...`;
+}
+
+function applyOutputBudget(payloads: ReplyPayload[], maxChars?: number): ReplyPayload[] {
+  if (!maxChars || maxChars <= 0) return payloads;
+  return payloads.map((payload) => {
+    if (!payload.text) return payload;
+    return { ...payload, text: clampText(payload.text, maxChars) };
+  });
+}
+

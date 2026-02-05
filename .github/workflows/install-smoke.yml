@@ -25,9 +25,9 @@ jobs:
 
       - name: Run installer docker tests
         env:
-          CLAWDBOT_INSTALL_URL: https://clawd.bot/install.sh
-          CLAWDBOT_INSTALL_CLI_URL: https://clawd.bot/install-cli.sh
-          CLAWDBOT_NO_ONBOARD: "1"
-          CLAWDBOT_INSTALL_SMOKE_SKIP_CLI: "1"
-          CLAWDBOT_INSTALL_SMOKE_PREVIOUS: "2026.1.11-4"
+          SURPRISEBOT_INSTALL_URL: https://surprisebot.bot/install.sh
+          SURPRISEBOT_INSTALL_CLI_URL: https://surprisebot.bot/install-cli.sh
+          SURPRISEBOT_NO_ONBOARD: "1"
+          SURPRISEBOT_INSTALL_SMOKE_SKIP_CLI: "1"
+          SURPRISEBOT_INSTALL_SMOKE_PREVIOUS: "2026.1.11-4"
         run: pnpm test:install:smoke

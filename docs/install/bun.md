@@ -44,7 +44,7 @@ bun run vitest run
 pnpm supports `package.json#pnpm.patchedDependencies` and records it in `pnpm-lock.yaml`.
 Bun (and npm/yarn) do not support pnpm patches, so we apply them in `postinstall` when pnpm is **not** the installer:
 
-- [`scripts/postinstall.js`](https://github.com/clawdbot/clawdbot/blob/main/scripts/postinstall.js) detects the package manager via `npm_config_user_agent` and applies every entry from `package.json#pnpm.patchedDependencies` into `node_modules/...` using a built-in JS patcher (no `git`/system `patch` dependency).
+- [`scripts/postinstall.js`](https://github.com/surprisebot/surprisebot/blob/main/scripts/postinstall.js) detects the package manager via `npm_config_user_agent` and applies every entry from `package.json#pnpm.patchedDependencies` into `node_modules/...` using a built-in JS patcher (no `git`/system `patch` dependency).
 - Under pnpm, this fallback is skipped because pnpm already applies `patchedDependencies` itself.
 
 To add a new patch that works in both pnpm + Bun:

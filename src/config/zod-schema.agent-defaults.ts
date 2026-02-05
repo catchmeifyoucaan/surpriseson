@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   HeartbeatSchema,
+  MemoryGraphSchema,
   MemorySearchSchema,
   SandboxBrowserSchema,
   SandboxDockerSchema,
@@ -11,6 +12,7 @@ import {
   BlockStreamingCoalesceSchema,
   CliBackendSchema,
   HumanDelaySchema,
+  IdentitySchema,
 } from "./zod-schema.core.js";
 
 export const AgentDefaultsSchema = z
@@ -41,9 +43,11 @@ export const AgentDefaultsSchema = z
     skipBootstrap: z.boolean().optional(),
     bootstrapMaxChars: z.number().int().positive().optional(),
     userTimezone: z.string().optional(),
+    identity: IdentitySchema,
     contextTokens: z.number().int().positive().optional(),
     cliBackends: z.record(z.string(), CliBackendSchema).optional(),
     memorySearch: MemorySearchSchema,
+    memoryGraph: MemoryGraphSchema,
     contextPruning: z
       .object({
         mode: z
@@ -88,6 +92,23 @@ export const AgentDefaultsSchema = z
           .optional(),
       })
       .optional(),
+    memoryCapture: z
+      .object({
+        enabled: z.boolean().optional(),
+        minIntervalMinutes: z.number().int().nonnegative().optional(),
+        minNewTokens: z.number().int().nonnegative().optional(),
+        prompt: z.string().optional(),
+        systemPrompt: z.string().optional(),
+      })
+      .optional(),
+    sharedMemory: z
+      .object({
+        enabled: z.boolean().optional(),
+        path: z.string().optional(),
+        pendingPath: z.string().optional(),
+        allowWriteAgents: z.array(z.string()).optional(),
+      })
+      .optional(),
     thinkingDefault: z
       .union([
         z.literal("off"),
@@ -116,7 +137,43 @@ export const AgentDefaultsSchema = z
         z.literal("message"),
       ])
       .optional(),
-    heartbeat: HeartbeatSchema,
+    reconStatus: z
+    .object({
+      intervalMinutes: z.number().int().positive().optional(),
+    })
+    .optional(),
+    memoryCliWatchdog: z
+      .object({
+        enabled: z.boolean().optional(),
+        intervalMinutes: z.number().int().positive().optional(),
+        maxStatusAgeSeconds: z.number().int().nonnegative().optional(),
+        maxSearchAgeSeconds: z.number().int().nonnegative().optional(),
+        maxIndexAgeSeconds: z.number().int().nonnegative().optional(),
+        maxOtherAgeSeconds: z.number().int().nonnegative().optional(),
+      })
+      .optional(),
+    orchestrator: z
+      .object({
+        enabled: z.boolean().optional(),
+        defaultAgentId: z.string().optional(),
+        routing: z
+          .array(
+            z.object({
+              id: z.string().optional(),
+              sources: z.array(z.string()).optional(),
+              severities: z
+                .array(z.union([z.literal("low"), z.literal("medium"), z.literal("high")]))
+                .optional(),
+              summaryContains: z.array(z.string()).optional(),
+              jobType: z.string().optional(),
+              agentId: z.string(),
+              taskTemplate: z.string(),
+            }),
+          )
+          .optional(),
+      })
+      .optional(),
+  heartbeat: HeartbeatSchema,
     maxConcurrent: z.number().int().positive().optional(),
     subagents: z
       .object({

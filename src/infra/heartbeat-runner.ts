@@ -1,4 +1,7 @@
 import { resolveEffectiveMessagesConfig } from "../agents/identity.js";
+import { execFile } from "node:child_process";
+import { access } from "node:fs/promises";
+import { promisify } from "node:util";
 import {
   DEFAULT_HEARTBEAT_ACK_MAX_CHARS,
   DEFAULT_HEARTBEAT_EVERY,
@@ -10,7 +13,7 @@ import type { ReplyPayload } from "../auto-reply/types.js";
 import { getChannelPlugin, normalizeChannelId } from "../channels/plugins/index.js";
 import type { ChannelHeartbeatDeps } from "../channels/plugins/types.js";
 import { parseDurationMs } from "../cli/parse-duration.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { loadConfig } from "../config/config.js";
 import {
   loadSessionStore,
@@ -43,12 +46,34 @@ type HeartbeatDeps = OutboundSendDeps &
 
 const log = createSubsystemLogger("gateway/heartbeat");
 let heartbeatsEnabled = true;
+let lastHeartbeatAtMs = 0;
+
+const TOOL_UNAVAILABLE_RE = /\b(tool|tools|memory_search|memory_get|telegram send tool|message tool)\b.*\b(unavailable|not available|disabled|cannot|can't)\b/i;
+const execFileAsync = promisify(execFile);
+const DEFAULT_QMD_BIN = "/usr/local/bin/qmd";
+
+async function getQmdHealth(): Promise<{ ok: boolean; detail: string }> {
+  const bin = process.env.QMD_BIN?.trim() || DEFAULT_QMD_BIN;
+  try {
+    await access(bin);
+  } catch (err) {
+    return { ok: false, detail: `missing:${bin}` };
+  }
+
+  try {
+    await execFileAsync(bin, ["collection", "list"], { timeout: 5_000 });
+    return { ok: true, detail: "ok" };
+  } catch (err) {
+    return { ok: false, detail: formatErrorMessage(err) };
+  }
+}
+
 
 export function setHeartbeatsEnabled(enabled: boolean) {
   heartbeatsEnabled = enabled;
 }
 
-export function resolveHeartbeatIntervalMs(cfg: ClawdbotConfig, overrideEvery?: string) {
+export function resolveHeartbeatIntervalMs(cfg: SurprisebotConfig, overrideEvery?: string) {
   const raw = overrideEvery ?? cfg.agents?.defaults?.heartbeat?.every ?? DEFAULT_HEARTBEAT_EVERY;
   if (!raw) return null;
   const trimmed = String(raw).trim();
@@ -63,18 +88,24 @@ export function resolveHeartbeatIntervalMs(cfg: ClawdbotConfig, overrideEvery?: 
   return ms;
 }
 
-export function resolveHeartbeatPrompt(cfg: ClawdbotConfig) {
+export function resolveHeartbeatPrompt(cfg: SurprisebotConfig) {
   return resolveHeartbeatPromptText(cfg.agents?.defaults?.heartbeat?.prompt);
 }
 
-function resolveHeartbeatAckMaxChars(cfg: ClawdbotConfig) {
+function resolveHeartbeatMinIntervalMs(cfg: SurprisebotConfig): number {
+  const raw = (cfg.agents?.defaults as { heartbeat?: { minIntervalMinutes?: number } } | undefined)?.heartbeat?.minIntervalMinutes;
+  const minutes = typeof raw === "number" && Number.isFinite(raw) ? raw : 5;
+  return Math.max(1, Math.floor(minutes)) * 60_000;
+}
+
+function resolveHeartbeatAckMaxChars(cfg: SurprisebotConfig) {
   return Math.max(
     0,
     cfg.agents?.defaults?.heartbeat?.ackMaxChars ?? DEFAULT_HEARTBEAT_ACK_MAX_CHARS,
   );
 }
 
-function resolveHeartbeatSession(cfg: ClawdbotConfig) {
+function resolveHeartbeatSession(cfg: SurprisebotConfig) {
   const sessionCfg = cfg.session;
   const scope = sessionCfg?.scope ?? "per-sender";
   const sessionKey = scope === "global" ? "global" : resolveMainSessionKey(cfg);
@@ -108,6 +139,13 @@ function resolveHeartbeatReasoningPayloads(
     const text = typeof payload.text === "string" ? payload.text : "";
     return text.trimStart().startsWith("Reasoning:");
   });
+}
+
+function sanitizeHeartbeatText(text?: string): string {
+  if (!text) return "";
+  const lines = text.split(/\r?\n/);
+  const filtered = lines.filter((line) => !TOOL_UNAVAILABLE_RE.test(line));
+  return filtered.join("\n").trim();
 }
 
 function resolveHeartbeatSender(params: {
@@ -179,7 +217,7 @@ function normalizeHeartbeatReply(
 }
 
 export async function runHeartbeatOnce(opts: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   reason?: string;
   deps?: HeartbeatDeps;
 }): Promise<HeartbeatRunResult> {
@@ -197,6 +235,10 @@ export async function runHeartbeatOnce(opts: {
   }
 
   const startedAt = opts.deps?.nowMs?.() ?? Date.now();
+  const minIntervalMs = resolveHeartbeatMinIntervalMs(cfg);
+  if (startedAt - lastHeartbeatAtMs < minIntervalMs) {
+    return { status: "skipped", reason: "cooldown" };
+  }
   const { entry, sessionKey, storePath } = resolveHeartbeatSession(cfg);
   const previousUpdatedAt = entry?.updatedAt;
   const delivery = resolveHeartbeatDeliveryTarget({ cfg, entry });
@@ -216,7 +258,9 @@ export async function runHeartbeatOnce(opts: {
     lastTo: entry?.lastTo,
     provider: senderProvider,
   });
-  const prompt = resolveHeartbeatPrompt(cfg);
+  const qmdHealth = await getQmdHealth();
+  const qmdLine = qmdHealth.ok ? "QMD: OK" : `QMD: ERROR - ${qmdHealth.detail}`;
+  const prompt = `${resolveHeartbeatPrompt(cfg)}\n\nSystem health:\n- ${qmdLine}\nIf any line is ERROR, include it verbatim in your reply.`;
   const ctx = {
     Body: prompt,
     From: sender,
@@ -231,6 +275,12 @@ export async function runHeartbeatOnce(opts: {
     const reasoningPayloads = includeReasoning
       ? resolveHeartbeatReasoningPayloads(replyResult).filter((payload) => payload !== replyPayload)
       : [];
+    const sanitizedReasoningPayloads: ReplyPayload[] = [];
+    for (const payload of reasoningPayloads) {
+      const text = sanitizeHeartbeatText(payload.text);
+      if (!text) continue;
+      sanitizedReasoningPayloads.push({ ...payload, text });
+    }
 
     if (
       !replyPayload ||
@@ -241,6 +291,7 @@ export async function runHeartbeatOnce(opts: {
         sessionKey,
         updatedAt: previousUpdatedAt,
       });
+      lastHeartbeatAtMs = startedAt;
       emitHeartbeatEvent({
         status: "ok-empty",
         reason: opts.reason,
@@ -255,13 +306,15 @@ export async function runHeartbeatOnce(opts: {
       resolveEffectiveMessagesConfig(cfg, resolveAgentIdFromSessionKey(sessionKey)).responsePrefix,
       ackMaxChars,
     );
-    const shouldSkipMain = normalized.shouldSkip && !normalized.hasMedia;
-    if (shouldSkipMain && reasoningPayloads.length === 0) {
+    const sanitizedMainText = sanitizeHeartbeatText(normalized.text);
+    const shouldSkipMain = (normalized.shouldSkip || !sanitizedMainText) && !normalized.hasMedia;
+    if (shouldSkipMain && sanitizedReasoningPayloads.length === 0) {
       await restoreHeartbeatUpdatedAt({
         storePath,
         sessionKey,
         updatedAt: previousUpdatedAt,
       });
+      lastHeartbeatAtMs = startedAt;
       emitHeartbeatEvent({
         status: "ok-token",
         reason: opts.reason,
@@ -274,13 +327,14 @@ export async function runHeartbeatOnce(opts: {
       replyPayload.mediaUrls ?? (replyPayload.mediaUrl ? [replyPayload.mediaUrl] : []);
     // Reasoning payloads are text-only; any attachments stay on the main reply.
     const previewText = shouldSkipMain
-      ? reasoningPayloads
+      ? sanitizedReasoningPayloads
           .map((payload) => payload.text)
           .filter((text): text is string => Boolean(text?.trim()))
           .join("\n")
-      : normalized.text;
+      : sanitizedMainText;
 
     if (delivery.channel === "none" || !delivery.to) {
+      lastHeartbeatAtMs = startedAt;
       emitHeartbeatEvent({
         status: "skipped",
         reason: delivery.reason ?? "no-target",
@@ -321,12 +375,12 @@ export async function runHeartbeatOnce(opts: {
       to: delivery.to,
       accountId: deliveryAccountId,
       payloads: [
-        ...reasoningPayloads,
+        ...sanitizedReasoningPayloads,
         ...(shouldSkipMain
           ? []
           : [
               {
-                text: normalized.text,
+                text: sanitizedMainText,
                 mediaUrls,
               },
             ]),
@@ -334,6 +388,7 @@ export async function runHeartbeatOnce(opts: {
       deps: opts.deps,
     });
 
+    lastHeartbeatAtMs = startedAt;
     emitHeartbeatEvent({
       status: "sent",
       to: delivery.to,
@@ -355,7 +410,7 @@ export async function runHeartbeatOnce(opts: {
 }
 
 export function startHeartbeatRunner(opts: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
 }) {

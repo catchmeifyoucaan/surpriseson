@@ -71,7 +71,7 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
       vi.mocked(abortEmbeddedPiRun).mockClear();
       return await fn(home);
     },
-    { prefix: "clawdbot-triggers-" },
+    { prefix: "surprisebot-triggers-" },
   );
 }
 
@@ -80,7 +80,7 @@ function _makeCfg(home: string) {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: join(home, "clawd"),
+        workspace: join(home, "surprisebot"),
       },
     },
     channels: {
@@ -99,7 +99,7 @@ afterEach(() => {
 describe("trigger handling", () => {
   it("stages inbound media into the sandbox workspace", { timeout: 15_000 }, async () => {
     await withTempHome(async (home) => {
-      const inboundDir = join(home, ".clawdbot", "media", "inbound");
+      const inboundDir = join(home, ".surprisebot", "media", "inbound");
       await fs.mkdir(inboundDir, { recursive: true });
       const mediaPath = join(inboundDir, "photo.jpg");
       await fs.writeFile(mediaPath, "test");
@@ -116,7 +116,7 @@ describe("trigger handling", () => {
         agents: {
           defaults: {
             model: "anthropic/claude-opus-4-5",
-            workspace: join(home, "clawd"),
+            workspace: join(home, "surprisebot"),
             sandbox: {
               mode: "non-main" as const,
               workspaceRoot: join(home, "sandboxes"),

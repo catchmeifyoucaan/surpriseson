@@ -25,9 +25,9 @@ export type SkillsCheckOptions = {
   json?: boolean;
 };
 
-function appendClawdHubHint(output: string, json?: boolean): string {
+function appendSurprisebotHubHint(output: string, json?: boolean): string {
   if (json) return output;
-  return `${output}\n\nTip: use \`npx clawdhub\` to search, install, and sync skills.`;
+  return `${output}\n\nTip: use \`npx surprisebothub\` to search, install, and sync skills.`;
 }
 
 /**
@@ -101,9 +101,9 @@ export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOpti
 
   if (skills.length === 0) {
     const message = opts.eligible
-      ? "No eligible skills found. Run `clawdbot skills list` to see all skills."
+      ? "No eligible skills found. Run `surprisebot skills list` to see all skills."
       : "No skills found.";
-    return appendClawdHubHint(message, opts.json);
+    return appendSurprisebotHubHint(message, opts.json);
   }
 
   const eligible = skills.filter((s) => s.eligible);
@@ -130,7 +130,7 @@ export function formatSkillsList(report: SkillStatusReport, opts: SkillsListOpti
     }
   }
 
-  return appendClawdHubHint(lines.join("\n"), opts.json);
+  return appendSurprisebotHubHint(lines.join("\n"), opts.json);
 }
 
 /**
@@ -147,8 +147,8 @@ export function formatSkillInfo(
     if (opts.json) {
       return JSON.stringify({ error: "not found", skill: skillName }, null, 2);
     }
-    return appendClawdHubHint(
-      `Skill "${skillName}" not found. Run \`clawdbot skills list\` to see available skills.`,
+    return appendSurprisebotHubHint(
+      `Skill "${skillName}" not found. Run \`surprisebot skills list\` to see available skills.`,
       opts.json,
     );
   }
@@ -241,7 +241,7 @@ export function formatSkillInfo(
     }
   }
 
-  return appendClawdHubHint(lines.join("\n"), opts.json);
+  return appendSurprisebotHubHint(lines.join("\n"), opts.json);
 }
 
 /**
@@ -322,7 +322,7 @@ export function formatSkillsCheck(report: SkillStatusReport, opts: SkillsCheckOp
     }
   }
 
-  return appendClawdHubHint(lines.join("\n"), opts.json);
+  return appendSurprisebotHubHint(lines.join("\n"), opts.json);
 }
 
 /**
@@ -335,7 +335,7 @@ export function registerSkillsCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/skills", "docs.clawd.bot/cli/skills")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/skills", "docs.surprisebot.bot/cli/skills")}\n`,
     );
 
   skills

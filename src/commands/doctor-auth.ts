@@ -11,14 +11,14 @@ import {
   resolveApiKeyForProfile,
   resolveProfileUnusableUntilForDisplay,
 } from "../agents/auth-profiles.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { note } from "../terminal/note.js";
 import type { DoctorPrompter } from "./doctor-prompter.js";
 
 export async function maybeRepairAnthropicOAuthProfileId(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   prompter: DoctorPrompter,
-): Promise<ClawdbotConfig> {
+): Promise<SurprisebotConfig> {
   const store = ensureAuthProfileStore();
   const repair = repairOAuthProfileIdMismatch({
     cfg,
@@ -49,9 +49,9 @@ function formatAuthIssueHint(issue: AuthIssue): string | null {
     return "Run `claude setup-token` on the gateway host.";
   }
   if (issue.provider === "openai-codex" && issue.profileId === CODEX_CLI_PROFILE_ID) {
-    return "Run `codex login` (or `clawdbot configure` → OpenAI Codex OAuth).";
+    return "Run `codex login` (or `surprisebot configure` → OpenAI Codex OAuth).";
   }
-  return "Re-auth via `clawdbot configure` or `clawdbot onboard`.";
+  return "Re-auth via `surprisebot configure` or `surprisebot onboard`.";
 }
 
 function formatAuthIssueLine(issue: AuthIssue): string {
@@ -62,7 +62,7 @@ function formatAuthIssueLine(issue: AuthIssue): string {
 }
 
 export async function noteAuthProfileHealth(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   prompter: DoctorPrompter;
   allowKeychainPrompt: boolean;
 }): Promise<void> {

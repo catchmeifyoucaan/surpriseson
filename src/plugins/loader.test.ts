@@ -4,14 +4,14 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { loadClawdbotPlugins } from "./loader.js";
+import { loadSurprisebotPlugins } from "./loader.js";
 
 type TempPlugin = { dir: string; file: string; id: string };
 
 const tempDirs: string[] = [];
 
 function makeTempDir() {
-  const dir = path.join(os.tmpdir(), `clawdbot-plugin-${randomUUID()}`);
+  const dir = path.join(os.tmpdir(), `surprisebot-plugin-${randomUUID()}`);
   fs.mkdirSync(dir, { recursive: true });
   tempDirs.push(dir);
   return dir;
@@ -34,14 +34,14 @@ afterEach(() => {
   }
 });
 
-describe("loadClawdbotPlugins", () => {
+describe("loadSurprisebotPlugins", () => {
   it("loads plugins from config paths", () => {
     const plugin = writePlugin({
       id: "allowed",
       body: `export default function (api) { api.registerGatewayMethod("allowed.ping", ({ respond }) => respond(true, { ok: true })); }`,
     });
 
-    const registry = loadClawdbotPlugins({
+    const registry = loadSurprisebotPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -63,7 +63,7 @@ describe("loadClawdbotPlugins", () => {
       body: `export default function () {}`,
     });
 
-    const registry = loadClawdbotPlugins({
+    const registry = loadSurprisebotPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -84,7 +84,7 @@ describe("loadClawdbotPlugins", () => {
       body: `export default {\n  id: "configurable",\n  configSchema: {\n    parse(value) {\n      if (!value || typeof value !== "object" || Array.isArray(value)) {\n        throw new Error("bad config");\n      }\n      return value;\n    }\n  },\n  register() {}\n};`,
     });
 
-    const registry = loadClawdbotPlugins({
+    const registry = loadSurprisebotPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -128,7 +128,7 @@ describe("loadClawdbotPlugins", () => {
 };`,
     });
 
-    const registry = loadClawdbotPlugins({
+    const registry = loadSurprisebotPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -151,7 +151,7 @@ describe("loadClawdbotPlugins", () => {
 };`,
     });
 
-    const registry = loadClawdbotPlugins({
+    const registry = loadSurprisebotPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {

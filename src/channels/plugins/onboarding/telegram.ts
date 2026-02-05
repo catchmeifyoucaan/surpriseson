@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../../routing/session-key.js";
 import {
@@ -13,7 +13,7 @@ import { addWildcardAllowFrom, promptAccountId } from "./helpers.js";
 
 const channel = "telegram" as const;
 
-function setTelegramDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy) {
+function setTelegramDmPolicy(cfg: SurprisebotConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open" ? addWildcardAllowFrom(cfg.channels?.telegram?.allowFrom) : undefined;
   return {
@@ -37,7 +37,7 @@ async function noteTelegramTokenHelp(prompter: WizardPrompter): Promise<void> {
       "3) Copy the token (looks like 123456:ABC...)",
       "Tip: you can also set TELEGRAM_BOT_TOKEN in your env.",
       `Docs: ${formatDocsLink("/telegram")}`,
-      "Website: https://clawd.bot",
+      "Website: https://surprisebot.bot",
     ].join("\n"),
     "Telegram bot token",
   );
@@ -46,21 +46,21 @@ async function noteTelegramTokenHelp(prompter: WizardPrompter): Promise<void> {
 async function noteTelegramUserIdHelp(prompter: WizardPrompter): Promise<void> {
   await prompter.note(
     [
-      "1) DM your bot, then read from.id in `clawdbot logs --follow` (safest)",
+      "1) DM your bot, then read from.id in `surprisebot logs --follow` (safest)",
       "2) Or call https://api.telegram.org/bot<bot_token>/getUpdates and read message.from.id",
       "3) Third-party: DM @userinfobot or @getidsbot",
       `Docs: ${formatDocsLink("/telegram")}`,
-      "Website: https://clawd.bot",
+      "Website: https://surprisebot.bot",
     ].join("\n"),
     "Telegram user id",
   );
 }
 
 async function promptTelegramAllowFrom(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   prompter: WizardPrompter;
   accountId: string;
-}): Promise<ClawdbotConfig> {
+}): Promise<SurprisebotConfig> {
   const { cfg, prompter, accountId } = params;
   const resolved = resolveTelegramAccount({ cfg, accountId });
   const existingAllowFrom = resolved.config.allowFrom ?? [];

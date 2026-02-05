@@ -1,5 +1,5 @@
 import { VERSION } from "../version.js";
-import { ClawdbotSchema } from "./zod-schema.js";
+import { SurprisebotSchema } from "./zod-schema.js";
 
 export type ConfigUiHint = {
   label?: string;
@@ -14,7 +14,7 @@ export type ConfigUiHint = {
 
 export type ConfigUiHints = Record<string, ConfigUiHint>;
 
-export type ConfigSchema = ReturnType<typeof ClawdbotSchema.toJSONSchema>;
+export type ConfigSchema = ReturnType<typeof SurprisebotSchema.toJSONSchema>;
 
 export type ConfigSchemaResponse = {
   schema: ConfigSchema;
@@ -62,6 +62,10 @@ const GROUP_LABELS: Record<string, string> = {
   discovery: "Discovery",
   presence: "Presence",
   voicewake: "Voice Wake",
+  orchestrator: "Orchestrator",
+  budgets: "Budgets",
+  artemis: "Artemis",
+  missionControl: "Mission Control",
 };
 
 const GROUP_ORDER: Record<string, number> = {
@@ -86,6 +90,10 @@ const GROUP_ORDER: Record<string, number> = {
   discovery: 210,
   presence: 220,
   voicewake: 230,
+  orchestrator: 240,
+  budgets: 245,
+  artemis: 247,
+  missionControl: 250,
   logging: 900,
 };
 
@@ -106,8 +114,12 @@ const FIELD_LABELS: Record<string, string> = {
   "tools.exec.applyPatch.enabled": "Enable apply_patch",
   "tools.exec.applyPatch.allowModels": "apply_patch Model Allowlist",
   "tools.web.search.enabled": "Enable Web Search Tool",
-  "tools.web.search.provider": "Web Search Provider",
+  "tools.web.search.provider": "Web Search Provider (brave/serper/serpapi/hybrid)",
   "tools.web.search.apiKey": "Brave Search API Key",
+  "tools.web.search.serperApiKey": "Serper API Key",
+  "tools.web.search.serpapiApiKey": "SerpAPI API Key",
+  "tools.web.search.serpapiEngines": "SerpAPI Engines",
+  "tools.web.search.perplexityApiKey": "Perplexity API Key (query expansion)",
   "tools.web.search.maxResults": "Web Search Max Results",
   "tools.web.search.timeoutSeconds": "Web Search Timeout (sec)",
   "tools.web.search.cacheTtlMinutes": "Web Search Cache TTL (min)",
@@ -116,6 +128,13 @@ const FIELD_LABELS: Record<string, string> = {
   "tools.web.fetch.timeoutSeconds": "Web Fetch Timeout (sec)",
   "tools.web.fetch.cacheTtlMinutes": "Web Fetch Cache TTL (min)",
   "tools.web.fetch.userAgent": "Web Fetch User-Agent",
+  "tools.toolResults.strict": "Require Tool Results",
+  "tools.toolResults.retryOnce": "Retry Missing Tool Results",
+  "tools.toolResults.requireToolForQueries": "Require Tools for FS/Command Queries",
+  "tools.toolResults.timeoutMs": "Tool Result Timeout (ms)",
+  "tools.toolResults.heartbeatMs": "Tool Result Heartbeat (ms)",
+  "tools.toolResults.warnOnMissing": "Warn on Missing Tool Results",
+  "tools.toolResults.warnOnTimeout": "Warn on Tool Timeouts",
   "gateway.controlUi.basePath": "Control UI Base Path",
   "gateway.http.endpoints.chatCompletions.enabled": "OpenAI Chat Completions Endpoint",
   "gateway.reload.mode": "Config Reload Mode",
@@ -140,6 +159,114 @@ const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.memorySearch.sync.watchDebounceMs": "Memory Watch Debounce (ms)",
   "agents.defaults.memorySearch.query.maxResults": "Memory Search Max Results",
   "agents.defaults.memorySearch.query.minScore": "Memory Search Min Score",
+  "agents.defaults.memoryGraph": "Memory Graph",
+  "agents.defaults.memoryGraph.enabled": "Enable Memory Graph",
+  "agents.defaults.memoryGraph.url": "Memory Graph URL",
+  "agents.defaults.memoryGraph.username": "Memory Graph Username",
+  "agents.defaults.memoryGraph.password": "Memory Graph Password",
+  "agents.defaults.memoryGraph.database": "Memory Graph Database",
+  "agents.defaults.memoryGraph.sync.onSessionStart": "Graph Sync on Session Start",
+  "agents.defaults.memoryGraph.sync.onSearch": "Graph Sync on Search (Lazy)",
+  "agents.defaults.memoryGraph.sync.watch": "Watch Memory Files (Graph)",
+  "agents.defaults.memoryGraph.sync.watchDebounceMs": "Graph Watch Debounce (ms)",
+  "agents.defaults.memoryGraph.sync.intervalMinutes": "Graph Sync Interval (minutes)",
+  "agents.defaults.memoryGraph.query.maxResults": "Graph Query Max Results",
+  "agents.defaults.memoryGraph.query.maxHops": "Graph Query Max Hops",
+  "agents.defaults.memoryCapture": "Memory Capture",
+  "agents.defaults.memoryCapture.enabled": "Enable Memory Capture",
+  "agents.defaults.memoryCapture.minIntervalMinutes": "Memory Capture Minimum Interval (minutes)",
+  "agents.defaults.memoryCapture.minNewTokens": "Memory Capture Minimum New Tokens",
+  "agents.defaults.memoryCapture.prompt": "Memory Capture Prompt",
+  "agents.defaults.memoryCapture.systemPrompt": "Memory Capture System Prompt",
+  "agents.defaults.sharedMemory": "Shared Memory",
+  "agents.defaults.sharedMemory.enabled": "Enable Shared Memory",
+  "agents.defaults.sharedMemory.path": "Shared Memory Path",
+  "agents.defaults.sharedMemory.pendingPath": "Shared Memory Pending Path",
+  "agents.defaults.sharedMemory.allowWriteAgents": "Shared Memory Write Allowlist",
+  "agents.defaults.memoryCliWatchdog": "Memory CLI Watchdog",
+  "agents.defaults.memoryCliWatchdog.enabled": "Enable Memory CLI Watchdog",
+  "agents.defaults.memoryCliWatchdog.intervalMinutes": "Memory CLI Watchdog Interval (minutes)",
+  "agents.defaults.memoryCliWatchdog.maxStatusAgeSeconds": "Max Age for memory status (seconds)",
+  "agents.defaults.memoryCliWatchdog.maxSearchAgeSeconds": "Max Age for memory search (seconds)",
+  "agents.defaults.memoryCliWatchdog.maxIndexAgeSeconds": "Max Age for memory index (seconds)",
+  "agents.defaults.memoryCliWatchdog.maxOtherAgeSeconds": "Max Age for other memory CLI (seconds)",
+  "agents.defaults.orchestrator": "Orchestrator",
+  "agents.defaults.orchestrator.enabled": "Enable Orchestrator",
+  "agents.defaults.orchestrator.defaultAgentId": "Orchestrator Default Agent",
+  "agents.defaults.orchestrator.routing": "Orchestrator Routing Rules",
+  "agents.defaults.orchestrator.routing[].id": "Routing Rule ID",
+  "agents.defaults.orchestrator.routing[].sources": "Routing Sources",
+  "agents.defaults.orchestrator.routing[].severities": "Routing Severities",
+  "agents.defaults.orchestrator.routing[].summaryContains": "Routing Summary Match",
+  "agents.defaults.orchestrator.routing[].agentId": "Routing Agent ID",
+  "agents.defaults.orchestrator.routing[].taskTemplate": "Routing Task Template",
+  "agents.defaults.orchestrator.routing[].jobType": "Routing Job Type",
+  "budgets": "Budgets",
+  "budgets.global": "Global Budget",
+  "budgets.global.window": "Global Budget Window",
+  "budgets.global.tokenLimit": "Global Token Limit",
+  "budgets.global.runLimit": "Global Run Limit",
+  "budgets.global.concurrencyLimit": "Global Concurrency Limit",
+  "budgets.global.tokenEstimate": "Global Token Estimate",
+  "budgets.byAgent": "Budgets by Agent",
+  "budgets.byJobType": "Budgets by Job Type",
+  "budgets.alerts": "Budget Alerts",
+  "budgets.alerts.cooldownMs": "Budget Alert Cooldown (ms)",
+  "budgets.alerts.maxPerWindow": "Budget Alerts Per Window",
+  "budgets.global.queryLimit": "Global Query Limit",
+  "budgets.global.maxRuntimeSeconds": "Global Max Runtime (sec)",
+  "budgets.global.maxOutputChars": "Global Max Output Chars",
+  "budgets.byAgent.*.queryLimit": "Agent Query Limit",
+  "budgets.byAgent.*.maxRuntimeSeconds": "Agent Max Runtime (sec)",
+  "budgets.byAgent.*.maxOutputChars": "Agent Max Output Chars",
+  "budgets.byJobType.*.queryLimit": "Job Query Limit",
+  "budgets.byJobType.*.maxRuntimeSeconds": "Job Max Runtime (sec)",
+  "budgets.byJobType.*.maxOutputChars": "Job Max Output Chars",
+  "missionControl": "Mission Control",
+  "missionControl.killSwitch": "Kill Switch",
+  "missionControl.dbPath": "Mission Control DB Path",
+  "missionControl.ledgerDir": "Mission Control Ledger Dir",
+  "missionControl.trust": "Trust Tiers",
+  "missionControl.trust.defaultTier": "Default Trust Tier",
+  "missionControl.trust.bySource": "Trust Tier by Source",
+  "missionControl.trust.quarantineSources": "Quarantine Sources",
+  "missionControl.alerts": "Alert Gating",
+  "missionControl.alerts.highSignalOnly": "High-signal Alerts Only",
+  "missionControl.alerts.minSignalScore": "Min Signal Score",
+  "missionControl.alerts.minEvidenceCount": "Min Evidence Count",
+  "missionControl.alerts.suppressIfMissingEvidence": "Suppress if No Evidence",
+  "missionControl.incidents": "Incident Task Creation",
+  "missionControl.incidents.minSeverity": "Incident Min Severity",
+  "missionControl.incidents.defaultPriority": "Incident Default Priority",
+  "missionControl.qa": "QA Verification",
+  "missionControl.qa.agentId": "QA Agent Id",
+  "missionControl.qa.requiredTrustTiers": "QA Trust Tiers",
+  "missionControl.qa.requiredSeverities": "QA Severities",
+  "missionControl.recon": "Recon Follow-up",
+  "missionControl.recon.agentId": "Recon Agent Id",
+  "missionControl.mirror": "UI Mirror",
+  "missionControl.mirror.enabled": "Mirror Enabled",
+  "missionControl.mirror.file.path": "Mirror File Path",
+  "missionControl.mirror.webhook.url": "Mirror Webhook URL",
+  "missionControl.mirror.webhook.timeoutSeconds": "Mirror Webhook Timeout (sec)",
+  "missionControl.rollup": "Ledger Rollup",
+  "missionControl.maintenance": "Maintenance",
+  "missionControl.rollup.enabled": "Rollup Enabled",
+  "missionControl.rollup.keepDays": "Rollup Keep Days",
+  "missionControl.rollup.minBytes": "Rollup Min Bytes",
+  "missionControl.rollup.intervalMinutes": "Rollup Interval (minutes)",
+  "missionControl.maintenance.enabled": "Maintenance Enabled",
+  "missionControl.maintenance.intervalMinutes": "Maintenance Interval (minutes)",
+  "budgets.enforcement": "Budget Enforcement",
+  "budgets.enforcement.mode": "Budget Enforcement Mode",
+  "budgets.enforcement.deferMinutes": "Budget Defer Minutes",
+  "budgets.enforcement.warnThresholdPct": "Budget Warn Threshold (%)",
+  "budgets.enforcement.hardStopThresholdPct": "Budget Hard Stop Threshold (%)",
+  "agents.list[].sharedMemory": "Shared Memory",
+  "agents.list[].sharedMemory.enabled": "Enable Shared Memory",
+  "agents.list[].sharedMemory.path": "Shared Memory Path",
+  "agents.list[].sharedMemory.pendingPath": "Shared Memory Pending Path",
+  "agents.list[].sharedMemory.allowWriteAgents": "Shared Memory Write Allowlist",
   "auth.profiles": "Auth Profiles",
   "auth.order": "Auth Profile Order",
   "auth.cooldowns.billingBackoffHours": "Billing Backoff (hours)",
@@ -162,10 +289,16 @@ const FIELD_LABELS: Record<string, string> = {
   "commands.config": "Allow /config",
   "commands.debug": "Allow /debug",
   "commands.restart": "Allow Restart",
+  "commands.memory": "Allow /remember + /forget",
+  "commands.memoryForgetPolicy": "Memory Forget Policy",
   "commands.useAccessGroups": "Use Access Groups",
   "ui.seamColor": "Accent Color",
   "browser.controlUrl": "Browser Control URL",
   "session.agentToAgent.maxPingPongTurns": "Agent-to-Agent Ping-Pong Turns",
+  "session.bridge": "Optional cross-surface session bridge settings.",
+  "session.bridge.mode": 'Bridge mode ("off", "explicit", "owner").',
+  "session.bridge.key": 'Shared bridge key label (default: "owner").',
+  "session.bridge.includeGroups": "When true, group chats can be bridged (default: false).",
   "messages.ackReaction": "Ack Reaction Emoji",
   "messages.ackReactionScope": "Ack Reaction Scope",
   "talk.apiKey": "Talk API Key",
@@ -213,6 +346,39 @@ const FIELD_LABELS: Record<string, string> = {
   "plugins.entries": "Plugin Entries",
   "plugins.entries.*.enabled": "Plugin Enabled",
   "plugins.entries.*.config": "Plugin Config",
+  "artemis.enabled": "Enable Artemis",
+  "artemis.stanford.enabled": "Enable Stanford Artemis",
+  "artemis.stanford.intervalMinutes": "Stanford Artemis interval (minutes)",
+  "artemis.stanford.configPath": "Stanford Artemis config path",
+  "artemis.stanford.artemisDir": "Stanford Artemis repo path",
+  "artemis.stanford.outputDir": "Stanford Artemis output dir",
+  "artemis.stanford.pythonBin": "Stanford Artemis python bin",
+  "artemis.stanford.durationMinutes": "Stanford Artemis duration (minutes)",
+  "artemis.stanford.supervisorModel": "Stanford Artemis supervisor model",
+  "artemis.stanford.sessionRoot": "Stanford Artemis session root",
+  "artemis.stanford.codexBinary": "Stanford Artemis codex binary",
+  "artemis.stanford.benchmarkMode": "Stanford Artemis benchmark mode",
+  "artemis.stanford.skipTodos": "Stanford Artemis skip TODO generation",
+  "artemis.stanford.usePromptGeneration": "Stanford Artemis prompt generation",
+  "artemis.stanford.promptFeedback.enabled": "Stanford Artemis prompt feedback enabled",
+  "artemis.stanford.promptFeedback.minPrecision": "Stanford Artemis prompt feedback min precision",
+  "artemis.stanford.promptFeedback.minSamples": "Stanford Artemis prompt feedback min samples",
+  "artemis.stanford.promptFeedback.action": "Stanford Artemis prompt feedback action",
+  "artemis.stanford.finishOnSubmit": "Stanford Artemis finish on submit",
+  "artemis.stanford.jobType": "Stanford Artemis budget job type",
+  "artemis.stanford.syncArtifacts": "Stanford Artemis sync artifacts",
+  "artemis.cert.enabled": "Enable CERT Artemis ingest",
+  "artemis.cert.intervalMinutes": "CERT Artemis ingest interval (minutes)",
+  "artemis.cert.inputPath": "CERT Artemis input path",
+  "artemis.cert.outputDir": "CERT Artemis output dir",
+  "artemis.cert.outputFile": "CERT Artemis output file",
+  "artemis.cert.source": "CERT Artemis source label",
+  "artemis.cert.jobType": "CERT Artemis budget job type",
+  "artemis.cert.command": "CERT Artemis runner command",
+  "artemis.cert.args": "CERT Artemis runner args",
+  "artemis.cert.workingDir": "CERT Artemis runner working dir",
+  "artemis.cert.timeoutMinutes": "CERT Artemis runner timeout (minutes)",
+  "artemis.cert.env": "CERT Artemis runner env",
 };
 
 const FIELD_HELP: Record<string, string> = {
@@ -223,7 +389,7 @@ const FIELD_HELP: Record<string, string> = {
   "gateway.auth.token": "Recommended for all gateways; required for non-loopback binds.",
   "gateway.auth.password": "Required for Tailscale funnel.",
   "gateway.controlUi.basePath":
-    "Optional URL prefix where the Control UI is served (e.g. /clawdbot).",
+    "Optional URL prefix where the Control UI is served (e.g. /surprisebot).",
   "gateway.http.endpoints.chatCompletions.enabled":
     "Enable the OpenAI-compatible `POST /v1/chat/completions` endpoint (default: false).",
   "gateway.reload.mode": 'Hot reload strategy for config changes ("hybrid" recommended).',
@@ -233,8 +399,13 @@ const FIELD_HELP: Record<string, string> = {
   "tools.exec.applyPatch.allowModels":
     'Optional allowlist of model ids (e.g. "gpt-5.2" or "openai/gpt-5.2").',
   "tools.web.search.enabled": "Enable the web_search tool (requires Brave API key).",
-  "tools.web.search.provider": 'Search provider (only "brave" supported today).',
+  "tools.web.search.provider": 'Search provider ("brave", "serper", "serpapi", or "hybrid").',
   "tools.web.search.apiKey": "Brave Search API key (fallback: BRAVE_API_KEY env var).",
+  "tools.web.search.serperApiKey": "Serper API key (fallback: SERPER_API_KEY env var).",
+  "tools.web.search.serpapiApiKey": "SerpAPI API key (fallback: SERPAPI_API_KEY env var).",
+  "tools.web.search.serpapiEngines":
+    "SerpAPI engines to query (default: [\"google\"]). Example: [\"google\", \"yandex\", \"yahoo\"].",
+  "tools.web.search.perplexityApiKey": "Perplexity API key for query expansion (fallback: PPLX_API_KEY env var).",
   "tools.web.search.maxResults": "Default number of results to return (1-10).",
   "tools.web.search.timeoutSeconds": "Timeout in seconds for web_search requests.",
   "tools.web.search.cacheTtlMinutes": "Cache TTL in minutes for web_search results.",
@@ -243,6 +414,20 @@ const FIELD_HELP: Record<string, string> = {
   "tools.web.fetch.timeoutSeconds": "Timeout in seconds for web_fetch requests.",
   "tools.web.fetch.cacheTtlMinutes": "Cache TTL in minutes for web_fetch results.",
   "tools.web.fetch.userAgent": "Override User-Agent header for web_fetch requests.",
+  "tools.toolResults.strict":
+    "Block replies when tool calls are missing results (prevents unverifiable outputs).",
+  "tools.toolResults.retryOnce":
+    "Retry the run once if tool results are missing (reissues tool calls).",
+  "tools.toolResults.requireToolForQueries":
+    "Require at least one tool call for filesystem/command queries; otherwise reply with a verification error.",
+  "tools.toolResults.timeoutMs":
+    "Warn if a tool runs longer than this duration without returning (ms).",
+  "tools.toolResults.heartbeatMs":
+    "Emit periodic tool heartbeat updates at this interval (ms).",
+  "tools.toolResults.warnOnMissing":
+    "Emit user-visible warnings when tool results are missing.",
+  "tools.toolResults.warnOnTimeout":
+    "Emit user-visible warnings when a tool exceeds the timeout threshold.",
   "channels.slack.allowBots":
     "Allow bot-authored messages to trigger Slack replies (default: false).",
   "channels.slack.thread.historyScope":
@@ -262,7 +447,7 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.models": "Configured model catalog (keys are full provider/model IDs).",
   "agents.defaults.memorySearch":
     "Vector search over MEMORY.md and memory/*.md (per-agent overrides supported).",
-  "agents.defaults.memorySearch.provider": 'Embedding provider ("openai" or "local").',
+  "agents.defaults.memorySearch.provider": 'Embedding provider ("openai", "google"/"gemini", or "local").',
   "agents.defaults.memorySearch.remote.baseUrl":
     "Custom OpenAI-compatible base URL (e.g. for Gemini/OpenRouter proxies).",
   "agents.defaults.memorySearch.remote.apiKey": "Custom API key for the remote embedding provider.",
@@ -271,9 +456,17 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.memorySearch.local.modelPath":
     "Local GGUF model path or hf: URI (node-llama-cpp).",
   "agents.defaults.memorySearch.fallback":
-    'Fallback to OpenAI when local embeddings fail ("openai" or "none").',
+    'Fallback when local embeddings fail ("openai", "google"/"gemini", or "none").',
   "agents.defaults.memorySearch.store.path":
-    "SQLite index path (default: ~/.clawdbot/memory/{agentId}.sqlite).",
+    "SQLite index path (default: ~/.surprisebot/memory/{agentId}.sqlite).",
+  "agents.defaults.memoryCapture":
+    "Periodic memory capture turn that writes durable notes to MEMORY.md + memory/*.md.",
+  "agents.defaults.memoryCapture.minIntervalMinutes":
+    "Minimum minutes between capture runs for a session.",
+  "agents.defaults.memoryCapture.minNewTokens":
+    "Minimum new tokens since last capture before another capture runs.",
+  "agents.defaults.memoryCapture.prompt": "Memory capture prompt.",
+  "agents.defaults.memoryCapture.systemPrompt": "Memory capture system prompt.",
   "agents.defaults.memorySearch.sync.onSearch":
     "Lazy sync: reindex on first search after a change.",
   "agents.defaults.memorySearch.sync.watch": "Watch memory files for changes (chokidar).",
@@ -290,7 +483,7 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.imageModel.primary":
     "Optional image model (provider/model) used when the primary model lacks image input.",
   "agents.defaults.imageModel.fallbacks": "Ordered fallback image models (provider/model).",
-  "agents.defaults.cliBackends": "Optional CLI backends for text-only fallback (claude-cli, etc.).",
+  "agents.defaults.cliBackends": "Optional CLI backends for local tool-capable runs (claude-cli, etc.).",
   "agents.defaults.humanDelay.mode": 'Delay style for block replies ("off", "natural", "custom").',
   "agents.defaults.humanDelay.minMs": "Minimum delay in ms for custom humanDelay (default: 800).",
   "agents.defaults.humanDelay.maxMs": "Maximum delay in ms for custom humanDelay (default: 2500).",
@@ -304,6 +497,7 @@ const FIELD_HELP: Record<string, string> = {
   "commands.config": "Allow /config chat command to read/write config on disk (default: false).",
   "commands.debug": "Allow /debug chat command for runtime-only overrides (default: false).",
   "commands.restart": "Allow /restart and gateway restart tool actions (default: false).",
+  "commands.memory": "Allow memory commands like /remember, /forget, /prefer, and /deprecate (default: false).",
   "commands.useAccessGroups": "Enforce access-group allowlists/policies for commands.",
   "channels.telegram.configWrites":
     "Allow Telegram to write config in response to channel events/commands (default: true).",
@@ -367,7 +561,7 @@ const FIELD_HELP: Record<string, string> = {
 const FIELD_PLACEHOLDERS: Record<string, string> = {
   "gateway.remote.url": "ws://host:18789",
   "gateway.remote.sshTarget": "user@host",
-  "gateway.controlUi.basePath": "/clawdbot",
+  "gateway.controlUi.basePath": "/surprisebot",
 };
 
 const SENSITIVE_PATTERNS = [/token/i, /password/i, /secret/i, /api.?key/i];
@@ -471,11 +665,11 @@ let cachedBase: ConfigSchemaResponse | null = null;
 
 function buildBaseConfigSchema(): ConfigSchemaResponse {
   if (cachedBase) return cachedBase;
-  const schema = ClawdbotSchema.toJSONSchema({
+  const schema = SurprisebotSchema.toJSONSchema({
     target: "draft-07",
     unrepresentable: "any",
   });
-  schema.title = "ClawdbotConfig";
+  schema.title = "SurprisebotConfig";
   const hints = applySensitiveHints(buildBaseHints());
   const next = {
     schema,

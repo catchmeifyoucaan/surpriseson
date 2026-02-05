@@ -89,6 +89,10 @@ export type CommandsConfig = {
   debug?: boolean;
   /** Allow restart commands/tools (default: false). */
   restart?: boolean;
+  /** Allow memory commands like /remember and /forget (default: false). */
+  memory?: boolean;
+  /** Forget behavior: hard delete or mark deprecated (default: "hard"). */
+  memoryForgetPolicy?: "hard" | "deprecate";
   /** Enforce access-group allowlists/policies for commands (default: true). */
   useAccessGroups?: boolean;
 };

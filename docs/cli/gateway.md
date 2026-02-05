@@ -1,5 +1,5 @@
 ---
-summary: "Clawdbot Gateway CLI (`clawdbot gateway`) — run, query, and discover gateways"
+summary: "Surprisebot Gateway CLI (`surprisebot gateway`) — run, query, and discover gateways"
 read_when:
   - Running the Gateway from the CLI (dev or servers)
   - Debugging Gateway auth, bind modes, and connectivity
@@ -8,9 +8,9 @@ read_when:
 
 # Gateway CLI
 
-The Gateway is Clawdbot’s WebSocket server (channels, nodes, sessions, hooks).
+The Gateway is Surprisebot’s WebSocket server (channels, nodes, sessions, hooks).
 
-Subcommands in this page live under `clawdbot gateway …`.
+Subcommands in this page live under `surprisebot gateway …`.
 
 Related docs:
 - [/gateway/bonjour](/gateway/bonjour)
@@ -22,11 +22,11 @@ Related docs:
 Run a local Gateway process:
 
 ```bash
-clawdbot gateway
+surprisebot gateway
 ```
 
 Notes:
-- By default, the Gateway refuses to start unless `gateway.mode=local` is set in `~/.clawdbot/clawdbot.json`. Use `--allow-unconfigured` for ad-hoc/dev runs.
+- By default, the Gateway refuses to start unless `gateway.mode=local` is set in `~/.surprisebot/surprisebot.json`. Use `--allow-unconfigured` for ad-hoc/dev runs.
 - Binding beyond loopback without auth is blocked (safety guardrail).
 - `SIGUSR1` triggers an in-process restart (useful without a supervisor).
 
@@ -35,11 +35,12 @@ Notes:
 - `--port <port>`: WebSocket port (default comes from config/env; usually `18789`).
 - `--bind <loopback|lan|tailnet|auto>`: listener bind mode.
 - `--auth <token|password>`: auth mode override.
-- `--token <token>`: token override (also sets `CLAWDBOT_GATEWAY_TOKEN` for the process).
-- `--password <password>`: password override (also sets `CLAWDBOT_GATEWAY_PASSWORD` for the process).
+- `--token <token>`: token override (also sets `SURPRISEBOT_GATEWAY_TOKEN` for the process).
+- `--password <password>`: password override (also sets `SURPRISEBOT_GATEWAY_PASSWORD` for the process).
 - `--tailscale <off|serve|funnel>`: expose the Gateway via Tailscale.
 - `--tailscale-reset-on-exit`: reset Tailscale serve/funnel config on shutdown.
 - `--allow-unconfigured`: allow gateway start without `gateway.mode=local` in config.
+- `--allow-unsafe-workspace`: allow workspace inside state dir (unsafe; overrides guard).
 - `--dev`: create a dev config + workspace if missing (skips BOOTSTRAP.md).
 - `--reset`: reset dev config + credentials + sessions + workspace (requires `--dev`).
 - `--force`: kill any existing listener on the selected port before starting.
@@ -69,7 +70,7 @@ Shared options (where supported):
 ### `gateway health`
 
 ```bash
-clawdbot gateway health --url ws://127.0.0.1:18789
+surprisebot gateway health --url ws://127.0.0.1:18789
 ```
 
 ### `gateway status`
@@ -81,8 +82,8 @@ clawdbot gateway health --url ws://127.0.0.1:18789
 If multiple gateways are reachable, it prints all of them. Multiple gateways are supported when you use profiles for redundancy, but most installs still run a single gateway.
 
 ```bash
-clawdbot gateway status
-clawdbot gateway status --json
+surprisebot gateway status
+surprisebot gateway status --json
 ```
 
 #### Remote over SSH (Mac app parity)
@@ -92,7 +93,7 @@ The macOS app “Remote over SSH” mode uses a local port-forward so the remote
 CLI equivalent:
 
 ```bash
-clawdbot gateway status --ssh user@gateway-host
+surprisebot gateway status --ssh user@gateway-host
 ```
 
 Options:
@@ -109,16 +110,16 @@ Config (optional, used as defaults):
 Low-level RPC helper.
 
 ```bash
-clawdbot gateway call status
-clawdbot gateway call logs.tail --params '{"sinceMs": 60000}'
+surprisebot gateway call status
+surprisebot gateway call logs.tail --params '{"sinceMs": 60000}'
 ```
 
 ## Discover gateways (Bonjour)
 
-`gateway discover` scans for Gateway bridge beacons (`_clawdbot-bridge._tcp`).
+`gateway discover` scans for Gateway bridge beacons (`_surprisebot-bridge._tcp`).
 
 - Multicast DNS-SD: `local.`
-- Unicast DNS-SD (Wide-Area Bonjour): `clawdbot.internal.` (requires split DNS + DNS server; see [/gateway/bonjour](/gateway/bonjour))
+- Unicast DNS-SD (Wide-Area Bonjour): `surprisebot.internal.` (requires split DNS + DNS server; see [/gateway/bonjour](/gateway/bonjour))
 
 Only gateways with the **bridge enabled** will advertise the discovery beacon.
 
@@ -131,7 +132,7 @@ Wide-Area discovery records include (TXT):
 ### `gateway discover`
 
 ```bash
-clawdbot gateway discover
+surprisebot gateway discover
 ```
 
 Options:
@@ -141,6 +142,6 @@ Options:
 Examples:
 
 ```bash
-clawdbot gateway discover --timeout 4000
-clawdbot gateway discover --json | jq '.beacons[].wsUrl'
+surprisebot gateway discover --timeout 4000
+surprisebot gateway discover --json | jq '.beacons[].wsUrl'
 ```

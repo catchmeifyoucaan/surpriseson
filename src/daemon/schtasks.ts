@@ -23,9 +23,9 @@ function resolveHomeDir(env: Record<string, string | undefined>): string {
 
 function resolveTaskScriptPath(env: Record<string, string | undefined>): string {
   const home = resolveHomeDir(env);
-  const profile = env.CLAWDBOT_PROFILE?.trim();
+  const profile = env.SURPRISEBOT_PROFILE?.trim();
   const suffix = profile && profile.toLowerCase() !== "default" ? `-${profile}` : "";
-  return path.join(home, `.clawdbot${suffix}`, "gateway.cmd");
+  return path.join(home, `.surprisebot${suffix}`, "gateway.cmd");
 }
 
 function quoteCmdArg(value: string): string {
@@ -210,8 +210,8 @@ export async function installScheduledTask({
   const scriptPath = resolveTaskScriptPath(env);
   await fs.mkdir(path.dirname(scriptPath), { recursive: true });
   const description = formatGatewayServiceDescription({
-    profile: env.CLAWDBOT_PROFILE,
-    version: environment?.CLAWDBOT_SERVICE_VERSION ?? env.CLAWDBOT_SERVICE_VERSION,
+    profile: env.SURPRISEBOT_PROFILE,
+    version: environment?.SURPRISEBOT_SERVICE_VERSION ?? env.SURPRISEBOT_SERVICE_VERSION,
   });
   const script = buildTaskScript({
     description,
@@ -221,7 +221,7 @@ export async function installScheduledTask({
   });
   await fs.writeFile(scriptPath, script, "utf8");
 
-  const taskName = resolveGatewayWindowsTaskName(env.CLAWDBOT_PROFILE);
+  const taskName = resolveGatewayWindowsTaskName(env.SURPRISEBOT_PROFILE);
   const quotedScript = quoteCmdArg(scriptPath);
   const create = await execSchtasks([
     "/Create",
@@ -255,7 +255,7 @@ export async function uninstallScheduledTask({
   stdout: NodeJS.WritableStream;
 }): Promise<void> {
   await assertSchtasksAvailable();
-  const taskName = resolveGatewayWindowsTaskName(env.CLAWDBOT_PROFILE);
+  const taskName = resolveGatewayWindowsTaskName(env.SURPRISEBOT_PROFILE);
   await execSchtasks(["/Delete", "/F", "/TN", taskName]);
 
   const scriptPath = resolveTaskScriptPath(env);
@@ -323,7 +323,7 @@ export async function readScheduledTaskRuntime(
       detail: String(err),
     };
   }
-  const taskName = resolveGatewayWindowsTaskName(env.CLAWDBOT_PROFILE);
+  const taskName = resolveGatewayWindowsTaskName(env.SURPRISEBOT_PROFILE);
   const res = await execSchtasks(["/Query", "/TN", taskName, "/V", "/FO", "LIST"]);
   if (res.code !== 0) {
     const detail = (res.stderr || res.stdout).trim();

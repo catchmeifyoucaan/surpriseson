@@ -6,39 +6,39 @@ import type { ProgramContext } from "./context.js";
 
 const EXAMPLES = [
   [
-    "clawdbot channels login --verbose",
+    "surprisebot channels login --verbose",
     "Link personal WhatsApp Web and show QR + connection logs.",
   ],
   [
-    'clawdbot message send --to +15555550123 --message "Hi" --json',
+    'surprisebot message send --to +15555550123 --message "Hi" --json',
     "Send via your web session and print JSON result.",
   ],
-  ["clawdbot gateway --port 18789", "Run the WebSocket Gateway locally."],
-  ["clawdbot --dev gateway", "Run a dev Gateway (isolated state/config) on ws://127.0.0.1:19001."],
-  ["clawdbot gateway --force", "Kill anything bound to the default gateway port, then start it."],
-  ["clawdbot gateway ...", "Gateway control via WebSocket."],
+  ["surprisebot gateway --port 18789", "Run the WebSocket Gateway locally."],
+  ["surprisebot --dev gateway", "Run a dev Gateway (isolated state/config) on ws://127.0.0.1:19001."],
+  ["surprisebot gateway --force", "Kill anything bound to the default gateway port, then start it."],
+  ["surprisebot gateway ...", "Gateway control via WebSocket."],
   [
-    'clawdbot agent --to +15555550123 --message "Run summary" --deliver',
+    'surprisebot agent --to +15555550123 --message "Run summary" --deliver',
     "Talk directly to the agent using the Gateway; optionally send the WhatsApp reply.",
   ],
   [
-    'clawdbot message send --channel telegram --to @mychat --message "Hi"',
+    'surprisebot message send --channel telegram --to @mychat --message "Hi"',
     "Send via your Telegram bot.",
   ],
 ] as const;
 
 export function configureProgramHelp(program: Command, ctx: ProgramContext) {
   program
-    .name("clawdbot")
+    .name("surprisebot")
     .description("")
     .version(ctx.programVersion)
     .option(
       "--dev",
-      "Dev profile: isolate state under ~/.clawdbot-dev, default gateway port 19001, and shift derived ports (bridge/browser/canvas)",
+      "Dev profile: isolate state under ~/.surprisebot-dev, default gateway port 19001, and shift derived ports (bridge/browser/canvas)",
     )
     .option(
       "--profile <name>",
-      "Use a named profile (isolates CLAWDBOT_STATE_DIR/CLAWDBOT_CONFIG_PATH under ~/.clawdbot-<name>)",
+      "Use a named profile (isolates SURPRISEBOT_STATE_DIR/SURPRISEBOT_CONFIG_PATH under ~/.surprisebot-<name>)",
     );
 
   program.option("--no-color", "Disable ANSI colors", false);
@@ -81,7 +81,7 @@ export function configureProgramHelp(program: Command, ctx: ProgramContext) {
   ).join("\n");
 
   program.addHelpText("afterAll", () => {
-    const docs = formatDocsLink("/cli", "docs.clawd.bot/cli");
+    const docs = formatDocsLink("/cli", "docs.surprisebot.bot/cli");
     return `\n${theme.heading("Examples:")}\n${fmtExamples}\n\n${theme.muted("Docs:")} ${docs}\n`;
   });
 }

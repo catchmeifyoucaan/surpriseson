@@ -36,7 +36,7 @@ vi.mock("../pairing/pairing-store.js", () => ({
 }));
 
 vi.mock("../config/sessions.js", () => ({
-  resolveStorePath: vi.fn(() => "/tmp/clawdbot-sessions.json"),
+  resolveStorePath: vi.fn(() => "/tmp/surprisebot-sessions.json"),
   updateLastRoute: (...args: unknown[]) => updateLastRouteMock(...args),
 }));
 
@@ -74,7 +74,7 @@ beforeEach(() => {
     },
     session: { mainKey: "main" },
     messages: {
-      groupChat: { mentionPatterns: ["@clawd"] },
+      groupChat: { mentionPatterns: ["@surprisebot"] },
     },
   };
   requestMock.mockReset().mockImplementation((method: string) => {

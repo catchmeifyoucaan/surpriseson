@@ -35,9 +35,9 @@ export function installGatewayTestHooks() {
   beforeEach(async () => {
     setLoggerOverride({ level: "silent", consoleLevel: "silent" });
     previousHome = process.env.HOME;
-    tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gateway-home-"));
+    tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gateway-home-"));
     process.env.HOME = tempHome;
-    tempConfigRoot = path.join(tempHome, ".clawdbot-test");
+    tempConfigRoot = path.join(tempHome, ".surprisebot-test");
     setTestConfigRoot(tempConfigRoot);
     sessionStoreSaveDelayMs.value = 0;
     testTailnetIPv4.value = undefined;
@@ -177,11 +177,11 @@ export async function startGatewayServer(port: number, opts?: GatewayServerOptio
 
 export async function startServerWithClient(token?: string, opts?: GatewayServerOptions) {
   let port = await getFreePort();
-  const prev = process.env.CLAWDBOT_GATEWAY_TOKEN;
+  const prev = process.env.SURPRISEBOT_GATEWAY_TOKEN;
   if (token === undefined) {
-    delete process.env.CLAWDBOT_GATEWAY_TOKEN;
+    delete process.env.SURPRISEBOT_GATEWAY_TOKEN;
   } else {
-    process.env.CLAWDBOT_GATEWAY_TOKEN = token;
+    process.env.SURPRISEBOT_GATEWAY_TOKEN = token;
   }
 
   let server: Awaited<ReturnType<typeof startGatewayServer>> | null = null;

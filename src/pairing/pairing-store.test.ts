@@ -9,14 +9,14 @@ import { resolveOAuthDir } from "../config/paths.js";
 import { listChannelPairingRequests, upsertChannelPairingRequest } from "./pairing-store.js";
 
 async function withTempStateDir<T>(fn: (stateDir: string) => Promise<T>) {
-  const previous = process.env.CLAWDBOT_STATE_DIR;
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-pairing-"));
-  process.env.CLAWDBOT_STATE_DIR = dir;
+  const previous = process.env.SURPRISEBOT_STATE_DIR;
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-pairing-"));
+  process.env.SURPRISEBOT_STATE_DIR = dir;
   try {
     return await fn(dir);
   } finally {
-    if (previous === undefined) delete process.env.CLAWDBOT_STATE_DIR;
-    else process.env.CLAWDBOT_STATE_DIR = previous;
+    if (previous === undefined) delete process.env.SURPRISEBOT_STATE_DIR;
+    else process.env.SURPRISEBOT_STATE_DIR = previous;
     await fs.rm(dir, { recursive: true, force: true });
   }
 }

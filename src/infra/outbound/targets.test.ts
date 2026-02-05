@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 
 import { resolveOutboundTarget } from "./targets.js";
 
 describe("resolveOutboundTarget", () => {
   it("falls back to whatsapp allowFrom via config", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { whatsapp: { allowFrom: ["+1555"] } },
     };
     const res = resolveOutboundTarget({

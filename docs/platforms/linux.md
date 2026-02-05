@@ -14,8 +14,8 @@ Native Linux companion apps are planned. Contributions are welcome if you want t
 ## Beginner quick path (VPS)
 
 1) Install Node 22+  
-2) `npm i -g clawdbot@latest`  
-3) `clawdbot onboard --install-daemon`  
+2) `npm i -g surprisebot@latest`  
+3) `surprisebot onboard --install-daemon`  
 4) From your laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`  
 5) Open `http://127.0.0.1:18789/` and paste your token
 
@@ -35,19 +35,19 @@ Step-by-step VPS guide: [exe.dev](/platforms/exe-dev)
 Use one of these:
 
 ```
-clawdbot onboard --install-daemon
+surprisebot onboard --install-daemon
 ```
 
 Or:
 
 ```
-clawdbot daemon install
+surprisebot daemon install
 ```
 
 Or:
 
 ```
-clawdbot configure
+surprisebot configure
 ```
 
 Select **Gateway daemon** when prompted.
@@ -55,26 +55,26 @@ Select **Gateway daemon** when prompted.
 Repair/migrate:
 
 ```
-clawdbot doctor
+surprisebot doctor
 ```
 
 ## System control (systemd user unit)
-Clawdbot installs a systemd **user** service by default. Use a **system**
+Surprisebot installs a systemd **user** service by default. Use a **system**
 service for shared or always-on servers. The full unit example and guidance
 live in the [Gateway runbook](/gateway).
 
 Minimal setup:
 
-Create `~/.config/systemd/user/clawdbot-gateway[-<profile>].service`:
+Create `~/.config/systemd/user/surprisebot-gateway[-<profile>].service`:
 
 ```
 [Unit]
-Description=Clawdbot Gateway (profile: <profile>, v<version>)
+Description=Surprisebot Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/clawdbot gateway --port 18789
+ExecStart=/usr/local/bin/surprisebot gateway --port 18789
 Restart=always
 RestartSec=5
 
@@ -85,5 +85,5 @@ WantedBy=default.target
 Enable it:
 
 ```
-systemctl --user enable --now clawdbot-gateway[-<profile>].service
+systemctl --user enable --now surprisebot-gateway[-<profile>].service
 ```

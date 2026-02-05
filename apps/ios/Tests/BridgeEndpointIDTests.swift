@@ -1,17 +1,17 @@
-import ClawdbotKit
+import SurprisebotKit
 import Network
 import Testing
-@testable import Clawdbot
+@testable import Surprisebot
 
 @Suite struct BridgeEndpointIDTests {
     @Test func stableIDForServiceDecodesAndNormalizesName() {
         let endpoint = NWEndpoint.service(
-            name: "Clawdbot\\032Bridge   \\032  Node\n",
-            type: "_clawdbot-bridge._tcp",
+            name: "Surprisebot\\032Bridge   \\032  Node\n",
+            type: "_surprisebot-bridge._tcp",
             domain: "local.",
             interface: nil)
 
-        #expect(BridgeEndpointID.stableID(endpoint) == "_clawdbot-bridge._tcp|local.|Clawdbot Bridge Node")
+        #expect(BridgeEndpointID.stableID(endpoint) == "_surprisebot-bridge._tcp|local.|Surprisebot Bridge Node")
     }
 
     @Test func stableIDForNonServiceUsesEndpointDescription() {
@@ -21,8 +21,8 @@ import Testing
 
     @Test func prettyDescriptionDecodesBonjourEscapes() {
         let endpoint = NWEndpoint.service(
-            name: "Clawdbot\\032Bridge",
-            type: "_clawdbot-bridge._tcp",
+            name: "Surprisebot\\032Bridge",
+            type: "_surprisebot-bridge._tcp",
             domain: "local.",
             interface: nil)
 

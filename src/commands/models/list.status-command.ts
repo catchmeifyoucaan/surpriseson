@@ -1,5 +1,5 @@
 import path from "node:path";
-import { resolveClawdbotAgentDir } from "../../agents/agent-paths.js";
+import { resolveSurprisebotAgentDir } from "../../agents/agent-paths.js";
 import {
   buildAuthHealthSummary,
   DEFAULT_OAUTH_WARN_MS,
@@ -12,7 +12,7 @@ import {
 } from "../../agents/auth-profiles.js";
 import { resolveEnvApiKey } from "../../agents/model-auth.js";
 import { parseModelRef, resolveConfiguredModelRef } from "../../agents/model-selection.js";
-import { CONFIG_PATH_CLAWDBOT, loadConfig } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, loadConfig } from "../../config/config.js";
 import { getShellEnvAppliedKeys, shouldEnableShellEnvFallback } from "../../infra/shell-env.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { colorize, theme } from "../../terminal/theme.js";
@@ -59,7 +59,7 @@ export async function modelsStatusCommand(
   );
   const allowed = Object.keys(cfg.agents?.defaults?.models ?? {});
 
-  const agentDir = resolveClawdbotAgentDir();
+  const agentDir = resolveSurprisebotAgentDir();
   const store = ensureAuthProfileStore();
   const modelsPath = path.join(agentDir, "models.json");
 
@@ -197,7 +197,7 @@ export async function modelsStatusCommand(
     runtime.log(
       JSON.stringify(
         {
-          configPath: CONFIG_PATH_CLAWDBOT,
+          configPath: CONFIG_PATH_SURPRISEBOT,
           agentDir,
           defaultModel: defaultLabel,
           resolvedDefault: resolvedLabel,
@@ -243,7 +243,7 @@ export async function modelsStatusCommand(
     rawModel && rawModel !== resolvedLabel ? `${resolvedLabel} (from ${rawModel})` : resolvedLabel;
 
   runtime.log(
-    `${label("Config")}${colorize(rich, theme.muted, ":")} ${colorize(rich, theme.info, CONFIG_PATH_CLAWDBOT)}`,
+    `${label("Config")}${colorize(rich, theme.muted, ":")} ${colorize(rich, theme.info, CONFIG_PATH_SURPRISEBOT)}`,
   );
   runtime.log(
     `${label("Agent dir")}${colorize(rich, theme.muted, ":")} ${colorize(
@@ -389,8 +389,8 @@ export async function modelsStatusCommand(
     for (const provider of missingProvidersInUse) {
       const hint =
         provider === "anthropic"
-          ? "Run `claude setup-token` or `clawdbot configure`."
-          : "Run `clawdbot configure` or set an API key env var.";
+          ? "Run `claude setup-token` or `surprisebot configure`."
+          : "Run `surprisebot configure` or set an API key env var.";
       runtime.log(`- ${theme.heading(provider)} ${hint}`);
     }
   }

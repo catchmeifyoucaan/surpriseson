@@ -18,7 +18,7 @@ export function registerDaemonCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/daemon", "docs.clawd.bot/cli/daemon")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/daemon", "docs.surprisebot.bot/cli/daemon")}\n`,
     );
 
   daemon

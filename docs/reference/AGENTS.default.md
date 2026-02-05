@@ -1,43 +1,50 @@
 ---
-summary: "Default Clawdbot agent instructions and skills roster for the personal assistant setup"
+summary: "Default Surprisebot agent instructions and skills roster for the personal assistant setup"
 read_when:
-  - Starting a new Clawdbot agent session
+  - Starting a new Surprisebot agent session
   - Enabling or auditing default skills
 ---
-# AGENTS.md — Clawdbot Personal Assistant (default)
+# AGENTS.md — Surprisebot Personal Assistant (default)
 
 ## First run (recommended)
 
-Clawdbot uses a dedicated workspace directory for the agent. Default: `~/clawd` (configurable via `agents.defaults.workspace`).
+Surprisebot uses a dedicated workspace directory for the agent. Default: `~/surprisebot` (configurable via `agents.defaults.workspace`).
 
 1) Create the workspace (if it doesn’t already exist):
 
 ```bash
-mkdir -p ~/clawd
+mkdir -p ~/surprisebot
 ```
 
 2) Copy the default workspace templates into the workspace:
 
 ```bash
-cp docs/reference/templates/AGENTS.md ~/clawd/AGENTS.md
-cp docs/reference/templates/SOUL.md ~/clawd/SOUL.md
-cp docs/reference/templates/TOOLS.md ~/clawd/TOOLS.md
+cp docs/reference/templates/AGENTS.md ~/surprisebot/AGENTS.md
+cp docs/reference/templates/SOUL.md ~/surprisebot/SOUL.md
+cp docs/reference/templates/TOOLS.md ~/surprisebot/TOOLS.md
 ```
 
 3) Optional: if you want the personal assistant skill roster, replace AGENTS.md with this file:
 
 ```bash
-cp docs/reference/AGENTS.default.md ~/clawd/AGENTS.md
+cp docs/reference/AGENTS.default.md ~/surprisebot/AGENTS.md
 ```
 
 4) Optional: choose a different workspace by setting `agents.defaults.workspace` (supports `~`):
 
 ```json5
 {
-  agents: { defaults: { workspace: "~/clawd" } }
+  agents: { defaults: { workspace: "~/surprisebot" } }
 }
 ```
 
+
+## Workspace vs State (required)
+
+- **Workspace**: your editable working directory (default `~/surprisebot`).
+- **State dir**: `~/.surprisebot` (config, tokens, sessions).
+- Keep them separate. Do **not** place the workspace inside the state dir.
+- All long-term memory files live under `memory/` inside the workspace.
 ## Safety defaults
 - Don’t dump directories or secrets into chat.
 - Don’t run destructive commands unless explicitly asked.
@@ -68,19 +75,19 @@ cp docs/reference/AGENTS.default.md ~/clawd/AGENTS.md
 - Keep environment-specific notes in `TOOLS.md` (Notes for Skills).
 
 ## Backup tip (recommended)
-If you treat this workspace as Clawd’s “memory”, make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
+If you treat this workspace as Surprisebot’s “memory”, make it a git repo (ideally private) so `AGENTS.md` and your memory files are backed up.
 
 ```bash
-cd ~/clawd
+cd ~/surprisebot
 git init
 git add AGENTS.md
-git commit -m "Add Clawd workspace"
+git commit -m "Add Surprisebot workspace"
 # Optional: add a private remote + push
 ```
 
-## What Clawdbot Does
+## What Surprisebot Does
 - Runs WhatsApp gateway + Pi coding agent so the assistant can read/write chats, fetch context, and run skills via the host Mac.
-- macOS app manages permissions (screen recording, notifications, microphone) and exposes the `clawdbot` CLI via its bundled binary.
+- macOS app manages permissions (screen recording, notifications, microphone) and exposes the `surprisebot` CLI via its bundled binary.
 - Direct chats collapse into the agent's `main` session by default; groups stay isolated as `agent:<agentId>:<channel>:group:<id>` (rooms/channels: `agent:<agentId>:<channel>:channel:<id>`); heartbeats keep background tasks alive.
 
 ## Core Skills (enable in Settings → Skills)
@@ -104,10 +111,10 @@ git commit -m "Add Clawd workspace"
 - **agent-tools** — Utility toolkit for automations and helper scripts.
 
 ## Usage Notes
-- Prefer the `clawdbot` CLI for scripting; mac app handles permissions.
+- Prefer the `surprisebot` CLI for scripting; mac app handles permissions.
 - Run installs from the Skills tab; it hides the button if a binary is already present.
 - Keep heartbeats enabled so the assistant can schedule reminders, monitor inboxes, and trigger camera captures.
 - Canvas UI runs full-screen with native overlays. Avoid placing critical controls in the top-left/top-right/bottom edges; add explicit gutters in the layout and don’t rely on safe-area insets.
-- For browser-driven verification, use `clawdbot browser` (tabs/status/screenshot) with the clawd-managed Chrome profile.
-- For DOM inspection, use `clawdbot browser eval|query|dom|snapshot` (and `--json`/`--out` when you need machine output).
-- For interactions, use `clawdbot browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type require snapshot refs; use `evaluate` for CSS selectors).
+- For browser-driven verification, use `surprisebot browser` (tabs/status/screenshot) with the surprisebot-managed Chrome profile.
+- For DOM inspection, use `surprisebot browser eval|query|dom|snapshot` (and `--json`/`--out` when you need machine output).
+- For interactions, use `surprisebot browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type require snapshot refs; use `evaluate` for CSS selectors).

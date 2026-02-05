@@ -4,7 +4,7 @@ import { runWithModelFallback } from "../../agents/model-fallback.js";
 import { isCliProvider } from "../../agents/model-selection.js";
 import { runEmbeddedPiAgent } from "../../agents/pi-embedded.js";
 import { resolveSandboxConfigForAgent, resolveSandboxRuntimeStatus } from "../../agents/sandbox.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   resolveAgentIdFromSessionKey,
   type SessionEntry,
@@ -21,11 +21,15 @@ import {
   resolveMemoryFlushSettings,
   shouldRunMemoryFlush,
 } from "./memory-flush.js";
+import {
+  resolveMemoryCaptureSettings,
+  shouldRunMemoryCapture,
+} from "./memory-capture.js";
 import type { FollowupRun } from "./queue.js";
 import { incrementCompactionCount } from "./session-updates.js";
 
 export async function runMemoryFlushIfNeeded(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   followupRun: FollowupRun;
   sessionCtx: TemplateContext;
   opts?: GetReplyOptions;
@@ -171,6 +175,130 @@ export async function runMemoryFlushIfNeeded(params: {
     }
   } catch (err) {
     logVerbose(`memory flush run failed: ${String(err)}`);
+  }
+
+  return activeSessionEntry;
+}
+
+export async function runMemoryCaptureIfNeeded(params: {
+  cfg: SurprisebotConfig;
+  followupRun: FollowupRun;
+  sessionCtx: TemplateContext;
+  opts?: GetReplyOptions;
+  defaultModel: string;
+  agentCfgContextTokens?: number;
+  resolvedVerboseLevel: VerboseLevel;
+  sessionEntry?: SessionEntry;
+  sessionStore?: Record<string, SessionEntry>;
+  sessionKey?: string;
+  storePath?: string;
+  isHeartbeat: boolean;
+}): Promise<SessionEntry | undefined> {
+  const agentId = params.sessionKey ? resolveAgentIdFromSessionKey(params.sessionKey) : undefined;
+  const settings = resolveMemoryCaptureSettings({ cfg: params.cfg, agentId });
+  if (!settings) return params.sessionEntry;
+  if (params.isHeartbeat) return params.sessionEntry;
+
+  const activeEntry =
+    params.sessionEntry ??
+    (params.sessionKey ? params.sessionStore?.[params.sessionKey] : undefined);
+  const shouldCapture = shouldRunMemoryCapture({
+    entry: activeEntry,
+    now: Date.now(),
+    minIntervalMinutes: settings.minIntervalMinutes,
+    minNewTokens: settings.minNewTokens,
+  });
+  if (!shouldCapture) return params.sessionEntry;
+
+  const memoryCaptureWritable = (() => {
+    if (!params.sessionKey) return true;
+    const runtime = resolveSandboxRuntimeStatus({
+      cfg: params.cfg,
+      sessionKey: params.sessionKey,
+    });
+    if (!runtime.sandboxed) return true;
+    const sandboxCfg = resolveSandboxConfigForAgent(params.cfg, runtime.agentId);
+    return sandboxCfg.workspaceAccess === "rw";
+  })();
+  if (!memoryCaptureWritable) return params.sessionEntry;
+
+  let activeSessionEntry = params.sessionEntry;
+  const activeSessionStore = params.sessionStore;
+  const captureRunId = crypto.randomUUID();
+  if (params.sessionKey) {
+    registerAgentRunContext(captureRunId, {
+      sessionKey: params.sessionKey,
+      verboseLevel: params.resolvedVerboseLevel,
+    });
+  }
+
+  const captureSystemPrompt = [
+    params.followupRun.run.extraSystemPrompt,
+    settings.systemPrompt,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  try {
+    await runWithModelFallback({
+      cfg: params.followupRun.run.config,
+      provider: params.followupRun.run.provider,
+      model: params.followupRun.run.model,
+      fallbacksOverride: resolveAgentModelFallbacksOverride(
+        params.followupRun.run.config,
+        resolveAgentIdFromSessionKey(params.followupRun.run.sessionKey),
+      ),
+      run: (provider, model) =>
+        runEmbeddedPiAgent({
+          sessionId: params.followupRun.run.sessionId,
+          sessionKey: params.sessionKey,
+          messageProvider: params.sessionCtx.Provider?.trim().toLowerCase() || undefined,
+          agentAccountId: params.sessionCtx.AccountId,
+          ...buildThreadingToolContext({
+            sessionCtx: params.sessionCtx,
+            config: params.followupRun.run.config,
+            hasRepliedRef: params.opts?.hasRepliedRef,
+          }),
+          sessionFile: params.followupRun.run.sessionFile,
+          workspaceDir: params.followupRun.run.workspaceDir,
+          agentDir: params.followupRun.run.agentDir,
+          config: params.followupRun.run.config,
+          skillsSnapshot: params.followupRun.run.skillsSnapshot,
+          prompt: settings.prompt,
+          extraSystemPrompt: captureSystemPrompt,
+          ownerNumbers: params.followupRun.run.ownerNumbers,
+          enforceFinalTag: resolveEnforceFinalTag(params.followupRun.run, provider),
+          provider,
+          model,
+          authProfileId: params.followupRun.run.authProfileId,
+          thinkLevel: params.followupRun.run.thinkLevel,
+          verboseLevel: params.followupRun.run.verboseLevel,
+          reasoningLevel: params.followupRun.run.reasoningLevel,
+          bashElevated: params.followupRun.run.bashElevated,
+          timeoutMs: params.followupRun.run.timeoutMs,
+          runId: captureRunId,
+        }),
+    });
+    if (params.storePath && params.sessionKey) {
+      try {
+        const updatedEntry = await updateSessionStoreEntry({
+          storePath: params.storePath,
+          sessionKey: params.sessionKey,
+          update: async (entry) => ({
+            memoryCaptureAt: Date.now(),
+            memoryCaptureTokenCount:
+              typeof entry.totalTokens === "number"
+                ? entry.totalTokens
+                : entry.memoryCaptureTokenCount,
+          }),
+        });
+        if (updatedEntry) activeSessionEntry = updatedEntry;
+      } catch (err) {
+        logVerbose(`failed to persist memory capture metadata: ${String(err)}`);
+      }
+    }
+  } catch (err) {
+    logVerbose(`memory capture run failed: ${String(err)}`);
   }
 
   return activeSessionEntry;

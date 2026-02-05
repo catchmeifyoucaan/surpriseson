@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveCommandAuthorization } from "./command-auth.js";
 import type { MsgContext } from "./templating.js";
 
@@ -8,7 +8,7 @@ describe("resolveCommandAuthorization", () => {
   it("falls back from empty SenderId to SenderE164", () => {
     const cfg = {
       channels: { whatsapp: { allowFrom: ["+123"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const ctx = {
       Provider: "whatsapp",
@@ -31,7 +31,7 @@ describe("resolveCommandAuthorization", () => {
   it("falls back from whitespace SenderId to SenderE164", () => {
     const cfg = {
       channels: { whatsapp: { allowFrom: ["+123"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const ctx = {
       Provider: "whatsapp",
@@ -54,7 +54,7 @@ describe("resolveCommandAuthorization", () => {
   it("falls back to From when SenderId and SenderE164 are whitespace", () => {
     const cfg = {
       channels: { whatsapp: { allowFrom: ["+999"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const ctx = {
       Provider: "whatsapp",
@@ -77,7 +77,7 @@ describe("resolveCommandAuthorization", () => {
   it("falls back from un-normalizable SenderId to SenderE164", () => {
     const cfg = {
       channels: { whatsapp: { allowFrom: ["+123"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const ctx = {
       Provider: "whatsapp",
@@ -100,7 +100,7 @@ describe("resolveCommandAuthorization", () => {
   it("prefers SenderE164 when SenderId does not match allowFrom", () => {
     const cfg = {
       channels: { whatsapp: { allowFrom: ["+41796666864"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const ctx = {
       Provider: "whatsapp",

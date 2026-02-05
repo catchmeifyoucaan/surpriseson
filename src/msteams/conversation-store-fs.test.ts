@@ -9,11 +9,11 @@ import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 
 describe("msteams conversation store (fs)", () => {
   it("filters and prunes expired entries (but keeps legacy ones)", async () => {
-    const stateDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "clawdbot-msteams-store-"));
+    const stateDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "surprisebot-msteams-store-"));
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
-      CLAWDBOT_STATE_DIR: stateDir,
+      SURPRISEBOT_STATE_DIR: stateDir,
     };
 
     const store = createMSTeamsConversationStoreFs({ env, ttlMs: 1_000 });

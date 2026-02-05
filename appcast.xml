@@ -1,35 +1,35 @@
 <?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
-        <title>Clawdbot</title>
+        <title>Surprisebot</title>
         <item>
             <title>2026.1.14-1</title>
             <pubDate>Thu, 15 Jan 2026 11:14:40 +0000</pubDate>
-            <link>https://raw.githubusercontent.com/clawdbot/clawdbot/main/appcast.xml</link>
+            <link>https://raw.githubusercontent.com/surprisebot/surprisebot/main/appcast.xml</link>
             <sparkle:version>5825</sparkle:version>
             <sparkle:shortVersionString>2026.1.14-1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>Clawdbot 2026.1.14-1</h2>
+            <description><![CDATA[<h2>Surprisebot 2026.1.14-1</h2>
 <h3>Highlights</h3>
 <ul>
 <li>Web search: <code>web_search</code>/<code>web_fetch</code> tools (Brave API) + first-time setup in onboarding/configure.</li>
-<li>Browser control: Chrome extension relay takeover mode + remote browser control via <code>clawdbot browser serve</code>.</li>
+<li>Browser control: Chrome extension relay takeover mode + remote browser control via <code>surprisebot browser serve</code>.</li>
 <li>Plugins: channel plugins (gateway HTTP hooks) + Zalo plugin + onboarding install flow. (#854) — thanks @longmaba.</li>
-<li>Security: expanded <code>clawdbot security audit</code> (+ <code>--fix</code>), detect-secrets CI scan, and a <code>SECURITY.md</code> reporting policy.</li>
+<li>Security: expanded <code>surprisebot security audit</code> (+ <code>--fix</code>), detect-secrets CI scan, and a <code>SECURITY.md</code> reporting policy.</li>
 </ul>
 <h3>Changes</h3>
 <h4>Web Tools</h4>
 <ul>
 <li>Tools: add <code>web_search</code>/<code>web_fetch</code> (Brave API), including helpful setup hints when the key is missing.</li>
 <li>Tools: enable <code>web_fetch</code> by default (unless explicitly disabled in config).</li>
-<li>CLI/Docs: add <code>clawdbot configure --section web</code> for storing Brave API keys and update onboarding tips.</li>
+<li>CLI/Docs: add <code>surprisebot configure --section web</code> for storing Brave API keys and update onboarding tips.</li>
 </ul>
 <h4>Browser / Control UI</h4>
 <ul>
-<li>Browser: add Chrome extension relay takeover mode (toolbar button) + <code>clawdbot browser serve</code> remote control + <code>browser.controlToken</code>.</li>
+<li>Browser: add Chrome extension relay takeover mode (toolbar button) + <code>surprisebot browser serve</code> remote control + <code>browser.controlToken</code>.</li>
 <li>Browser: ship a built-in <code>chrome</code> profile for extension relay and start the relay automatically when running locally.</li>
 <li>Browser: default <code>browser.defaultProfile</code> to <code>chrome</code> (existing Chrome takeover mode).</li>
-<li>Browser: add <code>clawdbot browser extension install/path</code> and copy extension path to clipboard.</li>
+<li>Browser: add <code>surprisebot browser extension install/path</code> and copy extension path to clipboard.</li>
 <li>Browser: add <code>snapshot refs=aria</code> (Playwright aria-ref ids) for self-resolving refs across <code>snapshot</code> → <code>act</code>.</li>
 <li>Browser: <code>profile="chrome"</code> now defaults to host control and returns clearer “attach a tab” errors.</li>
 <li>Browser: extension mode recovers when only one tab is attached (stale targetId fallback).</li>
@@ -44,8 +44,8 @@
 </ul>
 <h4>Security</h4>
 <ul>
-<li>Security: expand <code>clawdbot security audit</code> checks and publish a <code>SECURITY.md</code> reporting policy.</li>
-<li>Security: extend <code>clawdbot security audit --fix</code> to tighten more sensitive state paths.</li>
+<li>Security: expand <code>surprisebot security audit</code> checks and publish a <code>SECURITY.md</code> reporting policy.</li>
+<li>Security: extend <code>surprisebot security audit --fix</code> to tighten more sensitive state paths.</li>
 <li>Security: add detect-secrets CI scan and baseline guidance. (#227) — thanks @Hyaxia.</li>
 </ul>
 <h4>Onboarding / Daemon</h4>
@@ -73,7 +73,7 @@
 <li>Docs: expand gateway security hardening guidance and incident response checklist.</li>
 <li>Docs: document DM history limits for channel DMs. (#883) — thanks @pkrmf.</li>
 <li>Docs: standardize Claude Code CLI naming across docs and prompts. (follow-up to #915)</li>
-<li>Docs: add per-command CLI doc pages and link them from <code>clawdbot <command> --help</code>.</li>
+<li>Docs: add per-command CLI doc pages and link them from <code>surprisebot <command> --help</code>.</li>
 <li>Docs: add multi-gateway guide (sidebar + nav).</li>
 </ul>
 <h3>Fixes</h3>
@@ -102,7 +102,7 @@
 <li>Sessions: return deep clones (<code>structuredClone</code>) so cached session entries can't be mutated. (#934) — thanks @ronak-guliani.</li>
 <li>Heartbeat: keep <code>updatedAt</code> monotonic when restoring heartbeat sessions. (#934) — thanks @ronak-guliani.</li>
 <li>Agent: clear run context after CLI runs (<code>clearAgentRunContext</code>) to avoid runaway contexts. (#934) — thanks @ronak-guliani.</li>
-<li>Gateway/Dev: ensure <code>pnpm gateway:dev</code> always uses the dev profile config + state (<code>~/.clawdbot-dev</code>).</li>
+<li>Gateway/Dev: ensure <code>pnpm gateway:dev</code> always uses the dev profile config + state (<code>~/.surprisebot-dev</code>).</li>
 </ul>
 <h4>CLI / Onboarding</h4>
 <ul>
@@ -166,46 +166,46 @@
 <h4>Config / Doctor / Packaging</h4>
 <ul>
 <li>Config: prevent partial config writes from clobbering unrelated settings (base hash guard + merge patch for connection saves).</li>
-<li>Config/Doctor: remove legacy Clawdis env fallbacks and config/service migrations (Clawdbot-only).</li>
+<li>Config/Doctor: remove legacy Surprisebotis env fallbacks and config/service migrations (Surprisebot-only).</li>
 <li>Doctor: avoid re-adding WhatsApp config when only legacy ack reactions are set. (#927, fixes #900) — thanks @grp06.</li>
 <li>Packaging: run <code>pnpm build</code> on <code>prepack</code> so npm publishes include fresh <code>dist/</code> output.</li>
 </ul>
-<p><a href="https://github.com/clawdbot/clawdbot/blob/main/CHANGELOG.md">View full changelog</a></p>
+<p><a href="https://github.com/surprisebot/surprisebot/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/clawdbot/clawdbot/releases/download/v2026.1.14-1/Clawdbot-2026.1.14-1.zip" length="19887144" type="application/octet-stream" sparkle:edSignature="1irKxBLt2eRtns34m/8JsjL/ZzhZQNjahwrxtArTvzaCnidS/MEnpD4nV2SHnhuo8g+fJZQpV9NoCAoEOAinCw=="/>
+            <enclosure url="https://github.com/surprisebot/surprisebot/releases/download/v2026.1.14-1/Surprisebot-2026.1.14-1.zip" length="19887144" type="application/octet-stream" sparkle:edSignature="1irKxBLt2eRtns34m/8JsjL/ZzhZQNjahwrxtArTvzaCnidS/MEnpD4nV2SHnhuo8g+fJZQpV9NoCAoEOAinCw=="/>
         </item>
         <item>
             <title>2026.1.12-2</title>
             <pubDate>Tue, 13 Jan 2026 10:05:25 +0000</pubDate>
-            <link>https://raw.githubusercontent.com/clawdbot/clawdbot/main/appcast.xml</link>
+            <link>https://raw.githubusercontent.com/surprisebot/surprisebot/main/appcast.xml</link>
             <sparkle:version>5534</sparkle:version>
             <sparkle:shortVersionString>2026.1.12-2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>Clawdbot 2026.1.12-2</h2>
+            <description><![CDATA[<h2>Surprisebot 2026.1.12-2</h2>
 <h3>Fixes</h3>
 <ul>
 <li>Packaging: include <code>dist/memory/**</code> in the npm tarball (fixes <code>ERR_MODULE_NOT_FOUND</code> for <code>dist/memory/index.js</code>).</li>
 </ul>
-<p><a href="https://github.com/clawdbot/clawdbot/blob/main/CHANGELOG.md">View full changelog</a></p>
+<p><a href="https://github.com/surprisebot/surprisebot/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/clawdbot/clawdbot/releases/download/v2026.1.12-2/Clawdbot-2026.1.12-2.zip" length="19854203" type="application/octet-stream" sparkle:edSignature="CVpUofNS+pl6Smk/K0Q8q35saRuuFx90s4sePABORFvGcAF1biajC8zpiImKuXpqD0ENb+VTwDJ1ul1Oxh3wDA=="/>
+            <enclosure url="https://github.com/surprisebot/surprisebot/releases/download/v2026.1.12-2/Surprisebot-2026.1.12-2.zip" length="19854203" type="application/octet-stream" sparkle:edSignature="CVpUofNS+pl6Smk/K0Q8q35saRuuFx90s4sePABORFvGcAF1biajC8zpiImKuXpqD0ENb+VTwDJ1ul1Oxh3wDA=="/>
         </item>
         <item>
             <title>2026.1.11-3</title>
             <pubDate>Mon, 12 Jan 2026 10:40:23 +0000</pubDate>
-            <link>https://raw.githubusercontent.com/clawdbot/clawdbot/main/appcast.xml</link>
+            <link>https://raw.githubusercontent.com/surprisebot/surprisebot/main/appcast.xml</link>
             <sparkle:version>5212</sparkle:version>
             <sparkle:shortVersionString>2026.1.11-3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>Clawdbot 2026.1.11-3</h2>
+            <description><![CDATA[<h2>Surprisebot 2026.1.11-3</h2>
 <h3>Fixes</h3>
 <ul>
 <li>CLI: avoid top-level await warnings in the entrypoint on fresh installs.</li>
 <li>CLI: show a commit hash in the banner for npm installs (package.json gitHead fallback).</li>
 </ul>
-<p><a href="https://github.com/clawdbot/clawdbot/blob/main/CHANGELOG.md">View full changelog</a></p>
+<p><a href="https://github.com/surprisebot/surprisebot/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/clawdbot/clawdbot/releases/download/v2026.1.11-3/Clawdbot-2026.1.11-3.zip" length="19860758" type="application/octet-stream" sparkle:edSignature="LbvGUSjc3jGO7aVo2UVA0nEkaJbb3O4iwRBo1TBqoapdTtxnDlS3s6N+Z4vOSLRAoAm22EoZOwbpK9085c7HAQ=="/>
+            <enclosure url="https://github.com/surprisebot/surprisebot/releases/download/v2026.1.11-3/Surprisebot-2026.1.11-3.zip" length="19860758" type="application/octet-stream" sparkle:edSignature="LbvGUSjc3jGO7aVo2UVA0nEkaJbb3O4iwRBo1TBqoapdTtxnDlS3s6N+Z4vOSLRAoAm22EoZOwbpK9085c7HAQ=="/>
         </item>
     </channel>
 </rss>

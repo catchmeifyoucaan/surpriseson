@@ -31,7 +31,7 @@ import type {
 } from "../../auto-reply/commands-registry.js";
 import { dispatchReplyWithDispatcher } from "../../auto-reply/reply/provider-dispatcher.js";
 import type { ReplyPayload } from "../../auto-reply/types.js";
-import type { ClawdbotConfig, loadConfig } from "../../config/config.js";
+import type { SurprisebotConfig, loadConfig } from "../../config/config.js";
 import { buildPairingReply } from "../../pairing/pairing-messages.js";
 import {
   readChannelAllowFromStore,
@@ -51,7 +51,7 @@ import {
 } from "./allow-list.js";
 import { formatDiscordUserTag } from "./format.js";
 
-type DiscordConfig = NonNullable<ClawdbotConfig["channels"]>["discord"];
+type DiscordConfig = NonNullable<SurprisebotConfig["channels"]>["discord"];
 
 function buildDiscordCommandOptions(params: {
   command: ChatCommandDefinition;

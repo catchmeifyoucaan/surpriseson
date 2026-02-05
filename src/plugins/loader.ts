@@ -1,16 +1,16 @@
 import { createJiti } from "jiti";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { GatewayRequestHandler } from "../gateway/server-methods/types.js";
 import { createSubsystemLogger } from "../logging.js";
 import { resolveUserPath } from "../utils.js";
-import { discoverClawdbotPlugins } from "./discovery.js";
+import { discoverSurprisebotPlugins } from "./discovery.js";
 import { createPluginRegistry, type PluginRecord, type PluginRegistry } from "./registry.js";
 import { setActivePluginRegistry } from "./runtime.js";
 import type {
-  ClawdbotPluginConfigSchema,
-  ClawdbotPluginDefinition,
-  ClawdbotPluginModule,
+  SurprisebotPluginConfigSchema,
+  SurprisebotPluginDefinition,
+  SurprisebotPluginModule,
   PluginConfigUiHint,
   PluginDiagnostic,
   PluginLogger,
@@ -19,7 +19,7 @@ import type {
 export type PluginLoadResult = PluginRegistry;
 
 export type PluginLoadOptions = {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   workspaceDir?: string;
   logger?: PluginLogger;
   coreGatewayHandlers?: Record<string, GatewayRequestHandler>;
@@ -66,7 +66,7 @@ const normalizePluginEntries = (entries: unknown): NormalizedPluginsConfig["entr
   return normalized;
 };
 
-const normalizePluginsConfig = (config?: ClawdbotConfig["plugins"]): NormalizedPluginsConfig => {
+const normalizePluginsConfig = (config?: SurprisebotConfig["plugins"]): NormalizedPluginsConfig => {
   return {
     enabled: config?.enabled !== false,
     allow: normalizeList(config?.allow),
@@ -105,7 +105,7 @@ function resolveEnableState(
 }
 
 function validatePluginConfig(params: {
-  schema?: ClawdbotPluginConfigSchema;
+  schema?: SurprisebotPluginConfigSchema;
   value?: Record<string, unknown>;
 }): { ok: boolean; value?: Record<string, unknown>; errors?: string[] } {
   const schema = params.schema;
@@ -145,8 +145,8 @@ function validatePluginConfig(params: {
 }
 
 function resolvePluginModuleExport(moduleExport: unknown): {
-  definition?: ClawdbotPluginDefinition;
-  register?: ClawdbotPluginDefinition["register"];
+  definition?: SurprisebotPluginDefinition;
+  register?: SurprisebotPluginDefinition["register"];
 } {
   const resolved =
     moduleExport &&
@@ -156,11 +156,11 @@ function resolvePluginModuleExport(moduleExport: unknown): {
       : moduleExport;
   if (typeof resolved === "function") {
     return {
-      register: resolved as ClawdbotPluginDefinition["register"],
+      register: resolved as SurprisebotPluginDefinition["register"],
     };
   }
   if (resolved && typeof resolved === "object") {
-    const def = resolved as ClawdbotPluginDefinition;
+    const def = resolved as SurprisebotPluginDefinition;
     const register = def.register ?? def.activate;
     return { definition: def, register };
   }
@@ -203,7 +203,7 @@ function pushDiagnostics(diagnostics: PluginDiagnostic[], append: PluginDiagnost
   diagnostics.push(...append);
 }
 
-export function loadClawdbotPlugins(options: PluginLoadOptions = {}): PluginRegistry {
+export function loadSurprisebotPlugins(options: PluginLoadOptions = {}): PluginRegistry {
   const cfg = options.config ?? {};
   const logger = options.logger ?? defaultLogger();
   const normalized = normalizePluginsConfig(cfg.plugins);
@@ -225,7 +225,7 @@ export function loadClawdbotPlugins(options: PluginLoadOptions = {}): PluginRegi
     coreGatewayHandlers: options.coreGatewayHandlers as Record<string, GatewayRequestHandler>,
   });
 
-  const discovery = discoverClawdbotPlugins({
+  const discovery = discoverSurprisebotPlugins({
     workspaceDir: options.workspaceDir,
     extraPaths: normalized.loadPaths,
   });
@@ -257,9 +257,9 @@ export function loadClawdbotPlugins(options: PluginLoadOptions = {}): PluginRegi
       continue;
     }
 
-    let mod: ClawdbotPluginModule | null = null;
+    let mod: SurprisebotPluginModule | null = null;
     try {
-      mod = jiti(candidate.source) as ClawdbotPluginModule;
+      mod = jiti(candidate.source) as SurprisebotPluginModule;
     } catch (err) {
       record.status = "error";
       record.error = String(err);

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import {
   type ChannelId,
@@ -51,7 +51,7 @@ export function resolvePairingChannel(raw: unknown): ChannelId {
 export async function notifyPairingApproved(params: {
   channelId: ChannelId;
   id: string;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   runtime?: RuntimeEnv;
 }): Promise<void> {
   const adapter = requirePairingAdapter(params.channelId);

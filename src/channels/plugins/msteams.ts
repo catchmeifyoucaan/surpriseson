@@ -1,5 +1,5 @@
 import { chunkMarkdownText } from "../../auto-reply/chunk.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { createMSTeamsPollStoreFs } from "../../msteams/polls.js";
 import { sendMessageMSTeams, sendPollMSTeams } from "../../msteams/send.js";
 import { resolveMSTeamsCredentials } from "../../msteams/token.js";
@@ -66,7 +66,7 @@ export const msteamsPlugin: ChannelPlugin<ResolvedMSTeamsAccount> = {
       },
     }),
     deleteAccount: ({ cfg }) => {
-      const next = { ...cfg } as ClawdbotConfig;
+      const next = { ...cfg } as SurprisebotConfig;
       const nextChannels = { ...cfg.channels };
       delete nextChannels.msteams;
       if (Object.keys(nextChannels).length > 0) {

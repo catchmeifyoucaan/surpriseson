@@ -95,28 +95,28 @@ describe("onboard (non-interactive): gateway auth", () => {
   it("writes gateway token auth into config and gateway enforces it", async () => {
     const prev = {
       home: process.env.HOME,
-      stateDir: process.env.CLAWDBOT_STATE_DIR,
-      configPath: process.env.CLAWDBOT_CONFIG_PATH,
-      skipChannels: process.env.CLAWDBOT_SKIP_CHANNELS,
-      skipGmail: process.env.CLAWDBOT_SKIP_GMAIL_WATCHER,
-      skipCron: process.env.CLAWDBOT_SKIP_CRON,
-      skipCanvas: process.env.CLAWDBOT_SKIP_CANVAS_HOST,
-      token: process.env.CLAWDBOT_GATEWAY_TOKEN,
+      stateDir: process.env.SURPRISEBOT_STATE_DIR,
+      configPath: process.env.SURPRISEBOT_CONFIG_PATH,
+      skipChannels: process.env.SURPRISEBOT_SKIP_CHANNELS,
+      skipGmail: process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER,
+      skipCron: process.env.SURPRISEBOT_SKIP_CRON,
+      skipCanvas: process.env.SURPRISEBOT_SKIP_CANVAS_HOST,
+      token: process.env.SURPRISEBOT_GATEWAY_TOKEN,
     };
 
-    process.env.CLAWDBOT_SKIP_CHANNELS = "1";
-    process.env.CLAWDBOT_SKIP_GMAIL_WATCHER = "1";
-    process.env.CLAWDBOT_SKIP_CRON = "1";
-    process.env.CLAWDBOT_SKIP_CANVAS_HOST = "1";
-    delete process.env.CLAWDBOT_GATEWAY_TOKEN;
+    process.env.SURPRISEBOT_SKIP_CHANNELS = "1";
+    process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER = "1";
+    process.env.SURPRISEBOT_SKIP_CRON = "1";
+    process.env.SURPRISEBOT_SKIP_CANVAS_HOST = "1";
+    delete process.env.SURPRISEBOT_GATEWAY_TOKEN;
 
-    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-onboard-noninteractive-"));
+    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-onboard-noninteractive-"));
     process.env.HOME = tempHome;
-    delete process.env.CLAWDBOT_STATE_DIR;
-    delete process.env.CLAWDBOT_CONFIG_PATH;
+    delete process.env.SURPRISEBOT_STATE_DIR;
+    delete process.env.SURPRISEBOT_CONFIG_PATH;
 
     const token = "tok_test_123";
-    const workspace = path.join(tempHome, "clawd");
+    const workspace = path.join(tempHome, "surprisebot");
 
     const runtime = {
       log: () => {},
@@ -145,8 +145,8 @@ describe("onboard (non-interactive): gateway auth", () => {
       runtime,
     );
 
-    const { CONFIG_PATH_CLAWDBOT } = await import("../config/config.js");
-    const cfg = JSON.parse(await fs.readFile(CONFIG_PATH_CLAWDBOT, "utf8")) as {
+    const { CONFIG_PATH_SURPRISEBOT } = await import("../config/config.js");
+    const cfg = JSON.parse(await fs.readFile(CONFIG_PATH_SURPRISEBOT, "utf8")) as {
       gateway?: { auth?: { mode?: string; token?: string } };
       agents?: { defaults?: { workspace?: string } };
     };
@@ -177,12 +177,12 @@ describe("onboard (non-interactive): gateway auth", () => {
 
     await fs.rm(tempHome, { recursive: true, force: true });
     process.env.HOME = prev.home;
-    process.env.CLAWDBOT_STATE_DIR = prev.stateDir;
-    process.env.CLAWDBOT_CONFIG_PATH = prev.configPath;
-    process.env.CLAWDBOT_SKIP_CHANNELS = prev.skipChannels;
-    process.env.CLAWDBOT_SKIP_GMAIL_WATCHER = prev.skipGmail;
-    process.env.CLAWDBOT_SKIP_CRON = prev.skipCron;
-    process.env.CLAWDBOT_SKIP_CANVAS_HOST = prev.skipCanvas;
-    process.env.CLAWDBOT_GATEWAY_TOKEN = prev.token;
+    process.env.SURPRISEBOT_STATE_DIR = prev.stateDir;
+    process.env.SURPRISEBOT_CONFIG_PATH = prev.configPath;
+    process.env.SURPRISEBOT_SKIP_CHANNELS = prev.skipChannels;
+    process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER = prev.skipGmail;
+    process.env.SURPRISEBOT_SKIP_CRON = prev.skipCron;
+    process.env.SURPRISEBOT_SKIP_CANVAS_HOST = prev.skipCanvas;
+    process.env.SURPRISEBOT_GATEWAY_TOKEN = prev.token;
   }, 60_000);
 });

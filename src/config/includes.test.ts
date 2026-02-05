@@ -11,17 +11,17 @@ import {
 
 const ROOT_DIR = path.parse(process.cwd()).root;
 const CONFIG_DIR = path.join(ROOT_DIR, "config");
-const ETC_CLAWDBOT_DIR = path.join(ROOT_DIR, "etc", "clawdbot");
+const ETC_SURPRISEBOT_DIR = path.join(ROOT_DIR, "etc", "surprisebot");
 const SHARED_DIR = path.join(ROOT_DIR, "shared");
 
-const DEFAULT_BASE_PATH = path.join(CONFIG_DIR, "clawdbot.json");
+const DEFAULT_BASE_PATH = path.join(CONFIG_DIR, "surprisebot.json");
 
 function configPath(...parts: string[]) {
   return path.join(CONFIG_DIR, ...parts);
 }
 
-function etcClawdbotPath(...parts: string[]) {
-  return path.join(ETC_CLAWDBOT_DIR, ...parts);
+function etcSurprisebotPath(...parts: string[]) {
+  return path.join(ETC_SURPRISEBOT_DIR, ...parts);
 }
 
 function sharedPath(...parts: string[]) {
@@ -70,7 +70,7 @@ describe("resolveConfigIncludes", () => {
   });
 
   it("resolves absolute path $include", () => {
-    const absolute = etcClawdbotPath("agents.json");
+    const absolute = etcSurprisebotPath("agents.json");
     const files = { [absolute]: { list: [{ id: "main" }] } };
     const obj = { agents: { $include: absolute } };
     expect(resolve(obj, files)).toEqual({
@@ -283,7 +283,7 @@ describe("resolveConfigIncludes", () => {
   it("resolves parent directory references", () => {
     const files = { [sharedPath("common.json")]: { shared: true } };
     const obj = { $include: "../../shared/common.json" };
-    expect(resolve(obj, files, configPath("sub", "clawdbot.json"))).toEqual({
+    expect(resolve(obj, files, configPath("sub", "surprisebot.json"))).toEqual({
       shared: true,
     });
   });

@@ -23,7 +23,7 @@ export type DiscoveryConfig = {
 
 export type CanvasHostConfig = {
   enabled?: boolean;
-  /** Directory to serve (default: ~/clawd/canvas). */
+  /** Directory to serve (default: ~/surprisebot/canvas). */
   root?: string;
   /** HTTP port to listen on (default: 18793). */
   port?: number;
@@ -49,7 +49,7 @@ export type TalkConfig = {
 export type GatewayControlUiConfig = {
   /** If false, the Gateway will not serve the Control UI (default /). */
   enabled?: boolean;
-  /** Optional base path prefix for the Control UI (e.g. "/clawdbot"). */
+  /** Optional base path prefix for the Control UI (e.g. "/surprisebot"). */
   basePath?: string;
 };
 

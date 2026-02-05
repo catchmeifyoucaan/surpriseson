@@ -1,10 +1,10 @@
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { getChannelPlugin, listChannelPlugins } from "./index.js";
 import type { ChannelMessageActionContext, ChannelMessageActionName } from "./types.js";
 
-export function listChannelMessageActions(cfg: ClawdbotConfig): ChannelMessageActionName[] {
+export function listChannelMessageActions(cfg: SurprisebotConfig): ChannelMessageActionName[] {
   const actions = new Set<ChannelMessageActionName>(["send"]);
   for (const plugin of listChannelPlugins()) {
     const list = plugin.actions?.listActions?.({ cfg });
@@ -14,7 +14,7 @@ export function listChannelMessageActions(cfg: ClawdbotConfig): ChannelMessageAc
   return Array.from(actions);
 }
 
-export function supportsChannelMessageButtons(cfg: ClawdbotConfig): boolean {
+export function supportsChannelMessageButtons(cfg: SurprisebotConfig): boolean {
   for (const plugin of listChannelPlugins()) {
     if (plugin.actions?.supportsButtons?.({ cfg })) return true;
   }

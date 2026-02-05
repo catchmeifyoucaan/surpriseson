@@ -24,7 +24,7 @@ vi.mock("./subagent-announce.js", () => ({
 }));
 
 describe("subagent registry persistence", () => {
-  const previousStateDir = process.env.CLAWDBOT_STATE_DIR;
+  const previousStateDir = process.env.SURPRISEBOT_STATE_DIR;
   let tempStateDir: string | null = null;
 
   afterEach(async () => {
@@ -35,15 +35,15 @@ describe("subagent registry persistence", () => {
       tempStateDir = null;
     }
     if (previousStateDir === undefined) {
-      delete process.env.CLAWDBOT_STATE_DIR;
+      delete process.env.SURPRISEBOT_STATE_DIR;
     } else {
-      process.env.CLAWDBOT_STATE_DIR = previousStateDir;
+      process.env.SURPRISEBOT_STATE_DIR = previousStateDir;
     }
   });
 
   it("persists runs to disk and resumes after restart", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-subagent-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-subagent-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
 
     vi.resetModules();
     const mod1 = await import("./subagent-registry.js");
@@ -83,8 +83,8 @@ describe("subagent registry persistence", () => {
   });
 
   it("retries announce even when announceHandled was persisted", async () => {
-    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-subagent-"));
-    process.env.CLAWDBOT_STATE_DIR = tempStateDir;
+    tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-subagent-"));
+    process.env.SURPRISEBOT_STATE_DIR = tempStateDir;
 
     const registryPath = path.join(tempStateDir, "subagents", "runs.json");
     const persisted = {

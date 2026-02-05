@@ -18,7 +18,7 @@ import {
   resolveControlUiLinks,
 } from "../commands/onboard-helpers.js";
 import type { OnboardOptions } from "../commands/onboard-types.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveGatewayLaunchAgentLabel } from "../daemon/constants.js";
 import { resolveGatewayProgramArguments } from "../daemon/program-args.js";
 import {
@@ -39,8 +39,8 @@ import type { WizardPrompter } from "./prompts.js";
 type FinalizeOnboardingOptions = {
   flow: WizardFlow;
   opts: OnboardOptions;
-  baseConfig: ClawdbotConfig;
-  nextConfig: ClawdbotConfig;
+  baseConfig: SurprisebotConfig;
+  nextConfig: SurprisebotConfig;
   workspaceDir: string;
   settings: GatewayWizardSettings;
   prompter: WizardPrompter;
@@ -126,7 +126,7 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
       );
     }
     const service = resolveGatewayService();
-    const loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+    const loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
     if (loaded) {
       const action = (await prompter.select({
         message: "Gateway service already installed",
@@ -143,7 +143,7 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
           async (progress) => {
             progress.update("Restarting Gateway daemon…");
             await service.restart({
-              profile: process.env.CLAWDBOT_PROFILE,
+              profile: process.env.SURPRISEBOT_PROFILE,
               stdout: process.stdout,
             });
           },
@@ -162,7 +162,7 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
 
     if (
       !loaded ||
-      (loaded && (await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE })) === false)
+      (loaded && (await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE })) === false)
     ) {
       const devMode =
         process.argv[1]?.includes(`${path.sep}src${path.sep}`) && process.argv[1]?.endsWith(".ts");
@@ -192,7 +192,7 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
             token: settings.gatewayToken,
             launchdLabel:
               process.platform === "darwin"
-                ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+                ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
                 : undefined,
           });
 
@@ -229,8 +229,8 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
       await prompter.note(
         [
           "Docs:",
-          "https://docs.clawd.bot/gateway/health",
-          "https://docs.clawd.bot/gateway/troubleshooting",
+          "https://docs.surprisebot.bot/gateway/health",
+          "https://docs.surprisebot.bot/gateway/troubleshooting",
         ].join("\n"),
         "Health check help",
       );
@@ -292,7 +292,7 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
       tokenParam ? `Web UI (with token): ${authedUrl}` : undefined,
       `Gateway WS: ${links.wsUrl}`,
       gatewayStatusLine,
-      "Docs: https://docs.clawd.bot/web/control-ui",
+      "Docs: https://docs.surprisebot.bot/web/control-ui",
     ]
       .filter(Boolean)
       .join("\n"),
@@ -347,14 +347,14 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
   }
 
   await prompter.note(
-    ["Back up your agent workspace.", "Docs: https://docs.clawd.bot/concepts/agent-workspace"].join(
+    ["Back up your agent workspace.", "Docs: https://docs.surprisebot.bot/concepts/agent-workspace"].join(
       "\n",
     ),
     "Workspace backup",
   );
 
   await prompter.note(
-    "Running agents on your computer is risky — harden your setup: https://docs.clawd.bot/security",
+    "Running agents on your computer is risky — harden your setup: https://docs.surprisebot.bot/security",
     "Security",
   );
 
@@ -385,8 +385,8 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
       [
         `Dashboard link (with token): ${authedUrl}`,
         controlUiOpened
-          ? "Opened in your browser. Keep that tab to control Clawdbot."
-          : "Copy/paste this URL in a browser on this machine to control Clawdbot.",
+          ? "Opened in your browser. Keep that tab to control Surprisebot."
+          : "Copy/paste this URL in a browser on this machine to control Surprisebot.",
         controlUiOpenHint,
       ]
         .filter(Boolean)
@@ -406,26 +406,26 @@ export async function finalizeOnboardingWizard(options: FinalizeOnboardingOption
           webSearchKey
             ? "API key: stored in config (tools.web.search.apiKey)."
             : "API key: provided via BRAVE_API_KEY env var (Gateway environment).",
-          "Docs: https://docs.clawd.bot/tools/web",
+          "Docs: https://docs.surprisebot.bot/tools/web",
         ].join("\n")
       : [
           "If you want your agent to be able to search the web, you’ll need an API key.",
           "",
-          "Clawdbot uses Brave Search for the `web_search` tool. Without a Brave Search API key, web search won’t work.",
+          "Surprisebot uses Brave Search for the `web_search` tool. Without a Brave Search API key, web search won’t work.",
           "",
           "Set it up interactively:",
-          "- Run: clawdbot configure --section web",
+          "- Run: surprisebot configure --section web",
           "- Enable web_search and paste your Brave Search API key",
           "",
           "Alternative: set BRAVE_API_KEY in the Gateway environment (no config changes).",
-          "Docs: https://docs.clawd.bot/tools/web",
+          "Docs: https://docs.surprisebot.bot/tools/web",
         ].join("\n"),
     "Web search (optional)",
   );
 
   await prompter.outro(
     controlUiOpened
-      ? "Onboarding complete. Dashboard opened with your token; keep that tab to control Clawdbot."
-      : "Onboarding complete. Use the tokenized dashboard link above to control Clawdbot.",
+      ? "Onboarding complete. Dashboard opened with your token; keep that tab to control Surprisebot."
+      : "Onboarding complete. Use the tokenized dashboard link above to control Surprisebot.",
   );
 }

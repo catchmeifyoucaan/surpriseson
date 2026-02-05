@@ -108,12 +108,12 @@ describe("gateway bonjour advertiser", () => {
       sshPort: 2222,
       bridgePort: 18790,
       tailnetDns: "host.tailnet.ts.net",
-      cliPath: "/opt/homebrew/bin/clawdbot",
+      cliPath: "/opt/homebrew/bin/surprisebot",
     });
 
     expect(createService).toHaveBeenCalledTimes(1);
     const [bridgeCall] = createService.mock.calls as Array<[Record<string, unknown>]>;
-    expect(bridgeCall?.[0]?.type).toBe("clawdbot-bridge");
+    expect(bridgeCall?.[0]?.type).toBe("surprisebot-bridge");
     expect(bridgeCall?.[0]?.port).toBe(18790);
     expect(bridgeCall?.[0]?.domain).toBe("local");
     expect(bridgeCall?.[0]?.hostname).toBe("test-host");
@@ -121,7 +121,7 @@ describe("gateway bonjour advertiser", () => {
     expect((bridgeCall?.[0]?.txt as Record<string, string>)?.bridgePort).toBe("18790");
     expect((bridgeCall?.[0]?.txt as Record<string, string>)?.sshPort).toBe("2222");
     expect((bridgeCall?.[0]?.txt as Record<string, string>)?.cliPath).toBe(
-      "/opt/homebrew/bin/clawdbot",
+      "/opt/homebrew/bin/surprisebot",
     );
     expect((bridgeCall?.[0]?.txt as Record<string, string>)?.transport).toBe("bridge");
 
@@ -328,7 +328,7 @@ describe("gateway bonjour advertiser", () => {
     });
 
     const [bridgeCall] = createService.mock.calls as Array<[ServiceCall]>;
-    expect(bridgeCall?.[0]?.name).toBe("Mac (Clawdbot)");
+    expect(bridgeCall?.[0]?.name).toBe("Mac (Surprisebot)");
     expect(bridgeCall?.[0]?.domain).toBe("local");
     expect(bridgeCall?.[0]?.hostname).toBe("Mac");
     expect((bridgeCall?.[0]?.txt as Record<string, string>)?.lanHost).toBe("Mac.local");

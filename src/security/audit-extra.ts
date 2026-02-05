@@ -3,7 +3,7 @@ import path from "node:path";
 
 import JSON5 from "json5";
 
-import type { ClawdbotConfig, ConfigFileSnapshot } from "../config/config.js";
+import type { SurprisebotConfig, ConfigFileSnapshot } from "../config/config.js";
 import { createConfigIO } from "../config/config.js";
 import { resolveOAuthDir } from "../config/paths.js";
 import { resolveDefaultAgentId } from "../agents/agent-scope.js";
@@ -36,7 +36,7 @@ function expandTilde(p: string, env: NodeJS.ProcessEnv): string | null {
   return null;
 }
 
-function summarizeGroupPolicy(cfg: ClawdbotConfig): {
+function summarizeGroupPolicy(cfg: SurprisebotConfig): {
   open: number;
   allowlist: number;
   other: number;
@@ -57,7 +57,7 @@ function summarizeGroupPolicy(cfg: ClawdbotConfig): {
   return { open, allowlist, other };
 }
 
-export function collectAttackSurfaceSummaryFindings(cfg: ClawdbotConfig): SecurityAuditFinding[] {
+export function collectAttackSurfaceSummaryFindings(cfg: SurprisebotConfig): SecurityAuditFinding[] {
   const group = summarizeGroupPolicy(cfg);
   const elevated = cfg.tools?.elevated?.enabled !== false;
   const hooksEnabled = cfg.hooks?.enabled === true;
@@ -104,7 +104,7 @@ export function collectSyncedFolderFindings(params: {
       severity: "warn",
       title: "State/config path looks like a synced folder",
       detail: `stateDir=${params.stateDir}, configPath=${params.configPath}. Synced folders (iCloud/Dropbox/OneDrive/Google Drive) can leak tokens and transcripts onto other devices.`,
-      remediation: `Keep CLAWDBOT_STATE_DIR on a local-only volume and re-run "clawdbot security audit --fix".`,
+      remediation: `Keep SURPRISEBOT_STATE_DIR on a local-only volume and re-run "surprisebot security audit --fix".`,
     });
   }
   return findings;
@@ -115,7 +115,7 @@ function looksLikeEnvRef(value: string): boolean {
   return v.startsWith("${") && v.endsWith("}");
 }
 
-export function collectSecretsInConfigFindings(cfg: ClawdbotConfig): SecurityAuditFinding[] {
+export function collectSecretsInConfigFindings(cfg: SurprisebotConfig): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   const password =
     typeof cfg.gateway?.auth?.password === "string" ? cfg.gateway.auth.password.trim() : "";
@@ -127,7 +127,7 @@ export function collectSecretsInConfigFindings(cfg: ClawdbotConfig): SecurityAud
       detail:
         "gateway.auth.password is set in the config file; prefer environment variables for secrets when possible.",
       remediation:
-        "Prefer CLAWDBOT_GATEWAY_PASSWORD (env) and remove gateway.auth.password from disk.",
+        "Prefer SURPRISEBOT_GATEWAY_PASSWORD (env) and remove gateway.auth.password from disk.",
     });
   }
 
@@ -141,7 +141,7 @@ export function collectSecretsInConfigFindings(cfg: ClawdbotConfig): SecurityAud
       detail:
         "browser.controlToken is set in the config file; prefer environment variables for secrets when possible.",
       remediation:
-        "Prefer CLAWDBOT_BROWSER_CONTROL_TOKEN (env) and remove browser.controlToken from disk.",
+        "Prefer SURPRISEBOT_BROWSER_CONTROL_TOKEN (env) and remove browser.controlToken from disk.",
     });
   }
 
@@ -159,7 +159,7 @@ export function collectSecretsInConfigFindings(cfg: ClawdbotConfig): SecurityAud
   return findings;
 }
 
-export function collectHooksHardeningFindings(cfg: ClawdbotConfig): SecurityAuditFinding[] {
+export function collectHooksHardeningFindings(cfg: SurprisebotConfig): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   if (cfg.hooks?.enabled !== true) return findings;
 
@@ -191,7 +191,7 @@ export function collectHooksHardeningFindings(cfg: ClawdbotConfig): SecurityAudi
   const browserToken =
     typeof cfg.browser?.controlToken === "string" && cfg.browser.controlToken.trim()
       ? cfg.browser.controlToken.trim()
-      : process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN?.trim() || null;
+      : process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN?.trim() || null;
   if (token && browserToken && token === browserToken) {
     findings.push({
       checkId: "hooks.token_reuse_browser_token",
@@ -226,7 +226,7 @@ function addModel(models: ModelRef[], raw: unknown, source: string) {
   models.push({ id, source });
 }
 
-function collectModels(cfg: ClawdbotConfig): ModelRef[] {
+function collectModels(cfg: SurprisebotConfig): ModelRef[] {
   const out: ModelRef[] = [];
   addModel(out, cfg.agents?.defaults?.model?.primary, "agents.defaults.model.primary");
   for (const f of cfg.agents?.defaults?.model?.fallbacks ?? [])
@@ -260,7 +260,7 @@ const LEGACY_MODEL_PATTERNS: Array<{ id: string; re: RegExp; label: string }> = 
   { id: "openai.gpt4_legacy", re: /\bgpt-4-(0314|0613)\b/i, label: "Legacy GPT-4 snapshots" },
 ];
 
-export function collectModelHygieneFindings(cfg: ClawdbotConfig): SecurityAuditFinding[] {
+export function collectModelHygieneFindings(cfg: SurprisebotConfig): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   const models = collectModels(cfg);
   if (models.length === 0) return findings;
@@ -297,7 +297,7 @@ export function collectModelHygieneFindings(cfg: ClawdbotConfig): SecurityAuditF
 }
 
 export async function collectPluginsTrustFindings(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   stateDir: string;
 }): Promise<SecurityAuditFinding[]> {
   const findings: SecurityAuditFinding[] = [];
@@ -441,7 +441,7 @@ export async function collectIncludeFilePermFindings(params: {
 }
 
 export async function collectStateDeepFilesystemFindings(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   env: NodeJS.ProcessEnv;
   stateDir: string;
 }): Promise<SecurityAuditFinding[]> {
@@ -546,7 +546,7 @@ export async function collectStateDeepFilesystemFindings(params: {
   return findings;
 }
 
-function listGroupPolicyOpen(cfg: ClawdbotConfig): string[] {
+function listGroupPolicyOpen(cfg: SurprisebotConfig): string[] {
   const out: string[] = [];
   const channels = cfg.channels as Record<string, unknown> | undefined;
   if (!channels || typeof channels !== "object") return out;
@@ -567,7 +567,7 @@ function listGroupPolicyOpen(cfg: ClawdbotConfig): string[] {
   return out;
 }
 
-export function collectExposureMatrixFindings(cfg: ClawdbotConfig): SecurityAuditFinding[] {
+export function collectExposureMatrixFindings(cfg: SurprisebotConfig): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
   const openGroups = listGroupPolicyOpen(cfg);
   if (openGroups.length === 0) return findings;

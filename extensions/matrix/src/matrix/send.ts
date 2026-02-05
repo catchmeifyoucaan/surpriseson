@@ -196,7 +196,7 @@ async function resolveMatrixClient(opts: {
   if (opts.client) return { client: opts.client, stopOnDone: false };
   const active = getActiveMatrixClient();
   if (active) return { client: active, stopOnDone: false };
-  const shouldShareClient = Boolean(process.env.CLAWDBOT_GATEWAY_PORT);
+  const shouldShareClient = Boolean(process.env.SURPRISEBOT_GATEWAY_PORT);
   if (shouldShareClient) {
     const client = await resolveSharedMatrixClient({
       timeoutMs: opts.timeoutMs,

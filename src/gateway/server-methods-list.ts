@@ -54,6 +54,10 @@ const BASE_METHODS = [
   "send",
   "agent",
   "agent.wait",
+  "mission-control.snapshot",
+  "mission-control.task.update",
+  "mission-control.task.qa",
+  "mission-control.task.requeue",
   // WebChat WebSocket-native chat methods
   "chat.history",
   "chat.abort",

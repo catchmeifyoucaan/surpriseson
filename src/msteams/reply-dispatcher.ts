@@ -1,6 +1,6 @@
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../agents/identity.js";
 import { createReplyDispatcherWithTyping } from "../auto-reply/reply/reply-dispatcher.js";
-import type { ClawdbotConfig, MSTeamsReplyStyle } from "../config/types.js";
+import type { SurprisebotConfig, MSTeamsReplyStyle } from "../config/types.js";
 import { danger } from "../globals.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { StoredConversationReference } from "./conversation-store.js";
@@ -18,7 +18,7 @@ import type { MSTeamsMonitorLogger } from "./monitor-types.js";
 import type { MSTeamsTurnContext } from "./sdk-types.js";
 
 export function createMSTeamsReplyDispatcher(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   runtime: RuntimeEnv;
   log: MSTeamsMonitorLogger;

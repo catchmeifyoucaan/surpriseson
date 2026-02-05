@@ -1,5 +1,5 @@
 ---
-summary: "Slack socket mode setup and Clawdbot config"
+summary: "Slack socket mode setup and Surprisebot config"
 read_when: "Setting up Slack or debugging Slack socket mode"
 ---
 
@@ -8,7 +8,7 @@ read_when: "Setting up Slack or debugging Slack socket mode"
 ## Quick setup (beginner)
 1) Create a Slack app and enable **Socket Mode**.
 2) Create an **App Token** (`xapp-...`) and **Bot Token** (`xoxb-...`).
-3) Set tokens for Clawdbot and start the gateway.
+3) Set tokens for Surprisebot and start the gateway.
 
 Minimal config:
 ```json5
@@ -36,14 +36,14 @@ Minimal config:
    - `channel_rename`
    - `pin_added`, `pin_removed`
 5) Invite the bot to channels you want it to read.
-6) Slash Commands → create `/clawd` if you use `channels.slack.slashCommand`. If you enable native commands, add one slash command per built-in command (same names as `/help`). Native defaults to off for Slack unless you set `channels.slack.commands.native: true` (global `commands.native` is `"auto"` which leaves Slack off).
+6) Slash Commands → create `/surprisebot` if you use `channels.slack.slashCommand`. If you enable native commands, add one slash command per built-in command (same names as `/help`). Native defaults to off for Slack unless you set `channels.slack.commands.native: true` (global `commands.native` is `"auto"` which leaves Slack off).
 7) App Home → enable the **Messages Tab** so users can DM the bot.
 
 Use the manifest below so scopes and events stay in sync.
 
 Multi-account support: use `channels.slack.accounts` with per-account tokens and optional `name`. See [`gateway/configuration`](/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts) for the shared pattern.
 
-## Clawdbot config (minimal)
+## Surprisebot config (minimal)
 
 Set tokens via env vars (recommended):
 - `SLACK_APP_TOKEN=xapp-...`
@@ -72,7 +72,7 @@ Or via config:
 By default, Slack is allowed to write config updates triggered by channel events or `/config set|unset`.
 
 This happens when:
-- Slack emits `channel_id_changed` (e.g. Slack Connect channel ID changes). Clawdbot can migrate `channels.slack.channels` automatically.
+- Slack emits `channel_id_changed` (e.g. Slack Connect channel ID changes). Surprisebot can migrate `channels.slack.channels` automatically.
 - You run `/config set` or `/config unset` in Slack (requires `commands.config: true`).
 
 Disable with:
@@ -88,12 +88,12 @@ Use this Slack app manifest to create the app quickly (adjust the name/command i
 ```json
 {
   "display_information": {
-    "name": "Clawdbot",
-    "description": "Slack connector for Clawdbot"
+    "name": "Surprisebot",
+    "description": "Slack connector for Surprisebot"
   },
   "features": {
     "bot_user": {
-      "display_name": "Clawdbot",
+      "display_name": "Surprisebot",
       "always_online": false
     },
     "app_home": {
@@ -102,8 +102,8 @@ Use this Slack app manifest to create the app quickly (adjust the name/command i
     },
     "slash_commands": [
       {
-        "command": "/clawd",
-        "description": "Send a message to Clawdbot",
+        "command": "/surprisebot",
+        "description": "Send a message to Surprisebot",
         "should_escape": false
       }
     ]
@@ -236,7 +236,7 @@ Slack uses Socket Mode only (no HTTP webhook server). Provide both tokens:
     },
     "slashCommand": {
       "enabled": true,
-      "name": "clawd",
+      "name": "surprisebot",
       "sessionPrefix": "slack:slash",
       "ephemeral": true
     },
@@ -259,7 +259,7 @@ ack reaction after the bot replies.
 - Media uploads are capped by `channels.slack.mediaMaxMb` (default 20).
 
 ## Reply threading
-By default, Clawdbot replies in the main channel. Use `channels.slack.replyToMode` to control automatic threading:
+By default, Surprisebot replies in the main channel. Use `channels.slack.replyToMode` to control automatic threading:
 
 | Mode | Behavior |
 | --- | --- |
@@ -288,7 +288,7 @@ For fine-grained control, use these tags in agent responses:
 
 ## DM security (pairing)
 - Default: `channels.slack.dm.policy="pairing"` — unknown DM senders get a pairing code (expires after 1 hour).
-- Approve via: `clawdbot pairing approve slack <code>`.
+- Approve via: `surprisebot pairing approve slack <code>`.
 - To allow anyone: set `channels.slack.dm.policy="open"` and `channels.slack.dm.allowFrom=["*"]`.
 
 ## Group policy

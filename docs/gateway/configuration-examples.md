@@ -1,9 +1,9 @@
 ---
-summary: "Schema-accurate configuration examples for common Clawdbot setups"
+summary: "Schema-accurate configuration examples for common Surprisebot setups"
 read_when:
-  - Learning how to configure Clawdbot
+  - Learning how to configure Surprisebot
   - Looking for configuration examples
-  - Setting up Clawdbot for the first time
+  - Setting up Surprisebot for the first time
 ---
 # Configuration Examples
 
@@ -14,23 +14,23 @@ Examples below are aligned with the current config schema. For the exhaustive re
 ### Absolute minimum
 ```json5
 {
-  agent: { workspace: "~/clawd" },
+  agent: { workspace: "~/surprisebot" },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } }
 }
 ```
 
-Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
+Save to `~/.surprisebot/surprisebot.json` and you can DM the bot from that number.
 
 ### Recommended starter
 ```json5
 {
   identity: {
-    name: "Clawd",
+    name: "Surprisebot",
     theme: "helpful assistant",
     emoji: "🦞"
   },
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/surprisebot",
     model: { primary: "anthropic/claude-sonnet-4-5" }
   },
   channels: {
@@ -85,7 +85,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
   // Logging
   logging: {
     level: "info",
-    file: "/tmp/clawdbot/clawdbot.log",
+    file: "/tmp/surprisebot/surprisebot.log",
     consoleLevel: "info",
     consoleStyle: "pretty",
     redactSensitive: "tools"
@@ -93,7 +93,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
 
   // Message formatting
   messages: {
-    messagePrefix: "[clawdbot]",
+    messagePrefix: "[surprisebot]",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions"
@@ -102,7 +102,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
   // Routing + queue
   routing: {
     groupChat: {
-      mentionPatterns: ["@clawd", "clawdbot"],
+      mentionPatterns: ["@surprisebot", "surprisebot"],
       historyLimit: 50
     },
     queue: {
@@ -138,7 +138,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
     idleMinutes: 60,
     heartbeatIdleMinutes: 120,
     resetTriggers: ["/new", "/reset"],
-    store: "~/.clawdbot/agents/default/sessions/sessions.json",
+    store: "~/.surprisebot/agents/default/sessions/sessions.json",
     typingIntervalSeconds: 5,
     sendPolicy: {
       default: "allow",
@@ -173,7 +173,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
       dm: { enabled: true, allowFrom: ["steipete"] },
       guilds: {
         "123456789012345678": {
-          slug: "friends-of-clawd",
+          slug: "friends-of-surprisebot",
           requireMention: false,
           channels: {
             general: { allow: true },
@@ -193,7 +193,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
         enabled: true,
-        name: "clawd",
+        name: "surprisebot",
         sessionPrefix: "slack:slash",
         ephemeral: true
       }
@@ -203,7 +203,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
   // Agent runtime
   agents: {
     defaults: {
-      workspace: "~/clawd",
+      workspace: "~/surprisebot",
       userTimezone: "America/Chicago",
       model: {
         primary: "anthropic/claude-sonnet-4-5",
@@ -256,9 +256,9 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
       sandbox: {
         mode: "non-main",
         perSession: true,
-        workspaceRoot: "~/.clawdbot/sandboxes",
+        workspaceRoot: "~/.surprisebot/sandboxes",
         docker: {
-          image: "clawdbot-sandbox:bookworm-slim",
+          image: "surprisebot-sandbox:bookworm-slim",
           workdir: "/workspace",
           readOnlyRoot: true,
           tmpfs: ["/tmp", "/var/tmp", "/run"],
@@ -323,7 +323,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
   // Cron jobs
   cron: {
     enabled: true,
-    store: "~/.clawdbot/cron/cron.json",
+    store: "~/.surprisebot/cron/cron.json",
     maxConcurrentRuns: 2
   },
 
@@ -333,7 +333,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
     path: "/hooks",
     token: "shared-secret",
     presets: ["gmail"],
-    transformsDir: "~/.clawdbot/hooks",
+    transformsDir: "~/.surprisebot/hooks",
     mappings: [
       {
         id: "gmail-hook",
@@ -353,7 +353,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
       }
     ],
     gmail: {
-      account: "clawdbot@gmail.com",
+      account: "surprisebot@gmail.com",
       label: "INBOX",
       topic: "projects/<project-id>/topics/gog-gmail-watch",
       subscription: "gog-gmail-watch-push",
@@ -372,7 +372,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
     mode: "local",
     port: 18789,
     bind: "loopback",
-    controlUi: { enabled: true, basePath: "/clawdbot" },
+    controlUi: { enabled: true, basePath: "/surprisebot" },
     auth: {
       mode: "token",
       token: "gateway-token",
@@ -409,7 +409,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
 ### Multi-platform setup
 ```json5
 {
-  agent: { workspace: "~/clawd" },
+  agent: { workspace: "~/surprisebot" },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -446,7 +446,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
     }
   },
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/surprisebot",
     model: {
       primary: "anthropic/claude-sonnet-4-5",
       fallbacks: ["anthropic/claude-opus-4-5"]
@@ -463,7 +463,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
     theme: "professional assistant"
   },
   agent: {
-    workspace: "~/work-clawd",
+    workspace: "~/work-surprisebot",
     elevated: { enabled: false }
   },
   channels: {
@@ -483,7 +483,7 @@ Save to `~/.clawdbot/clawdbot.json` and you can DM the bot from that number.
 ```json5
 {
   agent: {
-    workspace: "~/clawd",
+    workspace: "~/surprisebot",
     model: { primary: "lmstudio/minimax-m2.1-gs32" }
   },
   models: {

@@ -1,18 +1,18 @@
 ---
 title: "Showcase"
-description: "Real-world Clawdbot projects from the community"
-summary: "Community-built projects and integrations powered by Clawdbot"
+description: "Real-world Surprisebot projects from the community"
+summary: "Community-built projects and integrations powered by Surprisebot"
 ---
 
 # Showcase
 
-Real projects from the community. See what people are building with Clawdbot.
+Real projects from the community. See what people are building with Surprisebot.
 
 <Info>
-**Want to be featured?** Share your project in [#showcase on Discord](https://discord.gg/clawd) or [tag @clawdbot on X](https://x.com/clawdbot).
+**Want to be featured?** Share your project in [#showcase on Discord](https://discord.gg/surprisebot) or [tag @surprisebot on X](https://x.com/surprisebot).
 </Info>
 
-## 🎥 Clawdbot in Action
+## 🎥 Surprisebot in Action
 
 Full setup walkthrough (28m) by VelvetShark.
 
@@ -27,7 +27,7 @@ Full setup walkthrough (28m) by VelvetShark.
 >
   <iframe
     src="https://www.youtube-nocookie.com/embed/SaWSPZoPX34"
-    title="Clawdbot: The self-hosted AI that Siri should have been (Full setup)"
+    title="Surprisebot: The self-hosted AI that Siri should have been (Full setup)"
     style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
     frameBorder="0"
     loading="lazy"
@@ -45,17 +45,17 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="PR Review → Telegram Feedback" icon="code-pull-request" href="https://x.com/i/status/2010878524543131691">
   **@bangnokia** • `review` `github` `telegram`
 
-  OpenCode finishes the change → opens a PR → Clawdbot reviews the diff and replies in Telegram with “minor suggestions” plus a clear merge verdict (including critical fixes to apply first).
+  OpenCode finishes the change → opens a PR → Surprisebot reviews the diff and replies in Telegram with “minor suggestions” plus a clear merge verdict (including critical fixes to apply first).
 
-  <img src="/assets/showcase/pr-review-telegram.jpg" alt="Clawdbot PR review feedback delivered in Telegram" />
+  <img src="/assets/showcase/pr-review-telegram.jpg" alt="Surprisebot PR review feedback delivered in Telegram" />
 </Card>
 
 <Card title="Wine Cellar Skill in Minutes" icon="wine-glass" href="https://x.com/i/status/2010916352454791216">
   **@prades_maxime** • `skills` `local` `csv`
 
-  Asked “Robby” (@clawdbot) for a local wine cellar skill. It requests a sample CSV export + where to store it, then builds/tests the skill fast (962 bottles in the example).
+  Asked “Robby” (@surprisebot) for a local wine cellar skill. It requests a sample CSV export + where to store it, then builds/tests the skill fast (962 bottles in the example).
 
-  <img src="/assets/showcase/wine-cellar-skill.jpg" alt="Clawdbot building a local wine cellar skill from CSV" />
+  <img src="/assets/showcase/wine-cellar-skill.jpg" alt="Surprisebot building a local wine cellar skill from CSV" />
 </Card>
 
 <Card title="Tesco Shop Autopilot" icon="cart-shopping" href="https://x.com/i/status/2009724862470689131">
@@ -77,7 +77,7 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="Agents UI" icon="window-maximize" href="https://releaseflow.net/kitze/agents-ui">
   **@kitze** • `ui` `skills` `sync`
 
-  Desktop app to manage skills/commands across Agents, Claude, Codex, and Clawdbot.
+  Desktop app to manage skills/commands across Agents, Claude, Codex, and Surprisebot.
 
   <img src="/assets/showcase/agents-ui.jpg" alt="Agents UI app" />
 </Card>
@@ -90,28 +90,28 @@ Full setup walkthrough (28m) by VelvetShark.
   <img src="/assets/showcase/papla-tts.jpg" alt="Telegram voice note output from TTS" />
 </Card>
 
-<Card title="CodexMonitor" icon="eye" href="https://clawdhub.com/odrobnik/codexmonitor">
+<Card title="CodexMonitor" icon="eye" href="https://surprisebothub.com/odrobnik/codexmonitor">
   **@odrobnik** • `devtools` `codex` `brew`
 
   Homebrew-installed helper to list/inspect/watch local OpenAI Codex sessions (CLI + VS Code).
 
-  <img src="/assets/showcase/codexmonitor.png" alt="CodexMonitor on ClawdHub" />
+  <img src="/assets/showcase/codexmonitor.png" alt="CodexMonitor on SurprisebotHub" />
 </Card>
 
-<Card title="Bambu 3D Printer Control" icon="print" href="https://clawdhub.com/tobiasbischoff/bambu-cli">
+<Card title="Bambu 3D Printer Control" icon="print" href="https://surprisebothub.com/tobiasbischoff/bambu-cli">
   **@tobiasbischoff** • `hardware` `3d-printing` `skill`
 
   Control and troubleshoot BambuLab printers: status, jobs, camera, AMS, calibration, and more.
 
-  <img src="/assets/showcase/bambu-cli.png" alt="Bambu CLI skill on ClawdHub" />
+  <img src="/assets/showcase/bambu-cli.png" alt="Bambu CLI skill on SurprisebotHub" />
 </Card>
 
-<Card title="Vienna Transport (Wiener Linien)" icon="train" href="https://clawdhub.com/hjanuschka/wienerlinien">
+<Card title="Vienna Transport (Wiener Linien)" icon="train" href="https://surprisebothub.com/hjanuschka/wienerlinien">
   **@hjanuschka** • `travel` `transport` `skill`
 
   Real-time departures, disruptions, elevator status, and routing for Vienna's public transport.
 
-  <img src="/assets/showcase/wienerlinien.png" alt="Wiener Linien skill on ClawdHub" />
+  <img src="/assets/showcase/wienerlinien.png" alt="Wiener Linien skill on SurprisebotHub" />
 </Card>
 
 <Card title="ParentPay School Meals" icon="utensils" href="#">
@@ -120,10 +120,10 @@ Full setup walkthrough (28m) by VelvetShark.
   Automated UK school meal booking via ParentPay. Uses mouse coordinates for reliable table cell clicking.
 </Card>
 
-<Card title="R2 Upload (Send Me My Files)" icon="cloud-arrow-up" href="https://clawdhub.com/skills/r2-upload">
+<Card title="R2 Upload (Send Me My Files)" icon="cloud-arrow-up" href="https://surprisebothub.com/skills/r2-upload">
   **@julianengel** • `files` `r2` `presigned-urls`
 
-  Upload to Cloudflare R2/S3 and generate secure presigned download links. Perfect for remote Clawdbot instances.
+  Upload to Cloudflare R2/S3 and generate secure presigned download links. Perfect for remote Surprisebot instances.
 </Card>
 
 <Card title="iOS App via Telegram" icon="mobile" href="#">
@@ -141,10 +141,10 @@ Full setup walkthrough (28m) by VelvetShark.
 
   <img src="/assets/showcase/oura-health.png" alt="Oura ring health assistant" />
 </Card>
-<Card title="Multi-Agent Swarm (14+ Agents)" icon="robot" href="https://github.com/adam91holt/clawdspace">
+<Card title="Multi-Agent Swarm (14+ Agents)" icon="robot" href="https://github.com/adam91holt/surprisebotspace">
   **@adam91holt** • `multi-agent` `slack` `orchestration` `swarm`
 
-  14+ Clawdbot agents under one gateway. Opus 4.5 orchestrator delegates to Codex workers. Self-maintaining agents that continuously improve. Open-sourced clawdspace for agent sandboxing.
+  14+ Surprisebot agents under one gateway. Opus 4.5 orchestrator delegates to Codex workers. Self-maintaining agents that continuously improve. Open-sourced surprisebotspace for agent sandboxing.
 </Card>
 </CardGroup>
 
@@ -155,23 +155,23 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="Winix Air Purifier Control" icon="wind" href="https://x.com/antonplex/status/2010518442471006253">
   **@antonplex** • `automation` `hardware` `air-quality`
 
-  Claude Code discovered and confirmed the purifier controls, then Clawdbot takes over to manage room air quality.
+  Claude Code discovered and confirmed the purifier controls, then Surprisebot takes over to manage room air quality.
 
-  <img src="/assets/showcase/winix-air-purifier.jpg" alt="Winix air purifier control via Clawdbot" />
+  <img src="/assets/showcase/winix-air-purifier.jpg" alt="Winix air purifier control via Surprisebot" />
 </Card>
 
 <Card title="Pretty Sky Camera Shots" icon="camera" href="https://x.com/signalgaining/status/2010523120604746151">
   **@signalgaining** • `automation` `camera` `skill` `images`
 
-  Triggered by a roof camera: ask Clawdbot to snap a sky photo whenever it looks pretty — it designed a skill and took the shot.
+  Triggered by a roof camera: ask Surprisebot to snap a sky photo whenever it looks pretty — it designed a skill and took the shot.
 
-  <img src="/assets/showcase/roof-camera-sky.jpg" alt="Roof camera sky snapshot captured by Clawdbot" />
+  <img src="/assets/showcase/roof-camera-sky.jpg" alt="Roof camera sky snapshot captured by Surprisebot" />
 </Card>
 
 <Card title="Visual Morning Briefing Scene" icon="robot" href="https://x.com/buddyhadry/status/2010005331925954739">
   **@buddyhadry** • `automation` `briefing` `images` `telegram`
 
-  A scheduled prompt generates a single "scene" image each morning (weather, tasks, date, favorite post/quote) via a Clawdbot persona.
+  A scheduled prompt generates a single "scene" image each morning (weather, tasks, date, favorite post/quote) via a Surprisebot persona.
 </Card>
 
 <Card title="Padel Court Booking" icon="calendar-check" href="https://github.com/joshp123/padel-cli">
@@ -203,13 +203,13 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="Jira Skill Builder" icon="diagram-project" href="https://x.com/jdrhyne/status/2008336434827002232">
   **@jdrhyne** • `automation` `jira` `skill` `devtools`
 
-  Clawdbot connected to Jira, then generated a new skill on the fly (before it existed on ClawdHub).
+  Surprisebot connected to Jira, then generated a new skill on the fly (before it existed on SurprisebotHub).
 </Card>
 
 <Card title="Todoist Skill via Telegram" icon="list-check" href="https://x.com/iamsubhrajyoti/status/2009949389884920153">
   **@iamsubhrajyoti** • `automation` `todoist` `skill` `telegram`
 
-  Automated Todoist tasks and had Clawdbot generate the skill directly in Telegram chat.
+  Automated Todoist tasks and had Surprisebot generate the skill directly in Telegram chat.
 </Card>
 
 <Card title="TradingView Analysis" icon="chart-line">
@@ -233,7 +233,7 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="xuezh Chinese Learning" icon="language" href="https://github.com/joshp123/xuezh">
   **@joshp123** • `learning` `voice` `skill`
   
-  Chinese learning engine with pronunciation feedback and study flows via Clawdbot.
+  Chinese learning engine with pronunciation feedback and study flows via Surprisebot.
   
   <img src="/assets/showcase/xuezh-pronunciation.jpeg" alt="xuezh pronunciation feedback" />
 </Card>
@@ -262,16 +262,16 @@ Full setup walkthrough (28m) by VelvetShark.
 
 <CardGroup cols={2}>
 
-<Card title="Clawdia Phone Bridge" icon="phone" href="https://github.com/alejandroOPI/clawdia-bridge">
+<Card title="Surprisebotia Phone Bridge" icon="phone" href="https://github.com/alejandroOPI/surprisebotia-bridge">
   **@alejandroOPI** • `voice` `vapi` `bridge`
   
-  Vapi voice assistant ↔ Clawdbot HTTP bridge. Near real-time phone calls with your agent.
+  Vapi voice assistant ↔ Surprisebot HTTP bridge. Near real-time phone calls with your agent.
 </Card>
 
-<Card title="OpenRouter Transcription" icon="microphone" href="https://clawdhub.com/obviyus/openrouter-transcribe">
+<Card title="OpenRouter Transcription" icon="microphone" href="https://surprisebothub.com/obviyus/openrouter-transcribe">
   **@obviyus** • `transcription` `multilingual` `skill`
   
-  Multi-lingual audio transcription via OpenRouter (Gemini, etc). Available on ClawdHub.
+  Multi-lingual audio transcription via OpenRouter (Gemini, etc). Available on SurprisebotHub.
 </Card>
 
 <Card title="Google Docs Editor" icon="file-word">
@@ -286,26 +286,26 @@ Full setup walkthrough (28m) by VelvetShark.
 
 <CardGroup cols={2}>
 
-<Card title="Home Assistant Add-on" icon="home" href="https://github.com/ngutman/clawdbot-ha-addon">
+<Card title="Home Assistant Add-on" icon="home" href="https://github.com/ngutman/surprisebot-ha-addon">
   **@ngutman** • `homeassistant` `docker` `raspberry-pi`
   
-  Clawdbot gateway running on Home Assistant OS with SSH tunnel support and persistent state.
+  Surprisebot gateway running on Home Assistant OS with SSH tunnel support and persistent state.
 </Card>
 
-<Card title="Home Assistant Skill" icon="toggle-on" href="https://clawdhub.com/skills/homeassistant">
-  **ClawdHub** • `homeassistant` `skill` `automation`
+<Card title="Home Assistant Skill" icon="toggle-on" href="https://surprisebothub.com/skills/homeassistant">
+  **SurprisebotHub** • `homeassistant` `skill` `automation`
   
   Control and automate Home Assistant devices via natural language.
 </Card>
 
-<Card title="Nix Packaging" icon="snowflake" href="https://github.com/clawdbot/nix-clawdbot">
-  **@clawdbot** • `nix` `packaging` `deployment`
+<Card title="Nix Packaging" icon="snowflake" href="https://github.com/surprisebot/nix-surprisebot">
+  **@surprisebot** • `nix` `packaging` `deployment`
   
-  Batteries-included nixified Clawdbot configuration for reproducible deployments.
+  Batteries-included nixified Surprisebot configuration for reproducible deployments.
 </Card>
 
-<Card title="CalDAV Calendar" icon="calendar" href="https://clawdhub.com/skills/caldav-calendar">
-  **ClawdHub** • `calendar` `caldav` `skill`
+<Card title="CalDAV Calendar" icon="calendar" href="https://surprisebothub.com/skills/caldav-calendar">
+  **SurprisebotHub** • `calendar` `caldav` `skill`
   
   Calendar skill using khal/vdirsyncer. Self-hosted calendar integration.
 </Card>
@@ -319,7 +319,7 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="GoHome Automation" icon="house-signal" href="https://github.com/joshp123/gohome">
   **@joshp123** • `home` `nix` `grafana`
   
-  Nix-native home automation with Clawdbot as the interface, plus beautiful Grafana dashboards.
+  Nix-native home automation with Surprisebot as the interface, plus beautiful Grafana dashboards.
   
   <img src="/assets/showcase/gohome-grafana.png" alt="GoHome Grafana dashboard" />
 </Card>
@@ -341,7 +341,7 @@ Full setup walkthrough (28m) by VelvetShark.
 <Card title="StarSwap Marketplace" icon="star" href="https://star-swap.com/">
   **Community** • `marketplace` `astronomy` `webapp`
   
-  Full astronomy gear marketplace. Built with/around the Clawdbot ecosystem.
+  Full astronomy gear marketplace. Built with/around the Surprisebot ecosystem.
 </Card>
 
 </CardGroup>
@@ -354,7 +354,7 @@ Have something to share? We'd love to feature it!
 
 <Steps>
   <Step title="Share It">
-    Post in [#showcase on Discord](https://discord.gg/clawd) or [tweet @clawdbot](https://x.com/clawdbot)
+    Post in [#showcase on Discord](https://discord.gg/surprisebot) or [tweet @surprisebot](https://x.com/surprisebot)
   </Step>
   <Step title="Include Details">
     Tell us what it does, link to the repo/demo, share a screenshot if you have one

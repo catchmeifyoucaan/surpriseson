@@ -4,6 +4,7 @@ import { shouldHandleTextCommands } from "../commands-registry.js";
 import { handleBashCommand } from "./commands-bash.js";
 import { handleCompactCommand } from "./commands-compact.js";
 import { handleConfigCommand, handleDebugCommand } from "./commands-config.js";
+import { handleMemoryCommand, handleSharedMemoryReviewCommand } from "./commands-memory.js";
 import {
   handleCommandsListCommand,
   handleContextCommand,
@@ -36,6 +37,8 @@ const HANDLERS: CommandHandler[] = [
   handleWhoamiCommand,
   handleConfigCommand,
   handleDebugCommand,
+  handleSharedMemoryReviewCommand,
+  handleMemoryCommand,
   handleStopCommand,
   handleCompactCommand,
   handleAbortTrigger,

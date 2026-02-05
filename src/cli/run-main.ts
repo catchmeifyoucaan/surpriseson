@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { loadDotEnv } from "../infra/dotenv.js";
 import { normalizeEnv } from "../infra/env.js";
 import { isMainModule } from "../infra/is-main.js";
-import { ensureClawdbotCliOnPath } from "../infra/path-env.js";
+import { ensureSurprisebotCliOnPath } from "../infra/path-env.js";
 import { assertSupportedRuntime } from "../infra/runtime-guard.js";
 import { installUnhandledRejectionHandler } from "../infra/unhandled-rejections.js";
 import { enableConsoleCapture } from "../logging.js";
@@ -21,7 +21,7 @@ export function rewriteUpdateFlagArgv(argv: string[]): string[] {
 export async function runCli(argv: string[] = process.argv) {
   loadDotEnv({ quiet: true });
   normalizeEnv();
-  ensureClawdbotCliOnPath();
+  ensureSurprisebotCliOnPath();
 
   // Capture all console output into structured logs while keeping stdout/stderr behavior.
   enableConsoleCapture();
@@ -37,7 +37,7 @@ export async function runCli(argv: string[] = process.argv) {
   installUnhandledRejectionHandler();
 
   process.on("uncaughtException", (error) => {
-    console.error("[clawdbot] Uncaught exception:", error.stack ?? error.message);
+    console.error("[surprisebot] Uncaught exception:", error.stack ?? error.message);
     process.exit(1);
   });
 

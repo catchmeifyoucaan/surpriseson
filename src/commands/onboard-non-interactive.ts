@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { readConfigFileSnapshot } from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -12,12 +12,12 @@ export async function runNonInteractiveOnboarding(
 ) {
   const snapshot = await readConfigFileSnapshot();
   if (snapshot.exists && !snapshot.valid) {
-    runtime.error("Config invalid. Run `clawdbot doctor` to repair it, then re-run onboarding.");
+    runtime.error("Config invalid. Run `surprisebot doctor` to repair it, then re-run onboarding.");
     runtime.exit(1);
     return;
   }
 
-  const baseConfig: ClawdbotConfig = snapshot.valid ? snapshot.config : {};
+  const baseConfig: SurprisebotConfig = snapshot.valid ? snapshot.config : {};
   const mode = opts.mode ?? "local";
   if (mode !== "local" && mode !== "remote") {
     runtime.error(`Invalid --mode "${String(mode)}" (use local|remote).`);

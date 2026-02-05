@@ -44,7 +44,7 @@ export function formatElevatedUnavailableText(params: {
     );
   }
   if (params.sessionKey) {
-    lines.push(`See: clawdbot sandbox explain --session ${params.sessionKey}`);
+    lines.push(`See: surprisebot sandbox explain --session ${params.sessionKey}`);
   }
   return lines.join("\n");
 }

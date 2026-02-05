@@ -8,15 +8,17 @@ read_when:
 
 # Installer internals
 
-Surprisebot ships two installer scripts (served from `surprisebot.bot`):
+Surprisebot ships two installer scripts (served from `surprisebot.bot` (also vendored in this repo under `public/`)):
 
-- `https://surprisebot.bot/install.sh` — “recommended” installer (global npm install by default; can also install from a GitHub checkout)
-- `https://surprisebot.bot/install-cli.sh` — non-root-friendly CLI installer (installs into a prefix with its own Node)
+- `https://surprisebot.bot/install.sh` — “recommended” installer (global npm install by default; can also install from a GitHub checkout). Repo copy: `public/install.sh`
+- `https://surprisebot.bot/install-cli.sh` — non-root-friendly CLI installer (installs into a prefix with its own Node). Repo copy: `public/install-cli.sh`
 
 To see the current flags/behavior, run:
 
 ```bash
 curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --help
+# or (repo)
+./public/install.sh --help
 ```
 
 ## install.sh (recommended)
@@ -89,3 +91,19 @@ surprisebot init --quickstart
 
 This creates state/workspace and runs onboarding (QuickStart).
 
+
+
+### Minimal install (installer)
+
+```bash
+curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --minimal
+```
+
+
+## Windows PowerShell
+
+```powershell
+iwr -useb https://surprisebot.bot/install.ps1 | iex
+```
+
+Repo copy: `public/install.ps1`.

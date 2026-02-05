@@ -46,7 +46,7 @@ export async function runDaemonInstall(opts: DaemonInstallOptions) {
   }
 
   const service = resolveGatewayService();
-  const profile = process.env.CLAWDBOT_PROFILE;
+  const profile = process.env.SURPRISEBOT_PROFILE;
   let loaded = false;
   try {
     loaded = await service.isLoaded({ profile });
@@ -58,7 +58,7 @@ export async function runDaemonInstall(opts: DaemonInstallOptions) {
   if (loaded) {
     if (!opts.force) {
       defaultRuntime.log(`Gateway service already ${service.loadedText}.`);
-      defaultRuntime.log("Reinstall with: clawdbot daemon install --force");
+      defaultRuntime.log("Reinstall with: surprisebot daemon install --force");
       return;
     }
   }
@@ -83,7 +83,7 @@ export async function runDaemonInstall(opts: DaemonInstallOptions) {
   const environment = buildServiceEnvironment({
     env: process.env,
     port,
-    token: opts.token || cfg.gateway?.auth?.token || process.env.CLAWDBOT_GATEWAY_TOKEN,
+    token: opts.token || cfg.gateway?.auth?.token || process.env.SURPRISEBOT_GATEWAY_TOKEN,
     launchdLabel:
       process.platform === "darwin" ? resolveGatewayLaunchAgentLabel(profile) : undefined,
   });

@@ -3,12 +3,12 @@
 ## 2026.1.14
 
 ### Changes
-- Version alignment with core Clawdbot release numbers.
+- Version alignment with core Surprisebot release numbers.
 
 ## 0.1.0
 
 ### Highlights
-- First public release of the @clawdbot/voice-call plugin.
+- First public release of the @surprisebot/voice-call plugin.
 
 ### Features
 - Providers: Twilio (Programmable Voice + Media Streams), Telnyx (Call Control v2), and mock provider for local dev.
@@ -20,6 +20,6 @@
 - Speech: OpenAI TTS (model/voice/instructions) with Twilio `<Say>` fallback.
 - Tooling: `voice_call` tool actions for initiate/continue/speak/end/status.
 - Gateway RPC: `voicecall.initiate|continue|speak|end|status` (+ legacy `voicecall.start`).
-- CLI: `clawdbot voicecall` commands (call/start/continue/speak/end/status/tail/expose).
+- CLI: `surprisebot voicecall` commands (call/start/continue/speak/end/status/tail/expose).
 - Observability: JSONL call logs and `voicecall tail` for live inspection.
 - Response controls: `responseModel`, `responseSystemPrompt`, and `responseTimeoutMs` for auto‑responses.

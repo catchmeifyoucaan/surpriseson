@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 
 import { Type } from "@sinclair/typebox";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { scheduleGatewaySigusr1Restart } from "../../infra/restart.js";
 import {
   DOCTOR_NONINTERACTIVE_HINT,
@@ -48,7 +48,7 @@ const GatewayToolSchema = Type.Object({
 
 export function createGatewayTool(opts?: {
   agentSessionKey?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
 }): AnyAgentTool {
   return {
     label: "Gateway",

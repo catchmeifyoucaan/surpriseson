@@ -43,6 +43,7 @@ import { renderCron } from "./views/cron";
 import { renderDebug } from "./views/debug";
 import { renderInstances } from "./views/instances";
 import { renderLogs } from "./views/logs";
+import { renderMissionControl } from "./views/mission-control";
 import { renderNodes } from "./views/nodes";
 import { renderOverview } from "./views/overview";
 import { renderSessions } from "./views/sessions";
@@ -104,7 +105,7 @@ export function renderApp(state: AppViewState) {
             <span class="nav-collapse-toggle__icon">☰</span>
           </button>
           <div class="brand">
-            <div class="brand-title">CLAWDBOT</div>
+            <div class="brand-title">SURPRISEBOT</div>
             <div class="brand-sub">Gateway Dashboard</div>
           </div>
         </div>
@@ -151,7 +152,7 @@ export function renderApp(state: AppViewState) {
           <div class="nav-group__items">
             <a
               class="nav-item nav-item--external"
-              href="https://docs.clawd.bot"
+              href="https://docs.surprisebot.bot"
               target="_blank"
               rel="noreferrer"
               title="Docs (opens in new tab)"
@@ -442,6 +443,30 @@ export function renderApp(state: AppViewState) {
               onCallParamsChange: (next) => (state.debugCallParams = next),
               onRefresh: () => loadDebug(state),
               onCall: () => callDebugMethod(state),
+            })
+          : nothing}
+
+        ${state.tab === "mission-control"
+          ? renderMissionControl({
+              loading: state.missionControlLoading,
+              error: state.missionControlError,
+              snapshot: state.missionControlSnapshot,
+              selectedTaskId: state.missionControlSelectedTaskId,
+              filters: state.missionControlFilters,
+              onSelectTask: (id) => state.handleMissionControlSelectTask(id),
+              onFiltersUpdate: (next) => state.handleMissionControlFiltersUpdate(next),
+              onRefresh: () => state.handleLoadMissionControl(),
+              onTaskUpdate: (id, patch) => state.handleMissionControlTaskUpdate(id, patch),
+              onTaskQa: (id, action) => state.handleMissionControlQa(id, action),
+              onTaskRequeue: (id) => state.handleMissionControlRequeue(id),
+              onKillSwitch: (enabled) => state.handleMissionControlKillSwitch(enabled),
+              onBudgetMode: (mode) => state.handleMissionControlBudgetMode(mode),
+              paging: state.missionControlPaging,
+              denseMode: state.missionControlDenseMode,
+              quickOpen: state.missionControlQuickOpen,
+              onToggleDense: () => state.handleMissionControlToggleDense(),
+              onToggleQuick: (force) => state.handleMissionControlQuickToggle(force),
+              onPageChange: (section, direction) => state.handleMissionControlPageChange(section, direction),
             })
           : nothing}
 

@@ -247,7 +247,7 @@ export async function runTui(opts: TuiOptions) {
     const agentLabel = formatAgentLabel(currentAgentId);
     header.setText(
       theme.header(
-        `clawdbot tui - ${client.connection.url} - agent ${agentLabel} - session ${sessionLabel}`,
+        `surprisebot tui - ${client.connection.url} - agent ${agentLabel} - session ${sessionLabel}`,
       ),
     );
   };

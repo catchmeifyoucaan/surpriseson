@@ -12,7 +12,7 @@ import type {
   ChannelMessageActionName,
   ChannelThreadingToolContext,
 } from "../../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { GatewayClientMode, GatewayClientName } from "../../utils/message-channel.js";
 import { resolveMessageChannelSelection } from "./channel-selection.js";
 import type { OutboundSendDeps } from "./deliver.js";
@@ -29,7 +29,7 @@ export type MessageActionRunnerGateway = {
 };
 
 export type RunMessageActionParams = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   action: ChannelMessageActionName;
   params: Record<string, unknown>;
   defaultAccountId?: string;
@@ -167,7 +167,7 @@ function enforceContextIsolation(params: {
   );
 }
 
-async function resolveChannel(cfg: ClawdbotConfig, params: Record<string, unknown>) {
+async function resolveChannel(cfg: SurprisebotConfig, params: Record<string, unknown>) {
   const channelHint = readStringParam(params, "channel");
   const selection = await resolveMessageChannelSelection({
     cfg,

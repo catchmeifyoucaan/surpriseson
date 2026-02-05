@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import type { getChildLogger as getChildLoggerFn } from "../logging.js";
 import type {
   MSTeamsConversationStore,
@@ -81,7 +81,7 @@ async function findConversationReference(recipient: {
 }
 
 export async function resolveMSTeamsSendContext(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   to: string;
 }): Promise<MSTeamsProactiveContext> {
   const msteamsCfg = params.cfg.channels?.msteams;

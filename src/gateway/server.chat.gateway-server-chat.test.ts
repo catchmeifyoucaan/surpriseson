@@ -92,7 +92,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.send blocked by send policy", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     testState.sessionConfig = {
       sendPolicy: {
@@ -139,7 +139,7 @@ describe("gateway server chat", () => {
   });
 
   test("agent blocked by send policy for sessionKey", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     testState.sessionConfig = {
       sendPolicy: {
@@ -234,7 +234,7 @@ describe("gateway server chat", () => {
       return typeof text === "string" ? text : undefined;
     };
 
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -321,7 +321,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.history prefers sessionFile when set", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
 
     const forkedPath = path.join(dir, "sess-forked.jsonl");
@@ -391,7 +391,7 @@ describe("gateway server chat", () => {
         reasoning: true,
       },
     ];
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

@@ -9,6 +9,7 @@ import { cronHandlers } from "./server-methods/cron.js";
 import { healthHandlers } from "./server-methods/health.js";
 import { logsHandlers } from "./server-methods/logs.js";
 import { modelsHandlers } from "./server-methods/models.js";
+import { missionControlHandlers } from "./server-methods/mission-control.js";
 import { nodeHandlers } from "./server-methods/nodes.js";
 import { sendHandlers } from "./server-methods/send.js";
 import { sessionsHandlers } from "./server-methods/sessions.js";
@@ -32,6 +33,7 @@ export const coreGatewayHandlers: GatewayRequestHandlers = {
   ...cronHandlers,
   ...webHandlers,
   ...modelsHandlers,
+  ...missionControlHandlers,
   ...configHandlers,
   ...wizardHandlers,
   ...talkHandlers,

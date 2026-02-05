@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot message` (send + channel actions)"
+summary: "CLI reference for `surprisebot message` (send + channel actions)"
 read_when:
   - Adding or modifying message CLI actions
   - Changing outbound channel behavior
 ---
 
-# `clawdbot message`
+# `surprisebot message`
 
 Single outbound command for sending messages and channel actions
 (Discord/Slack/Telegram/WhatsApp/Signal/iMessage/MS Teams).
@@ -13,7 +13,7 @@ Single outbound command for sending messages and channel actions
 ## Usage
 
 ```
-clawdbot message <subcommand> [flags]
+surprisebot message <subcommand> [flags]
 ```
 
 Channel selection:
@@ -170,13 +170,13 @@ Target formats (`--to`):
 
 Send a Discord reply:
 ```
-clawdbot message send --channel discord \
+surprisebot message send --channel discord \
   --to channel:123 --message "hi" --reply-to 456
 ```
 
 Create a Discord poll:
 ```
-clawdbot message poll --channel discord \
+surprisebot message poll --channel discord \
   --to channel:123 \
   --poll-question "Snack?" \
   --poll-option Pizza --poll-option Sushi \
@@ -185,13 +185,13 @@ clawdbot message poll --channel discord \
 
 Send a Teams proactive message:
 ```
-clawdbot message send --channel msteams \
+surprisebot message send --channel msteams \
   --to conversation:19:abc@thread.tacv2 --message "hi"
 ```
 
 Create a Teams poll:
 ```
-clawdbot message poll --channel msteams \
+surprisebot message poll --channel msteams \
   --to conversation:19:abc@thread.tacv2 \
   --poll-question "Lunch?" \
   --poll-option Pizza --poll-option Sushi
@@ -199,12 +199,12 @@ clawdbot message poll --channel msteams \
 
 React in Slack:
 ```
-clawdbot message react --channel slack \
+surprisebot message react --channel slack \
   --to C123 --message-id 456 --emoji "✅"
 ```
 
 Send Telegram inline buttons:
 ```
-clawdbot message send --channel telegram --to @mychat --message "Choose:" \
+surprisebot message send --channel telegram --to @mychat --message "Choose:" \
   --buttons '[ [{"text":"Yes","callback_data":"cmd:yes"}], [{"text":"No","callback_data":"cmd:no"}] ]'
 ```

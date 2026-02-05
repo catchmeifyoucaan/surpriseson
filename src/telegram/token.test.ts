@@ -4,11 +4,11 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveTelegramToken } from "./token.js";
 
 function withTempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "clawdbot-telegram-token-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "surprisebot-telegram-token-"));
 }
 
 describe("resolveTelegramToken", () => {
@@ -20,7 +20,7 @@ describe("resolveTelegramToken", () => {
     vi.stubEnv("TELEGRAM_BOT_TOKEN", "env-token");
     const cfg = {
       channels: { telegram: { botToken: "cfg-token" } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const res = resolveTelegramToken(cfg);
     expect(res.token).toBe("env-token");
     expect(res.source).toBe("env");
@@ -31,7 +31,7 @@ describe("resolveTelegramToken", () => {
     const dir = withTempDir();
     const tokenFile = path.join(dir, "token.txt");
     fs.writeFileSync(tokenFile, "file-token\n", "utf-8");
-    const cfg = { channels: { telegram: { tokenFile } } } as ClawdbotConfig;
+    const cfg = { channels: { telegram: { tokenFile } } } as SurprisebotConfig;
     const res = resolveTelegramToken(cfg);
     expect(res.token).toBe("file-token");
     expect(res.source).toBe("tokenFile");
@@ -42,7 +42,7 @@ describe("resolveTelegramToken", () => {
     vi.stubEnv("TELEGRAM_BOT_TOKEN", "");
     const cfg = {
       channels: { telegram: { botToken: "cfg-token" } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const res = resolveTelegramToken(cfg);
     expect(res.token).toBe("cfg-token");
     expect(res.source).toBe("config");
@@ -54,7 +54,7 @@ describe("resolveTelegramToken", () => {
     const tokenFile = path.join(dir, "missing-token.txt");
     const cfg = {
       channels: { telegram: { tokenFile, botToken: "cfg-token" } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const res = resolveTelegramToken(cfg);
     expect(res.token).toBe("");
     expect(res.source).toBe("none");

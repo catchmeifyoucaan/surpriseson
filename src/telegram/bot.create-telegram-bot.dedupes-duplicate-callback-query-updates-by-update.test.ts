@@ -168,7 +168,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({}),
     };
 
@@ -204,7 +204,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({}),
     });
 
@@ -219,7 +219,7 @@ describe("createTelegramBot", () => {
           message_id: 9001,
         },
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({}),
     });
 

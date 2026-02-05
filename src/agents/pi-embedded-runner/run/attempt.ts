@@ -12,7 +12,7 @@ import { getMachineDisplayName } from "../../../infra/machine-name.js";
 import { normalizeMessageChannel } from "../../../utils/message-channel.js";
 import { isReasoningTagProvider } from "../../../utils/provider-utils.js";
 import { resolveUserPath } from "../../../utils.js";
-import { resolveClawdbotAgentDir } from "../../agent-paths.js";
+import { resolveSurprisebotAgentDir } from "../../agent-paths.js";
 import { resolveSessionAgentIds } from "../../agent-scope.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
 import {
@@ -27,7 +27,7 @@ import {
   ensurePiCompactionReserveTokens,
   resolveCompactionReserveTokensFloor,
 } from "../../pi-settings.js";
-import { createClawdbotCodingTools } from "../../pi-tools.js";
+import { createSurprisebotCodingTools } from "../../pi-tools.js";
 import { resolveSandboxContext } from "../../sandbox.js";
 import { guardSessionManager } from "../../session-tool-result-guard-wrapper.js";
 import { acquireSessionWriteLock } from "../../session-write-lock.js";
@@ -127,9 +127,9 @@ export async function runEmbeddedAttempt(
       warn: (message) => log.warn(`${message} (sessionKey=${sessionLabel})`),
     });
 
-    const agentDir = params.agentDir ?? resolveClawdbotAgentDir();
+    const agentDir = params.agentDir ?? resolveSurprisebotAgentDir();
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       exec: {
         ...resolveExecToolDefaults(params.config),
         elevated: params.bashElevated,
@@ -335,6 +335,7 @@ export async function runEmbeddedAttempt(
         runId: params.runId,
         verboseLevel: params.verboseLevel,
         reasoningMode: params.reasoningLevel ?? "off",
+        toolResultPolicy: params.toolResultPolicy,
         shouldEmitToolResult: params.shouldEmitToolResult,
         onToolResult: params.onToolResult,
         onReasoningStream: params.onReasoningStream,
@@ -353,6 +354,8 @@ export async function runEmbeddedAttempt(
         toolMetas,
         unsubscribe,
         waitForCompactionRetry,
+        getPendingToolCalls,
+        getToolCallCounts,
         getMessagingToolSentTexts,
         getMessagingToolSentTargets,
         didSendViaMessagingTool,
@@ -389,6 +392,8 @@ export async function runEmbeddedAttempt(
 
       let messagesSnapshot: AgentMessage[] = [];
       let sessionIdUsed = activeSession.sessionId;
+      let pendingToolCalls = getPendingToolCalls?.() ?? [];
+      let toolCallCounts = getToolCallCounts?.();
       const onAbort = () => abortRun();
       if (params.abortSignal) {
         if (params.abortSignal.aborted) {
@@ -426,6 +431,8 @@ export async function runEmbeddedAttempt(
 
         messagesSnapshot = activeSession.messages.slice();
         sessionIdUsed = activeSession.sessionId;
+        pendingToolCalls = getPendingToolCalls?.() ?? [];
+        toolCallCounts = getToolCallCounts?.();
       } finally {
         clearTimeout(abortTimer);
         if (abortWarnTimer) clearTimeout(abortWarnTimer);
@@ -455,6 +462,8 @@ export async function runEmbeddedAttempt(
         messagesSnapshot,
         assistantTexts,
         toolMetas: toolMetasNormalized,
+        pendingToolCalls,
+        toolCallCounts,
         lastAssistant,
         didSendViaMessagingTool: didSendViaMessagingTool(),
         messagingToolSentTexts: getMessagingToolSentTexts(),

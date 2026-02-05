@@ -1,5 +1,5 @@
 import type { SkillSnapshot } from "../../../agents/skills.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { SessionEntry } from "../../../config/sessions.js";
 import type { OriginatingChannelType } from "../../templating.js";
 import type { ElevatedLevel, ReasoningLevel, ThinkLevel, VerboseLevel } from "../directives.js";
@@ -47,7 +47,7 @@ export type FollowupRun = {
     agentAccountId?: string;
     sessionFile: string;
     workspaceDir: string;
-    config: ClawdbotConfig;
+    config: SurprisebotConfig;
     skillsSnapshot?: SkillSnapshot;
     provider: string;
     model: string;
@@ -70,7 +70,7 @@ export type FollowupRun = {
 };
 
 export type ResolveQueueSettingsParams = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel?: string;
   sessionEntry?: SessionEntry;
   inlineMode?: QueueMode;

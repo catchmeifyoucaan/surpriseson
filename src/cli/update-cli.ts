@@ -1,7 +1,7 @@
 import { spinner } from "@clack/prompts";
 import type { Command } from "commander";
 
-import { resolveClawdbotPackageRoot } from "../infra/clawdbot-root.js";
+import { resolveSurprisebotPackageRoot } from "../infra/surprisebot-root.js";
 import {
   runGatewayUpdate,
   type UpdateRunResult,
@@ -26,7 +26,7 @@ const STEP_LABELS: Record<string, string> = {
   "deps install": "Installing dependencies",
   build: "Building",
   "ui:build": "Building UI",
-  "clawdbot doctor": "Running doctor checks",
+  "surprisebot doctor": "Running doctor checks",
   "git rev-parse HEAD (after)": "Verifying update",
 };
 
@@ -166,12 +166,12 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
   const showProgress = !opts.json && process.stdout.isTTY;
 
   if (!opts.json) {
-    defaultRuntime.log(theme.heading("Updating Clawdbot..."));
+    defaultRuntime.log(theme.heading("Updating Surprisebot..."));
     defaultRuntime.log("");
   }
 
   const root =
-    (await resolveClawdbotPackageRoot({
+    (await resolveSurprisebotPackageRoot({
       moduleUrl: import.meta.url,
       argv1: process.argv[1],
       cwd: process.cwd(),
@@ -206,12 +206,12 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
     if (result.reason === "not-git-install") {
       defaultRuntime.log(
         theme.warn(
-          "Skipped: this Clawdbot install isn't a git checkout. Update via your package manager, then run `clawdbot doctor` and `clawdbot daemon restart`.",
+          "Skipped: this Surprisebot install isn't a git checkout. Update via your package manager, then run `surprisebot doctor` and `surprisebot daemon restart`.",
         ),
       );
       defaultRuntime.log(
         theme.muted(
-          "Examples: `npm i -g clawdbot@latest`, `pnpm add -g clawdbot@latest`, or `bun add -g clawdbot@latest`",
+          "Examples: `npm i -g surprisebot@latest`, `pnpm add -g surprisebot@latest`, or `bun add -g surprisebot@latest`",
         ),
       );
     }
@@ -231,28 +231,28 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
       if (!opts.json && restarted) {
         defaultRuntime.log(theme.success("Daemon restarted successfully."));
         defaultRuntime.log("");
-        process.env.CLAWDBOT_UPDATE_IN_PROGRESS = "1";
+        process.env.SURPRISEBOT_UPDATE_IN_PROGRESS = "1";
         try {
           const { doctorCommand } = await import("../commands/doctor.js");
           await doctorCommand(defaultRuntime, { nonInteractive: true });
         } catch (err) {
           defaultRuntime.log(theme.warn(`Doctor failed: ${String(err)}`));
         } finally {
-          delete process.env.CLAWDBOT_UPDATE_IN_PROGRESS;
+          delete process.env.SURPRISEBOT_UPDATE_IN_PROGRESS;
         }
       }
     } catch (err) {
       if (!opts.json) {
         defaultRuntime.log(theme.warn(`Daemon restart failed: ${String(err)}`));
         defaultRuntime.log(
-          theme.muted("You may need to restart the daemon manually: clawdbot daemon restart"),
+          theme.muted("You may need to restart the daemon manually: surprisebot daemon restart"),
         );
       }
     }
   } else if (!opts.json) {
     defaultRuntime.log("");
     defaultRuntime.log(
-      theme.muted("Tip: Run `clawdbot daemon restart` to apply updates to a running gateway."),
+      theme.muted("Tip: Run `surprisebot daemon restart` to apply updates to a running gateway."),
     );
   }
 }
@@ -260,7 +260,7 @@ export async function updateCommand(opts: UpdateCommandOptions): Promise<void> {
 export function registerUpdateCli(program: Command) {
   program
     .command("update")
-    .description("Update Clawdbot to the latest version")
+    .description("Update Surprisebot to the latest version")
     .option("--json", "Output result as JSON", false)
     .option("--restart", "Restart the gateway daemon after a successful update", false)
     .option("--timeout <seconds>", "Timeout for each update step in seconds (default: 1200)")
@@ -269,17 +269,17 @@ export function registerUpdateCli(program: Command) {
       () =>
         `
 Examples:
-  clawdbot update                   # Update a source checkout (git)
-  clawdbot update --restart         # Update and restart the daemon
-  clawdbot update --json            # Output result as JSON
-  clawdbot --update                 # Shorthand for clawdbot update
+  surprisebot update                   # Update a source checkout (git)
+  surprisebot update --restart         # Update and restart the daemon
+  surprisebot update --json            # Output result as JSON
+  surprisebot --update                 # Shorthand for surprisebot update
 
 Notes:
   - For git installs: fetches, rebases, installs deps, builds, and runs doctor
   - For global installs: use npm/pnpm/bun to reinstall (see docs/install/updating.md)
   - Skips update if the working directory has uncommitted changes
 
-${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.clawd.bot/cli/update")}`,
+${theme.muted("Docs:")} ${formatDocsLink("/cli/update", "docs.surprisebot.bot/cli/update")}`,
     )
     .action(async (opts) => {
       try {

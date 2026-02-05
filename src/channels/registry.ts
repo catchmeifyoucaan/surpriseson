@@ -20,7 +20,7 @@ export const DEFAULT_CHAT_CHANNEL: ChatChannelId = "whatsapp";
 
 export type ChatChannelMeta = ChannelMeta;
 
-const WEBSITE_URL = "https://clawd.bot";
+const WEBSITE_URL = "https://surprisebot.bot";
 
 const CHAT_CHANNEL_META: Record<ChatChannelId, ChannelMeta> = {
   telegram: {

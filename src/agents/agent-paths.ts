@@ -4,17 +4,17 @@ import { resolveStateDir } from "../config/paths.js";
 import { DEFAULT_AGENT_ID } from "../routing/session-key.js";
 import { resolveUserPath } from "../utils.js";
 
-export function resolveClawdbotAgentDir(): string {
+export function resolveSurprisebotAgentDir(): string {
   const override =
-    process.env.CLAWDBOT_AGENT_DIR?.trim() || process.env.PI_CODING_AGENT_DIR?.trim();
+    process.env.SURPRISEBOT_AGENT_DIR?.trim() || process.env.PI_CODING_AGENT_DIR?.trim();
   if (override) return resolveUserPath(override);
   const defaultAgentDir = path.join(resolveStateDir(), "agents", DEFAULT_AGENT_ID, "agent");
   return resolveUserPath(defaultAgentDir);
 }
 
-export function ensureClawdbotAgentEnv(): string {
-  const dir = resolveClawdbotAgentDir();
-  if (!process.env.CLAWDBOT_AGENT_DIR) process.env.CLAWDBOT_AGENT_DIR = dir;
+export function ensureSurprisebotAgentEnv(): string {
+  const dir = resolveSurprisebotAgentDir();
+  if (!process.env.SURPRISEBOT_AGENT_DIR) process.env.SURPRISEBOT_AGENT_DIR = dir;
   if (!process.env.PI_CODING_AGENT_DIR) process.env.PI_CODING_AGENT_DIR = dir;
   return dir;
 }

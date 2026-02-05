@@ -10,7 +10,7 @@ read_when:
 
 A **node** is a companion device (iOS/Android today) that connects to the Gateway over the **Bridge** and exposes a command surface (e.g. `canvas.*`, `camera.*`, `system.*`) via `node.invoke`. Bridge protocol details: [Bridge protocol](/gateway/bridge-protocol).
 
-macOS can also run in **node mode**: the menubar app connects to the Gateway’s bridge and exposes its local canvas/camera commands as a node (so `clawdbot nodes …` works against this Mac).
+macOS can also run in **node mode**: the menubar app connects to the Gateway’s bridge and exposes its local canvas/camera commands as a node (so `surprisebot nodes …` works against this Mac).
 
 Notes:
 - Nodes are **peripherals**, not gateways. They don’t run the gateway daemon.
@@ -23,12 +23,12 @@ Pairing is gateway-owned and approval-based. See [Gateway pairing](/gateway/pair
 Quick CLI:
 
 ```bash
-clawdbot nodes pending
-clawdbot nodes approve <requestId>
-clawdbot nodes reject <requestId>
-clawdbot nodes status
-clawdbot nodes describe --node <idOrNameOrIp>
-clawdbot nodes rename --node <idOrNameOrIp> --name "Kitchen iPad"
+surprisebot nodes pending
+surprisebot nodes approve <requestId>
+surprisebot nodes reject <requestId>
+surprisebot nodes status
+surprisebot nodes describe --node <idOrNameOrIp>
+surprisebot nodes rename --node <idOrNameOrIp> --name "Kitchen iPad"
 ```
 
 Notes:
@@ -39,7 +39,7 @@ Notes:
 Low-level (raw RPC):
 
 ```bash
-clawdbot nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
+surprisebot nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
 ```
 
 Higher-level helpers exist for the common “give the agent a MEDIA attachment” workflows.
@@ -51,17 +51,17 @@ If the node is showing the Canvas (WebView), `canvas.snapshot` returns `{ format
 CLI helper (writes to a temp file and prints `MEDIA:<path>`):
 
 ```bash
-clawdbot nodes canvas snapshot --node <idOrNameOrIp> --format png
-clawdbot nodes canvas snapshot --node <idOrNameOrIp> --format jpg --max-width 1200 --quality 0.9
+surprisebot nodes canvas snapshot --node <idOrNameOrIp> --format png
+surprisebot nodes canvas snapshot --node <idOrNameOrIp> --format jpg --max-width 1200 --quality 0.9
 ```
 
 ### Canvas controls
 
 ```bash
-clawdbot nodes canvas present --node <idOrNameOrIp> --target https://example.com
-clawdbot nodes canvas hide --node <idOrNameOrIp>
-clawdbot nodes canvas navigate https://example.com --node <idOrNameOrIp>
-clawdbot nodes canvas eval --node <idOrNameOrIp> --js "document.title"
+surprisebot nodes canvas present --node <idOrNameOrIp> --target https://example.com
+surprisebot nodes canvas hide --node <idOrNameOrIp>
+surprisebot nodes canvas navigate https://example.com --node <idOrNameOrIp>
+surprisebot nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 ```
 
 Notes:
@@ -71,9 +71,9 @@ Notes:
 ### A2UI (Canvas)
 
 ```bash
-clawdbot nodes canvas a2ui push --node <idOrNameOrIp> --text "Hello"
-clawdbot nodes canvas a2ui push --node <idOrNameOrIp> --jsonl ./payload.jsonl
-clawdbot nodes canvas a2ui reset --node <idOrNameOrIp>
+surprisebot nodes canvas a2ui push --node <idOrNameOrIp> --text "Hello"
+surprisebot nodes canvas a2ui push --node <idOrNameOrIp> --jsonl ./payload.jsonl
+surprisebot nodes canvas a2ui reset --node <idOrNameOrIp>
 ```
 
 Notes:
@@ -84,16 +84,16 @@ Notes:
 Photos (`jpg`):
 
 ```bash
-clawdbot nodes camera list --node <idOrNameOrIp>
-clawdbot nodes camera snap --node <idOrNameOrIp>            # default: both facings (2 MEDIA lines)
-clawdbot nodes camera snap --node <idOrNameOrIp> --facing front
+surprisebot nodes camera list --node <idOrNameOrIp>
+surprisebot nodes camera snap --node <idOrNameOrIp>            # default: both facings (2 MEDIA lines)
+surprisebot nodes camera snap --node <idOrNameOrIp> --facing front
 ```
 
 Video clips (`mp4`):
 
 ```bash
-clawdbot nodes camera clip --node <idOrNameOrIp> --duration 10s
-clawdbot nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
+surprisebot nodes camera clip --node <idOrNameOrIp> --duration 10s
+surprisebot nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 ```
 
 Notes:
@@ -106,8 +106,8 @@ Notes:
 Nodes expose `screen.record` (mp4). Example:
 
 ```bash
-clawdbot nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
-clawdbot nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-audio
+surprisebot nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
+surprisebot nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-audio
 ```
 
 Notes:
@@ -124,8 +124,8 @@ Nodes expose `location.get` when Location is enabled in settings.
 CLI helper:
 
 ```bash
-clawdbot nodes location get --node <idOrNameOrIp>
-clawdbot nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
+surprisebot nodes location get --node <idOrNameOrIp>
+surprisebot nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
 ```
 
 Notes:
@@ -140,7 +140,7 @@ Android nodes can expose `sms.send` when the user grants **SMS** permission and 
 Low-level invoke:
 
 ```bash
-clawdbot nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from Clawdbot"}'
+surprisebot nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from Surprisebot"}'
 ```
 
 Notes:
@@ -154,8 +154,8 @@ The macOS node exposes `system.run` and `system.notify`.
 Examples:
 
 ```bash
-clawdbot nodes run --node <idOrNameOrIp> -- echo "Hello from mac node"
-clawdbot nodes notify --node <idOrNameOrIp> --title "Ping" --body "Gateway ready"
+surprisebot nodes run --node <idOrNameOrIp> -- echo "Hello from mac node"
+surprisebot nodes notify --node <idOrNameOrIp> --title "Ping" --body "Gateway ready"
 ```
 
 Notes:
@@ -170,5 +170,5 @@ Nodes may include a `permissions` map in `node.list` / `node.describe`, keyed by
 
 ## Mac node mode
 
-- The macOS menubar app connects to the Gateway bridge as a node (so `clawdbot nodes …` works against this Mac).
+- The macOS menubar app connects to the Gateway bridge as a node (so `surprisebot nodes …` works against this Mac).
 - In remote mode, the app opens an SSH tunnel for the bridge port and connects to `localhost`.

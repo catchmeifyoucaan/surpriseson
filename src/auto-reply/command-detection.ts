@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import {
   type CommandNormalizeOptions,
   listChatCommands,
@@ -9,7 +9,7 @@ import { isAbortTrigger } from "./reply/abort.js";
 
 export function hasControlCommand(
   text?: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
   options?: CommandNormalizeOptions,
 ): boolean {
   if (!text) return false;
@@ -35,7 +35,7 @@ export function hasControlCommand(
 
 export function isControlCommandMessage(
   text?: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
   options?: CommandNormalizeOptions,
 ): boolean {
   if (!text) return false;

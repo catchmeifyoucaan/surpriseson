@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
-import { runWithModelFallback } from "./model-fallback.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { __resetCliCooldownsForTest, runWithModelFallback } from "./model-fallback.js";
 
-function makeCfg(overrides: Partial<ClawdbotConfig> = {}): ClawdbotConfig {
+function makeCfg(overrides: Partial<SurprisebotConfig> = {}): SurprisebotConfig {
   return {
     agents: {
       defaults: {
@@ -14,10 +14,57 @@ function makeCfg(overrides: Partial<ClawdbotConfig> = {}): ClawdbotConfig {
       },
     },
     ...overrides,
-  } as ClawdbotConfig;
+  } as SurprisebotConfig;
 }
 
 describe("runWithModelFallback", () => {
+  it("skips CLI candidates in cooldown after rate limits", async () => {
+    __resetCliCooldownsForTest();
+    const cfg = {
+      agents: {
+        defaults: {
+          model: {
+            primary: "codex-cli-seat1/gpt-5.2-codex",
+            fallbacks: ["codex-cli-seat2/gpt-5.2-codex"],
+          },
+          cliBackends: {
+            "codex-cli-seat1": { command: "codex" },
+            "codex-cli-seat2": { command: "codex" },
+          },
+        },
+      },
+    } as SurprisebotConfig;
+
+    const calls: Array<{ provider: string; model: string }> = [];
+
+    await runWithModelFallback({
+      cfg,
+      provider: "codex-cli-seat1",
+      model: "gpt-5.2-codex",
+      run: async (provider, model) => {
+        calls.push({ provider, model });
+        if (provider === "codex-cli-seat1") {
+          throw Object.assign(new Error("429 too many requests"), { status: 429 });
+        }
+        return "ok";
+      },
+    });
+
+    const callsAfterCooldown: Array<{ provider: string; model: string }> = [];
+    await runWithModelFallback({
+      cfg,
+      provider: "codex-cli-seat1",
+      model: "gpt-5.2-codex",
+      run: async (provider, model) => {
+        callsAfterCooldown.push({ provider, model });
+        return "ok";
+      },
+    });
+
+    expect(calls[0]).toEqual({ provider: "codex-cli-seat1", model: "gpt-5.2-codex" });
+    expect(calls[1]).toEqual({ provider: "codex-cli-seat2", model: "gpt-5.2-codex" });
+    expect(callsAfterCooldown[0]).toEqual({ provider: "codex-cli-seat2", model: "gpt-5.2-codex" });
+  });
   it("does not fall back on non-auth errors", async () => {
     const cfg = makeCfg();
     const run = vi.fn().mockRejectedValueOnce(new Error("bad request")).mockResolvedValueOnce("ok");
@@ -156,7 +203,7 @@ describe("runWithModelFallback", () => {
           },
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const calls: Array<{ provider: string; model: string }> = [];
 
@@ -193,7 +240,7 @@ describe("runWithModelFallback", () => {
           },
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
 
     const calls: Array<{ provider: string; model: string }> = [];
 

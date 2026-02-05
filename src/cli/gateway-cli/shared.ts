@@ -63,25 +63,25 @@ export function extractGatewayMiskeys(parsed: unknown): {
 }
 
 export function renderGatewayServiceStopHints(env: NodeJS.ProcessEnv = process.env): string[] {
-  const profile = env.CLAWDBOT_PROFILE;
+  const profile = env.SURPRISEBOT_PROFILE;
   switch (process.platform) {
     case "darwin":
       return [
-        "Tip: clawdbot daemon stop",
+        "Tip: surprisebot daemon stop",
         `Or: launchctl bootout gui/$UID/${resolveGatewayLaunchAgentLabel(profile)}`,
       ];
     case "linux":
       return [
-        "Tip: clawdbot daemon stop",
+        "Tip: surprisebot daemon stop",
         `Or: systemctl --user stop ${resolveGatewaySystemdServiceName(profile)}.service`,
       ];
     case "win32":
       return [
-        "Tip: clawdbot daemon stop",
+        "Tip: surprisebot daemon stop",
         `Or: schtasks /End /TN "${resolveGatewayWindowsTaskName(profile)}"`,
       ];
     default:
-      return ["Tip: clawdbot daemon stop"];
+      return ["Tip: surprisebot daemon stop"];
   }
 }
 
@@ -89,7 +89,7 @@ export async function maybeExplainGatewayServiceStop() {
   const service = resolveGatewayService();
   let loaded: boolean | null = null;
   try {
-    loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+    loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
   } catch {
     loaded = null;
   }

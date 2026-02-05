@@ -11,6 +11,13 @@ This folder is home. Treat it that way.
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
 
+
+## Workspace vs State (required)
+
+- **Workspace**: your editable working directory (default `~/surprisebot`).
+- **State dir**: `~/.surprisebot` (config, tokens, sessions).
+- Keep them separate. Do **not** place the workspace inside the state dir.
+- All long-term memory files live under `memory/` inside the workspace.
 ## Every Session
 
 Before doing anything else:

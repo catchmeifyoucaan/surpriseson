@@ -5,7 +5,7 @@ import { resolveBrowserConfig } from "./config.js";
 let cachedConfigToken: string | null | undefined = undefined;
 
 function getBrowserControlToken(): string | null {
-  const env = process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN?.trim();
+  const env = process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN?.trim();
   if (env) return env;
 
   if (cachedConfigToken !== undefined) return cachedConfigToken;
@@ -31,27 +31,27 @@ function enhanceBrowserFetchError(url: string, err: unknown, timeoutMs: number):
   const code = extractErrorCode(cause) ?? extractErrorCode(err) ?? "";
 
   const hint =
-    "Start (or restart) the Clawdbot gateway (Clawdbot.app menubar, or `clawdbot gateway`) and try again.";
+    "Start (or restart) the Surprisebot gateway (Surprisebot.app menubar, or `surprisebot gateway`) and try again.";
 
   if (code === "ECONNREFUSED") {
     return new Error(
-      `Can't reach the clawd browser control server at ${url} (connection refused). ${hint}`,
+      `Can't reach the surprisebot browser control server at ${url} (connection refused). ${hint}`,
     );
   }
   if (code === "ETIMEDOUT" || code === "UND_ERR_CONNECT_TIMEOUT") {
     return new Error(
-      `Can't reach the clawd browser control server at ${url} (timed out after ${timeoutMs}ms). ${hint}`,
+      `Can't reach the surprisebot browser control server at ${url} (timed out after ${timeoutMs}ms). ${hint}`,
     );
   }
 
   const msg = formatErrorMessage(err);
   if (msg.toLowerCase().includes("abort")) {
     return new Error(
-      `Can't reach the clawd browser control server at ${url} (timed out after ${timeoutMs}ms). ${hint}`,
+      `Can't reach the surprisebot browser control server at ${url} (timed out after ${timeoutMs}ms). ${hint}`,
     );
   }
 
-  return new Error(`Can't reach the clawd browser control server at ${url}. ${hint} (${msg})`);
+  return new Error(`Can't reach the surprisebot browser control server at ${url}. ${hint} (${msg})`);
 }
 
 export async function fetchBrowserJson<T>(

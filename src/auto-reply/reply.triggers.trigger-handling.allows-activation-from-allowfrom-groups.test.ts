@@ -68,7 +68,7 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
       vi.mocked(abortEmbeddedPiRun).mockClear();
       return await fn(home);
     },
-    { prefix: "clawdbot-triggers-" },
+    { prefix: "surprisebot-triggers-" },
   );
 }
 
@@ -77,7 +77,7 @@ function makeCfg(home: string) {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: join(home, "clawd"),
+        workspace: join(home, "surprisebot"),
       },
     },
     channels: {
@@ -140,7 +140,7 @@ describe("trigger handling", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: join(home, "clawd"),
+              workspace: join(home, "surprisebot"),
             },
           },
           channels: {
@@ -185,7 +185,7 @@ describe("trigger handling", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: join(home, "clawd"),
+              workspace: join(home, "surprisebot"),
             },
           },
           channels: {
@@ -194,7 +194,7 @@ describe("trigger handling", () => {
             },
           },
           session: {
-            store: join(tmpdir(), `clawdbot-session-test-${Date.now()}.json`),
+            store: join(tmpdir(), `surprisebot-session-test-${Date.now()}.json`),
           },
         },
       );

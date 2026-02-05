@@ -1,10 +1,10 @@
 ---
-summary: "CLI reference for `clawdbot onboard` (interactive onboarding wizard)"
+summary: "CLI reference for `surprisebot onboard` (interactive onboarding wizard)"
 read_when:
   - You want guided setup for gateway, workspace, auth, channels, and skills
 ---
 
-# `clawdbot onboard`
+# `surprisebot onboard`
 
 Interactive onboarding wizard (local or remote Gateway setup).
 
@@ -14,8 +14,8 @@ Related:
 ## Examples
 
 ```bash
-clawdbot onboard
-clawdbot onboard --flow quickstart
-clawdbot onboard --mode remote --remote-url ws://gateway-host:18789
+surprisebot onboard
+surprisebot onboard --flow quickstart
+surprisebot onboard --mode remote --remote-url ws://gateway-host:18789
 ```
 

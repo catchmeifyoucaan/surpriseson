@@ -41,6 +41,7 @@ export type CronJobState = {
 export type CronJob = {
   id: string;
   agentId?: string;
+  jobType?: string;
   name: string;
   description?: string;
   enabled: boolean;

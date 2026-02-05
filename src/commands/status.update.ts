@@ -1,4 +1,4 @@
-import { resolveClawdbotPackageRoot } from "../infra/clawdbot-root.js";
+import { resolveSurprisebotPackageRoot } from "../infra/surprisebot-root.js";
 import {
   checkUpdateStatus,
   compareSemverStrings,
@@ -11,7 +11,7 @@ export async function getUpdateCheckResult(params: {
   fetchGit: boolean;
   includeRegistry: boolean;
 }): Promise<UpdateCheckResult> {
-  const root = await resolveClawdbotPackageRoot({
+  const root = await resolveSurprisebotPackageRoot({
     moduleUrl: import.meta.url,
     argv1: process.argv[1],
     cwd: process.cwd(),

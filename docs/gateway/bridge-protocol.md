@@ -56,7 +56,7 @@ Exact allowlist is enforced in `src/gateway/server-bridge.ts`.
 ## Tailnet usage
 
 - Bind the bridge to a tailnet IP: `bridge.bind: "tailnet"` in
-  `~/.clawdbot/clawdbot.json`.
+  `~/.surprisebot/surprisebot.json`.
 - Clients connect via MagicDNS name or tailnet IP.
 - Bonjour does **not** cross networks; use manual host/port or wide-area DNS‑SD
   when needed.

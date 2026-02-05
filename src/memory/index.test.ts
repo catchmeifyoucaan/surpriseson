@@ -32,7 +32,7 @@ describe("memory index", () => {
   let manager: MemoryIndexManager | null = null;
 
   beforeEach(async () => {
-    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-mem-"));
+    workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-mem-"));
     indexPath = path.join(workspaceDir, "index.sqlite");
     await fs.mkdir(path.join(workspaceDir, "memory"));
     await fs.writeFile(

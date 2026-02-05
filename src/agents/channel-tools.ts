@@ -1,8 +1,8 @@
 import { listChannelPlugins } from "../channels/plugins/index.js";
 import type { ChannelAgentTool } from "../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 
-export function listChannelAgentTools(params: { cfg?: ClawdbotConfig }): ChannelAgentTool[] {
+export function listChannelAgentTools(params: { cfg?: SurprisebotConfig }): ChannelAgentTool[] {
   // Channel docking: aggregate channel-owned tools (login, etc.).
   const tools: ChannelAgentTool[] = [];
   for (const plugin of listChannelPlugins()) {

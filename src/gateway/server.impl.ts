@@ -4,7 +4,7 @@ import type { CanvasHostServer } from "../canvas-host/server.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { createDefaultDeps } from "../cli/deps.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   isNixMode,
   loadConfig,
   migrateLegacyConfig,
@@ -12,10 +12,22 @@ import {
   writeConfigFile,
 } from "../config/config.js";
 import { clearAgentRunContext, onAgentEvent } from "../infra/agent-events.js";
+import { startAgentActivityTracker } from "../infra/agent-activity.js";
+import { startActiveMemoryRunner } from "../infra/active-memory-runner.js";
+import { startMemoryCliWatchdog } from "../infra/memory-cli-watchdog.js";
+import { ensureMissionControlLedger } from "../infra/mission-control/ledger.js";
+import { startMissionControlRollupRunner } from "../infra/mission-control/rollup-runner.js";
+import { startMissionControlMaintenanceRunner } from "../infra/mission-control/maintenance-runner.js";
+import { openMissionControlDb } from "../infra/mission-control/db.js";
 import { onHeartbeatEvent } from "../infra/heartbeat-events.js";
 import { startHeartbeatRunner } from "../infra/heartbeat-runner.js";
+import { startIncidentGenerator } from "../infra/incidents.js";
+import { startOrchestratorRunner } from "../infra/orchestrator-runner.js";
+import { scheduleRestartAnnouncement } from "../infra/restart-announcement.js";
+import { startReconStatusRunner } from "../infra/recon-status-runner.js";
+import { startArtemisRunner } from "../infra/artemis-runner.js";
 import { getMachineDisplayName } from "../infra/machine-name.js";
-import { ensureClawdbotCliOnPath } from "../infra/path-env.js";
+import { ensureSurprisebotCliOnPath } from "../infra/path-env.js";
 import { autoMigrateLegacyState } from "../infra/state-migrations.js";
 import { createSubsystemLogger, runtimeForLogger } from "../logging.js";
 import type { PluginServicesHandle } from "../plugins/services.js";
@@ -54,7 +66,7 @@ import { attachGatewayWsHandlers } from "./server-ws-runtime.js";
 
 export { __resetModelCatalogCacheForTest } from "./server-model-catalog.js";
 
-ensureClawdbotCliOnPath();
+ensureSurprisebotCliOnPath();
 
 const log = createSubsystemLogger("gateway");
 const logCanvas = log.child("canvas");
@@ -126,7 +138,7 @@ export async function startGatewayServer(
   opts: GatewayServerOptions = {},
 ): Promise<GatewayServer> {
   // Ensure all default port derivations (browser/bridge/canvas) see the actual runtime port.
-  process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+  process.env.SURPRISEBOT_GATEWAY_PORT = String(port);
 
   const configSnapshot = await readConfigFileSnapshot();
   if (configSnapshot.legacyIssues.length > 0) {
@@ -138,7 +150,7 @@ export async function startGatewayServer(
     const { config: migrated, changes } = migrateLegacyConfig(configSnapshot.parsed);
     if (!migrated) {
       throw new Error(
-        'Legacy config entries detected but auto-migration failed. Run "clawdbot doctor" to migrate.',
+        'Legacy config entries detected but auto-migration failed. Run "surprisebot doctor" to migrate.',
       );
     }
     await writeConfigFile(migrated);
@@ -153,7 +165,10 @@ export async function startGatewayServer(
 
   const cfgAtStart = loadConfig();
   initSubagentRegistry();
+  const stopActivityTracker = startAgentActivityTracker(cfgAtStart);
   await autoMigrateLegacyState({ cfg: cfgAtStart, log });
+  await ensureMissionControlLedger(cfgAtStart);
+  openMissionControlDb(cfgAtStart);
   const defaultAgentId = resolveDefaultAgentId(cfgAtStart);
   const defaultWorkspaceDir = resolveAgentWorkspaceDir(cfgAtStart, defaultAgentId);
   const baseMethods = listGatewayMethods();
@@ -322,6 +337,17 @@ export async function startGatewayServer(
 
   let heartbeatRunner = startHeartbeatRunner({ cfg: cfgAtStart });
 
+  const activeMemoryRunner = startActiveMemoryRunner(cfgAtStart);
+  const memoryCliWatchdog = startMemoryCliWatchdog(cfgAtStart);
+
+  const incidentGenerator = startIncidentGenerator({ cfg: cfgAtStart });
+  const orchestratorRunner = startOrchestratorRunner({ cfg: cfgAtStart });
+
+  const reconStatusRunner = startReconStatusRunner(cfgAtStart);
+  const artemisRunner = startArtemisRunner(cfgAtStart);
+  const missionControlRollupRunner = startMissionControlRollupRunner(cfgAtStart);
+  const missionControlMaintenanceRunner = startMissionControlMaintenanceRunner(cfgAtStart);
+
   void cron.start().catch((err) => logCron.error(`failed to start: ${String(err)}`));
 
   attachGatewayWsHandlers({
@@ -400,6 +426,7 @@ export async function startGatewayServer(
     logChannels,
     logBrowser,
   }));
+  scheduleRestartAnnouncement(cfgAtStart);
 
   const { applyHotReload, requestGatewayRestart } = createGatewayReloadHandlers({
     deps,
@@ -437,7 +464,7 @@ export async function startGatewayServer(
       warn: (msg) => logReload.warn(msg),
       error: (msg) => logReload.error(msg),
     },
-    watchPath: CONFIG_PATH_CLAWDBOT,
+    watchPath: CONFIG_PATH_SURPRISEBOT,
   });
 
   const close = createGatewayCloseHandler({
@@ -456,6 +483,7 @@ export async function startGatewayServer(
     healthInterval,
     dedupeCleanup,
     agentUnsub,
+    extraStops: [stopActivityTracker, incidentGenerator.stop, orchestratorRunner.stop, reconStatusRunner.stop, missionControlRollupRunner.stop],
     heartbeatUnsub,
     chatRunState,
     clients,

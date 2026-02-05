@@ -10,7 +10,7 @@ Status: ready for DM and guild text channels via the official Discord bot gatewa
 
 ## Quick setup (beginner)
 1) Create a Discord bot and copy the bot token.
-2) Set the token for Clawdbot:
+2) Set the token for Surprisebot:
    - Env: `DISCORD_BOT_TOKEN=...`
    - Or config: `channels.discord.token: "..."`.
 3) Invite the bot to your server with message permissions.
@@ -30,7 +30,7 @@ Minimal config:
 ```
 
 ## Goals
-- Talk to Clawdbot via Discord DMs or guild channels.
+- Talk to Surprisebot via Discord DMs or guild channels.
 - Direct chats collapse into the agent's main session (default `agent:main:main`); guild channels stay isolated as `agent:<agentId>:discord:channel:<channelId>` (display names use `discord:<guildSlug>#<channelSlug>`).
 - Group DMs are ignored by default; enable via `channels.discord.dm.groupEnabled` and optionally restrict by `channels.discord.dm.groupChannels`.
 - Keep routing deterministic: replies always go back to the channel they arrived on.
@@ -38,12 +38,12 @@ Minimal config:
 ## How it works
 1. Create a Discord application → Bot, enable the intents you need (DMs + guild messages + message content), and grab the bot token.
 2. Invite the bot to your server with the permissions required to read/send messages where you want to use it.
-3. Configure Clawdbot with `DISCORD_BOT_TOKEN` (or `channels.discord.token` in `~/.clawdbot/clawdbot.json`).
+3. Configure Surprisebot with `DISCORD_BOT_TOKEN` (or `channels.discord.token` in `~/.surprisebot/surprisebot.json`).
 4. Run the gateway; it auto-starts the Discord channel when a token is available (env or config) and `channels.discord.enabled` is not `false`.
    - If you prefer env vars, set `DISCORD_BOT_TOKEN` (a config block is optional).
 5. Direct chats: use `user:<id>` (or a `<@id>` mention) when delivering; all turns land in the shared `main` session. Bare numeric IDs are ambiguous and rejected.
 6. Guild channels: use `channel:<channelId>` for delivery. Mentions are required by default and can be set per guild or per channel.
-7. Direct chats: secure by default via `channels.discord.dm.policy` (default: `"pairing"`). Unknown senders get a pairing code (expires after 1 hour); approve via `clawdbot pairing approve discord <code>`.
+7. Direct chats: secure by default via `channels.discord.dm.policy` (default: `"pairing"`). Unknown senders get a pairing code (expires after 1 hour); approve via `surprisebot pairing approve discord <code>`.
    - To keep old “open to anyone” behavior: set `channels.discord.dm.policy="open"` and `channels.discord.dm.allowFrom=["*"]`.
    - To hard-allowlist: set `channels.discord.dm.policy="allowlist"` and list senders in `channels.discord.dm.allowFrom`.
    - To ignore all DMs: set `channels.discord.dm.enabled=false` or `channels.discord.dm.policy="disabled"`.
@@ -73,7 +73,7 @@ Disable with:
 
 ## How to create your own bot
 
-This is the “Discord Developer Portal” setup for running Clawdbot in a server (guild) channel like `#help`.
+This is the “Discord Developer Portal” setup for running Surprisebot in a server (guild) channel like `#help`.
 
 ### 1) Create the Discord app + bot user
 1. Discord Developer Portal → **Applications** → **New Application**
@@ -81,7 +81,7 @@ This is the “Discord Developer Portal” setup for running Clawdbot in a serve
    - **Bot** → **Add Bot**
    - Copy the **Bot Token** (this is what you put in `DISCORD_BOT_TOKEN`)
 
-### 2) Enable the gateway intents Clawdbot needs
+### 2) Enable the gateway intents Surprisebot needs
 Discord blocks “privileged intents” unless you explicitly enable them.
 
 In **Bot** → **Privileged Gateway Intents**, enable:
@@ -111,7 +111,7 @@ Avoid **Administrator** unless you’re debugging and fully trust the bot.
 Copy the generated URL, open it, pick your server, and install the bot.
 
 ### 4) Get the ids (guild/user/channel)
-Discord uses numeric ids everywhere; Clawdbot config prefers ids.
+Discord uses numeric ids everywhere; Surprisebot config prefers ids.
 
 1. Discord (desktop/web) → **User Settings** → **Advanced** → enable **Developer Mode**
 2. Right-click:
@@ -119,7 +119,7 @@ Discord uses numeric ids everywhere; Clawdbot config prefers ids.
    - Channel (e.g. `#help`) → **Copy Channel ID**
    - Your user → **Copy User ID**
 
-### 5) Configure Clawdbot
+### 5) Configure Surprisebot
 
 #### Token
 Set the bot token via env var (recommended on servers):
@@ -183,7 +183,7 @@ Notes:
 3. If nothing happens: check **Troubleshooting** below.
 
 ### Troubleshooting
-- First: run `clawdbot doctor` and `clawdbot channels status --probe` (actionable warnings + quick audits).
+- First: run `surprisebot doctor` and `surprisebot channels status --probe` (actionable warnings + quick audits).
 - **“Used disallowed intents”**: enable **Message Content Intent** (and likely **Server Members Intent**) in the Developer Portal, then restart the gateway.
 - **Bot connects but never replies in a guild channel**:
   - Missing **Message Content Intent**, or
@@ -247,12 +247,12 @@ Outbound Discord API calls retry on rate limits (429) using Discord `retry_after
         policy: "pairing", // pairing | allowlist | open | disabled
         allowFrom: ["123456789012345678", "steipete"],
         groupEnabled: false,
-        groupChannels: ["clawd-dm"]
+        groupChannels: ["surprisebot-dm"]
       },
       guilds: {
         "*": { requireMention: true },
         "123456789012345678": {
-          slug: "friends-of-clawd",
+          slug: "friends-of-surprisebot",
           requireMention: false,
           reactionNotifications: "own",
           users: ["987654321098765432", "steipete"],
@@ -354,7 +354,7 @@ Allowlist matching notes:
 - When `guilds.<id>.channels` is present, channels not listed are denied by default.
 
 Native command notes:
-- The registered commands mirror Clawdbot’s chat commands.
+- The registered commands mirror Surprisebot’s chat commands.
 - Native commands honor the same allowlists as DMs/guild messages (`channels.discord.dm.allowFrom`, `channels.discord.guilds`, per-channel rules).
 
 ## Tool actions
@@ -374,4 +374,4 @@ Emoji can be unicode (e.g., `✅`) or custom emoji syntax like `<:party_blob:123
 ## Safety & ops
 - Treat the bot token like a password; prefer the `DISCORD_BOT_TOKEN` env var on supervised hosts or lock down the config file permissions.
 - Only grant the bot permissions it needs (typically Read/Send Messages).
-- If the bot is stuck or rate limited, restart the gateway (`clawdbot gateway --force`) after confirming no other processes own the Discord session.
+- If the bot is stuck or rate limited, restart the gateway (`surprisebot gateway --force`) after confirming no other processes own the Discord session.

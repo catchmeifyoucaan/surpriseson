@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
 import { setupChannels } from "./onboard-channels.js";
@@ -56,7 +56,7 @@ describe("setupChannels", () => {
       }),
     };
 
-    await setupChannels({} as ClawdbotConfig, runtime, prompter, {
+    await setupChannels({} as SurprisebotConfig, runtime, prompter, {
       skipConfirm: true,
       quickstartDefaults: true,
       forceAllowFromChannels: ["whatsapp"],

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { createClawdbotTools } from "../agents/clawdbot-tools.js";
+import { createSurprisebotTools } from "../agents/surprisebot-tools.js";
 import { resolveSessionTranscriptPath } from "../config/sessions.js";
 import { emitAgentEvent } from "../infra/agent-events.js";
 import {
@@ -16,8 +16,8 @@ installGatewayTestHooks();
 describe("sessions_send gateway loopback", () => {
   it("returns reply when lifecycle ends before agent.wait", async () => {
     const port = await getFreePort();
-    const prevPort = process.env.CLAWDBOT_GATEWAY_PORT;
-    process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+    const prevPort = process.env.SURPRISEBOT_GATEWAY_PORT;
+    process.env.SURPRISEBOT_GATEWAY_PORT = String(port);
 
     const server = await startGatewayServer(port);
     const spy = vi.mocked(agentCommand);
@@ -64,7 +64,7 @@ describe("sessions_send gateway loopback", () => {
     });
 
     try {
-      const tool = createClawdbotTools().find((candidate) => candidate.name === "sessions_send");
+      const tool = createSurprisebotTools().find((candidate) => candidate.name === "sessions_send");
       if (!tool) throw new Error("missing sessions_send tool");
 
       const result = await tool.execute("call-loopback", {
@@ -85,9 +85,9 @@ describe("sessions_send gateway loopback", () => {
       expect(firstCall?.lane).toBe("nested");
     } finally {
       if (prevPort === undefined) {
-        delete process.env.CLAWDBOT_GATEWAY_PORT;
+        delete process.env.SURPRISEBOT_GATEWAY_PORT;
       } else {
-        process.env.CLAWDBOT_GATEWAY_PORT = prevPort;
+        process.env.SURPRISEBOT_GATEWAY_PORT = prevPort;
       }
       await server.close();
     }
@@ -97,8 +97,8 @@ describe("sessions_send gateway loopback", () => {
 describe("sessions_send label lookup", () => {
   it("finds session by label and sends message", { timeout: 15_000 }, async () => {
     const port = await getFreePort();
-    const prevPort = process.env.CLAWDBOT_GATEWAY_PORT;
-    process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+    const prevPort = process.env.SURPRISEBOT_GATEWAY_PORT;
+    process.env.SURPRISEBOT_GATEWAY_PORT = String(port);
 
     const server = await startGatewayServer(port);
     const spy = vi.mocked(agentCommand);
@@ -143,7 +143,7 @@ describe("sessions_send label lookup", () => {
         timeoutMs: 5000,
       });
 
-      const tool = createClawdbotTools().find((candidate) => candidate.name === "sessions_send");
+      const tool = createSurprisebotTools().find((candidate) => candidate.name === "sessions_send");
       if (!tool) throw new Error("missing sessions_send tool");
 
       // Send using label instead of sessionKey
@@ -162,9 +162,9 @@ describe("sessions_send label lookup", () => {
       expect(details.sessionKey).toBe("agent:main:test-labeled-session");
     } finally {
       if (prevPort === undefined) {
-        delete process.env.CLAWDBOT_GATEWAY_PORT;
+        delete process.env.SURPRISEBOT_GATEWAY_PORT;
       } else {
-        process.env.CLAWDBOT_GATEWAY_PORT = prevPort;
+        process.env.SURPRISEBOT_GATEWAY_PORT = prevPort;
       }
       await server.close();
     }
@@ -172,13 +172,13 @@ describe("sessions_send label lookup", () => {
 
   it("returns error when label not found", { timeout: 15_000 }, async () => {
     const port = await getFreePort();
-    const prevPort = process.env.CLAWDBOT_GATEWAY_PORT;
-    process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+    const prevPort = process.env.SURPRISEBOT_GATEWAY_PORT;
+    process.env.SURPRISEBOT_GATEWAY_PORT = String(port);
 
     const server = await startGatewayServer(port);
 
     try {
-      const tool = createClawdbotTools().find((candidate) => candidate.name === "sessions_send");
+      const tool = createSurprisebotTools().find((candidate) => candidate.name === "sessions_send");
       if (!tool) throw new Error("missing sessions_send tool");
 
       const result = await tool.execute("call-missing-label", {
@@ -191,9 +191,9 @@ describe("sessions_send label lookup", () => {
       expect(details.error).toContain("No session found with label");
     } finally {
       if (prevPort === undefined) {
-        delete process.env.CLAWDBOT_GATEWAY_PORT;
+        delete process.env.SURPRISEBOT_GATEWAY_PORT;
       } else {
-        process.env.CLAWDBOT_GATEWAY_PORT = prevPort;
+        process.env.SURPRISEBOT_GATEWAY_PORT = prevPort;
       }
       await server.close();
     }
@@ -201,13 +201,13 @@ describe("sessions_send label lookup", () => {
 
   it("returns error when neither sessionKey nor label provided", { timeout: 15_000 }, async () => {
     const port = await getFreePort();
-    const prevPort = process.env.CLAWDBOT_GATEWAY_PORT;
-    process.env.CLAWDBOT_GATEWAY_PORT = String(port);
+    const prevPort = process.env.SURPRISEBOT_GATEWAY_PORT;
+    process.env.SURPRISEBOT_GATEWAY_PORT = String(port);
 
     const server = await startGatewayServer(port);
 
     try {
-      const tool = createClawdbotTools().find((candidate) => candidate.name === "sessions_send");
+      const tool = createSurprisebotTools().find((candidate) => candidate.name === "sessions_send");
       if (!tool) throw new Error("missing sessions_send tool");
 
       const result = await tool.execute("call-no-key", {
@@ -219,9 +219,9 @@ describe("sessions_send label lookup", () => {
       expect(details.error).toContain("Either sessionKey or label is required");
     } finally {
       if (prevPort === undefined) {
-        delete process.env.CLAWDBOT_GATEWAY_PORT;
+        delete process.env.SURPRISEBOT_GATEWAY_PORT;
       } else {
-        process.env.CLAWDBOT_GATEWAY_PORT = prevPort;
+        process.env.SURPRISEBOT_GATEWAY_PORT = prevPort;
       }
       await server.close();
     }

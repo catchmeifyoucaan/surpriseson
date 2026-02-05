@@ -163,25 +163,25 @@ describe("gateway wizard (e2e)", () => {
   it("runs wizard over ws and writes auth token config", async () => {
     const prev = {
       home: process.env.HOME,
-      stateDir: process.env.CLAWDBOT_STATE_DIR,
-      configPath: process.env.CLAWDBOT_CONFIG_PATH,
-      token: process.env.CLAWDBOT_GATEWAY_TOKEN,
-      skipChannels: process.env.CLAWDBOT_SKIP_CHANNELS,
-      skipGmail: process.env.CLAWDBOT_SKIP_GMAIL_WATCHER,
-      skipCron: process.env.CLAWDBOT_SKIP_CRON,
-      skipCanvas: process.env.CLAWDBOT_SKIP_CANVAS_HOST,
+      stateDir: process.env.SURPRISEBOT_STATE_DIR,
+      configPath: process.env.SURPRISEBOT_CONFIG_PATH,
+      token: process.env.SURPRISEBOT_GATEWAY_TOKEN,
+      skipChannels: process.env.SURPRISEBOT_SKIP_CHANNELS,
+      skipGmail: process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER,
+      skipCron: process.env.SURPRISEBOT_SKIP_CRON,
+      skipCanvas: process.env.SURPRISEBOT_SKIP_CANVAS_HOST,
     };
 
-    process.env.CLAWDBOT_SKIP_CHANNELS = "1";
-    process.env.CLAWDBOT_SKIP_GMAIL_WATCHER = "1";
-    process.env.CLAWDBOT_SKIP_CRON = "1";
-    process.env.CLAWDBOT_SKIP_CANVAS_HOST = "1";
-    delete process.env.CLAWDBOT_GATEWAY_TOKEN;
+    process.env.SURPRISEBOT_SKIP_CHANNELS = "1";
+    process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER = "1";
+    process.env.SURPRISEBOT_SKIP_CRON = "1";
+    process.env.SURPRISEBOT_SKIP_CANVAS_HOST = "1";
+    delete process.env.SURPRISEBOT_GATEWAY_TOKEN;
 
-    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-wizard-home-"));
+    const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-wizard-home-"));
     process.env.HOME = tempHome;
-    delete process.env.CLAWDBOT_STATE_DIR;
-    delete process.env.CLAWDBOT_CONFIG_PATH;
+    delete process.env.SURPRISEBOT_STATE_DIR;
+    delete process.env.SURPRISEBOT_CONFIG_PATH;
 
     const wizardToken = `wiz-${randomUUID()}`;
     const port = await getFreeGatewayPort();
@@ -227,8 +227,8 @@ describe("gateway wizard (e2e)", () => {
       expect(didSendToken).toBe(true);
       expect(next.status).toBe("done");
 
-      const { CONFIG_PATH_CLAWDBOT } = await import("../config/config.js");
-      const parsed = JSON.parse(await fs.readFile(CONFIG_PATH_CLAWDBOT, "utf8"));
+      const { CONFIG_PATH_SURPRISEBOT } = await import("../config/config.js");
+      const parsed = JSON.parse(await fs.readFile(CONFIG_PATH_SURPRISEBOT, "utf8"));
       const token = (parsed as Record<string, unknown>)?.gateway as
         | Record<string, unknown>
         | undefined;
@@ -260,13 +260,13 @@ describe("gateway wizard (e2e)", () => {
       await server2.close({ reason: "wizard auth verify" });
       await fs.rm(tempHome, { recursive: true, force: true });
       process.env.HOME = prev.home;
-      process.env.CLAWDBOT_STATE_DIR = prev.stateDir;
-      process.env.CLAWDBOT_CONFIG_PATH = prev.configPath;
-      process.env.CLAWDBOT_GATEWAY_TOKEN = prev.token;
-      process.env.CLAWDBOT_SKIP_CHANNELS = prev.skipChannels;
-      process.env.CLAWDBOT_SKIP_GMAIL_WATCHER = prev.skipGmail;
-      process.env.CLAWDBOT_SKIP_CRON = prev.skipCron;
-      process.env.CLAWDBOT_SKIP_CANVAS_HOST = prev.skipCanvas;
+      process.env.SURPRISEBOT_STATE_DIR = prev.stateDir;
+      process.env.SURPRISEBOT_CONFIG_PATH = prev.configPath;
+      process.env.SURPRISEBOT_GATEWAY_TOKEN = prev.token;
+      process.env.SURPRISEBOT_SKIP_CHANNELS = prev.skipChannels;
+      process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER = prev.skipGmail;
+      process.env.SURPRISEBOT_SKIP_CRON = prev.skipCron;
+      process.env.SURPRISEBOT_SKIP_CANVAS_HOST = prev.skipCanvas;
     }
   }, 60_000);
 });

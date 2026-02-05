@@ -234,6 +234,6 @@ export async function appendStatusAllDiagnosis(params: {
 
   lines.push("");
   lines.push(muted("Pasteable debug report. Auth tokens redacted."));
-  lines.push("Troubleshooting: https://docs.clawd.bot/troubleshooting");
+  lines.push("Troubleshooting: https://docs.surprisebot.bot/troubleshooting");
   lines.push("");
 }

@@ -3,7 +3,7 @@
 ## 2026.1.14
 
 ### Features
-- Version alignment with core Clawdbot release numbers.
+- Version alignment with core Surprisebot release numbers.
 - Matrix channel plugin with homeserver + user ID auth (access token or password login with device name).
 - Direct messages with pairing/allowlist/open/disabled policies and allowFrom support.
 - Group/room controls: allowlist policy, per-room config, mention gating, auto-reply, per-room skills/system prompts.

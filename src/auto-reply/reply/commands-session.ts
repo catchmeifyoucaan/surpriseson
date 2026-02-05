@@ -2,7 +2,7 @@ import { abortEmbeddedPiRun } from "../../agents/pi-embedded.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import { saveSessionStore } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
-import { scheduleGatewaySigusr1Restart, triggerClawdbotRestart } from "../../infra/restart.js";
+import { scheduleGatewaySigusr1Restart, triggerSurprisebotRestart } from "../../infra/restart.js";
 import { parseAgentSessionKey } from "../../routing/session-key.js";
 import { parseActivationCommand } from "../group-activation.js";
 import { parseSendPolicyCommand } from "../send-policy.js";
@@ -145,11 +145,11 @@ export const handleRestartCommand: CommandHandler = async (params, allowTextComm
     return {
       shouldContinue: false,
       reply: {
-        text: "⚙️ Restarting clawdbot in-process (SIGUSR1); back in a few seconds.",
+        text: "⚙️ Restarting surprisebot in-process (SIGUSR1); back in a few seconds.",
       },
     };
   }
-  const restartMethod = triggerClawdbotRestart();
+  const restartMethod = triggerSurprisebotRestart();
   if (!restartMethod.ok) {
     const detail = restartMethod.detail ? ` Details: ${restartMethod.detail}` : "";
     return {
@@ -162,7 +162,7 @@ export const handleRestartCommand: CommandHandler = async (params, allowTextComm
   return {
     shouldContinue: false,
     reply: {
-      text: `⚙️ Restarting clawdbot via ${restartMethod.method}; give me a few seconds to come back online.`,
+      text: `⚙️ Restarting surprisebot via ${restartMethod.method}; give me a few seconds to come back online.`,
     },
   };
 };

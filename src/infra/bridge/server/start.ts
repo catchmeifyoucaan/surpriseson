@@ -18,7 +18,7 @@ import type {
 } from "./types.js";
 
 export async function startNodeBridgeServer(opts: NodeBridgeServerOpts): Promise<NodeBridgeServer> {
-  if (isNodeBridgeTestEnv() && process.env.CLAWDBOT_ENABLE_BRIDGE_IN_TESTS !== "1") {
+  if (isNodeBridgeTestEnv() && process.env.SURPRISEBOT_ENABLE_BRIDGE_IN_TESTS !== "1") {
     return createDisabledNodeBridgeServer();
   }
 

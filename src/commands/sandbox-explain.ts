@@ -4,7 +4,7 @@ import {
   resolveSandboxToolPolicyForAgent,
 } from "../agents/sandbox.js";
 import { normalizeChannelId } from "../channels/plugins/index.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { loadConfig } from "../config/config.js";
 import {
   loadSessionStore,
@@ -30,10 +30,10 @@ type SandboxExplainOptions = {
   json: boolean;
 };
 
-const SANDBOX_DOCS_URL = "https://docs.clawd.bot/sandbox";
+const SANDBOX_DOCS_URL = "https://docs.surprisebot.bot/sandbox";
 
 function normalizeExplainSessionKey(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   session?: string;
 }): string {
@@ -53,7 +53,7 @@ function normalizeExplainSessionKey(params: {
 }
 
 function inferProviderFromSessionKey(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sessionKey: string;
 }): string | undefined {
   const parsed = parseAgentSessionKey(params.sessionKey);
@@ -71,7 +71,7 @@ function inferProviderFromSessionKey(params: {
 }
 
 function resolveActiveChannel(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   sessionKey: string;
 }): string | undefined {
@@ -307,7 +307,7 @@ export async function sandboxExplainCommand(
   lines.push(heading("Fix-it:"));
   for (const key of payload.fixIt) lines.push(`  - ${key}`);
   lines.push("");
-  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.clawd.bot/sandbox")}`);
+  lines.push(`${key("Docs:")} ${formatDocsLink("/sandbox", "docs.surprisebot.bot/sandbox")}`);
 
   runtime.log(`${lines.join("\n")}\n`);
 }

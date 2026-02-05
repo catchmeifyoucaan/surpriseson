@@ -27,10 +27,10 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
     },
     {
       env: {
-        CLAWDBOT_AGENT_DIR: (home) => path.join(home, ".clawdbot", "agent"),
-        PI_CODING_AGENT_DIR: (home) => path.join(home, ".clawdbot", "agent"),
+        SURPRISEBOT_AGENT_DIR: (home) => path.join(home, ".surprisebot", "agent"),
+        PI_CODING_AGENT_DIR: (home) => path.join(home, ".surprisebot", "agent"),
       },
-      prefix: "clawdbot-reply-",
+      prefix: "surprisebot-reply-",
     },
   );
 }
@@ -78,7 +78,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
           },
           tools: {
@@ -121,7 +121,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
             list: [
               {
@@ -159,7 +159,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },
@@ -191,7 +191,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },
@@ -225,7 +225,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },
@@ -240,7 +240,7 @@ describe("directive behavior", () => {
           agents: {
             defaults: {
               model: "anthropic/claude-opus-4-5",
-              workspace: path.join(home, "clawd"),
+              workspace: path.join(home, "surprisebot"),
             },
           },
           channels: { whatsapp: { allowFrom: ["*"] } },

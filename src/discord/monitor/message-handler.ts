@@ -9,7 +9,7 @@ import { processDiscordMessage } from "./message-handler.process.js";
 
 type LoadedConfig = ReturnType<typeof import("../../config/config.js").loadConfig>;
 type DiscordConfig = NonNullable<
-  import("../../config/config.js").ClawdbotConfig["channels"]
+  import("../../config/config.js").SurprisebotConfig["channels"]
 >["discord"];
 
 export function createDiscordMessageHandler(params: {

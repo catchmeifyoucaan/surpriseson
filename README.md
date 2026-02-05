@@ -1,7 +1,7 @@
-# 🦞 Clawdbot — Personal AI Assistant
+# 🦞 Surprisebot — Personal AI Assistant
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/clawdbot/clawdbot/main/docs/whatsapp-clawd.jpg" alt="Clawdbot" width="400">
+  <img src="https://raw.githubusercontent.com/surprisebot/surprisebot/main/docs/whatsapp-surprisebot.jpg" alt="Surprisebot" width="400">
 </p>
 
 <p align="center">
@@ -9,43 +9,43 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/clawdbot/clawdbot/actions/workflows/ci.yml?branch=main"><img src="https://img.shields.io/github/actions/workflow/status/clawdbot/clawdbot/ci.yml?branch=main&style=for-the-badge" alt="CI status"></a>
-  <a href="https://github.com/clawdbot/clawdbot/releases"><img src="https://img.shields.io/github/v/release/clawdbot/clawdbot?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
-  <a href="https://discord.gg/clawd"><img src="https://img.shields.io/discord/1456350064065904867?label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge" alt="Discord"></a>
+  <a href="https://github.com/surprisebot/surprisebot/actions/workflows/ci.yml?branch=main"><img src="https://img.shields.io/github/actions/workflow/status/surprisebot/surprisebot/ci.yml?branch=main&style=for-the-badge" alt="CI status"></a>
+  <a href="https://github.com/surprisebot/surprisebot/releases"><img src="https://img.shields.io/github/v/release/surprisebot/surprisebot?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
+  <a href="https://discord.gg/surprisebot"><img src="https://img.shields.io/discord/1456350064065904867?label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge" alt="Discord"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**Clawdbot** is a *personal AI assistant* you run on your own devices.
+**Surprisebot** is a *personal AI assistant* you run on your own devices.
 It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Microsoft Teams, WebChat), can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
 
 If you want a personal, single-user assistant that feels local, fast, and always-on, this is it.
 
-[Website](https://clawdbot.com) · [Docs](https://docs.clawd.bot) · [Getting Started](https://docs.clawd.bot/start/getting-started) · [Updating](https://docs.clawd.bot/install/updating) · [Showcase](https://docs.clawd.bot/start/showcase) · [FAQ](https://docs.clawd.bot/start/faq) · [Wizard](https://docs.clawd.bot/start/wizard) · [Nix](https://github.com/clawdbot/nix-clawdbot) · [Docker](https://docs.clawd.bot/install/docker) · [Discord](https://discord.gg/clawd)
+[Website](https://surprisebot.com) · [Docs](https://docs.surprisebot.bot) · [Getting Started](https://docs.surprisebot.bot/start/getting-started) · [Surprisebot](https://docs.surprisebot.bot/surprisebot) · [Updating](https://docs.surprisebot.bot/install/updating) · [Showcase](https://docs.surprisebot.bot/start/showcase) · [FAQ](https://docs.surprisebot.bot/start/faq) · [Wizard](https://docs.surprisebot.bot/start/wizard) · [Nix](https://github.com/surprisebot/nix-surprisebot) · [Docker](https://docs.surprisebot.bot/install/docker) · [Discord](https://discord.gg/surprisebot)
 
-Preferred setup: run the onboarding wizard (`clawdbot onboard`). It walks through gateway, workspace, channels, and skills. The CLI wizard is the recommended path and works on **macOS, Linux, and Windows (via WSL2; strongly recommended)**.
+Preferred setup: run the onboarding wizard (`surprisebot init --quickstart`). It walks through gateway, workspace, channels, and skills. The CLI wizard is the recommended path and works on **macOS, Linux, and Windows (via WSL2; strongly recommended)**.
 Works with npm, pnpm, or bun.
-New install? Start here: [Getting started](https://docs.clawd.bot/start/getting-started)
+New install? Start here: [Getting started](https://docs.surprisebot.bot/start/getting-started)
 
 **Subscriptions (OAuth):**
 - **[Anthropic](https://www.anthropic.com/)** (Claude Pro/Max)
 - **[OpenAI](https://openai.com/)** (ChatGPT/Codex)
 
-Model note: while any model is supported, I strongly recommend **Anthropic Pro/Max (100/200) + Opus 4.5** for long‑context strength and better prompt‑injection resistance. See [Onboarding](https://docs.clawd.bot/start/onboarding).
+Model note: while any model is supported, I strongly recommend **Anthropic Pro/Max (100/200) + Opus 4.5** for long‑context strength and better prompt‑injection resistance. See [Onboarding](https://docs.surprisebot.bot/start/onboarding).
 
 ## Models (selection + auth)
 
-- Models config + CLI: [Models](https://docs.clawd.bot/concepts/models)
-- Auth profile rotation (OAuth vs API keys) + fallbacks: [Model failover](https://docs.clawd.bot/concepts/model-failover)
+- Models config + CLI: [Models](https://docs.surprisebot.bot/concepts/models)
+- Auth profile rotation (OAuth vs API keys) + fallbacks: [Model failover](https://docs.surprisebot.bot/concepts/model-failover)
 
 ## Install (recommended)
 
 Runtime: **Node ≥22**.
 
 ```bash
-npm install -g clawdbot@latest
-# or: pnpm add -g clawdbot@latest
+npm install -g surprisebot@latest
+# or: pnpm add -g surprisebot@latest
 
-clawdbot onboard --install-daemon
+surprisebot init --quickstart --install-daemon
 ```
 
 The wizard installs the Gateway daemon (launchd/systemd user service) so it stays running.
@@ -54,107 +54,116 @@ The wizard installs the Gateway daemon (launchd/systemd user service) so it stay
 
 Runtime: **Node ≥22**.
 
-Full beginner guide (auth, pairing, channels): [Getting started](https://docs.clawd.bot/start/getting-started)
+Full beginner guide (auth, pairing, channels): [Getting started](https://docs.surprisebot.bot/start/getting-started)
 
 ```bash
-clawdbot onboard --install-daemon
+surprisebot init --quickstart --install-daemon
 
-clawdbot gateway --port 18789 --verbose
+surprisebot gateway --port 18789 --verbose
 
 # Send a message
-clawdbot message send --to +1234567890 --message "Hello from Clawdbot"
+surprisebot message send --to +1234567890 --message "Hello from Surprisebot"
 
 # Talk to the assistant (optionally deliver back to WhatsApp/Telegram/Slack/Discord/Microsoft Teams)
-clawdbot agent --message "Ship checklist" --thinking high
+surprisebot agent --message "Ship checklist" --thinking high
 ```
 
-Upgrading? [Updating guide](https://docs.clawd.bot/install/updating) (and run `clawdbot doctor`).
+Upgrading? [Updating guide](https://docs.surprisebot.bot/install/updating) (and run `surprisebot doctor`).
 
 ## From source (development)
 
 Prefer `pnpm` for builds from source. Bun is optional for running TypeScript directly.
 
 ```bash
-git clone https://github.com/clawdbot/clawdbot.git
-cd clawdbot
+git clone https://github.com/surprisebot/surprisebot.git
+cd surprisebot
 
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
 
-pnpm clawdbot onboard --install-daemon
+pnpm surprisebot init --quickstart --install-daemon
 
 # Dev loop (auto-reload on TS changes)
 pnpm gateway:watch
 ```
 
-Note: `pnpm clawdbot ...` runs TypeScript directly (via `tsx`). `pnpm build` produces `dist/` for running via Node / the packaged `clawdbot` binary.
+Note: `pnpm surprisebot ...` runs TypeScript directly (via `tsx`). `pnpm build` produces `dist/` for running via Node / the packaged `surprisebot` binary.
 
 ## Security defaults (DM access)
 
-Clawdbot connects to real messaging surfaces. Treat inbound DMs as **untrusted input**.
+Surprisebot connects to real messaging surfaces. Treat inbound DMs as **untrusted input**.
 
-Full security guide: [Security](https://docs.clawd.bot/gateway/security)
+Full security guide: [Security](https://docs.surprisebot.bot/gateway/security)
 
 Default behavior on Telegram/WhatsApp/Signal/iMessage/Microsoft Teams/Discord/Slack:
 - **DM pairing** (`dmPolicy="pairing"` / `channels.discord.dm.policy="pairing"` / `channels.slack.dm.policy="pairing"`): unknown senders receive a short pairing code and the bot does not process their message.
-- Approve with: `clawdbot pairing approve <channel> <code>` (then the sender is added to a local allowlist store).
+- Approve with: `surprisebot pairing approve <channel> <code>` (then the sender is added to a local allowlist store).
 - Public inbound DMs require an explicit opt-in: set `dmPolicy="open"` and include `"*"` in the channel allowlist (`allowFrom` / `channels.discord.dm.allowFrom` / `channels.slack.dm.allowFrom`).
 
-Run `clawdbot doctor` to surface risky/misconfigured DM policies.
+Run `surprisebot doctor` to surface risky/misconfigured DM policies.
 
 ## Highlights
 
-- **[Local-first Gateway](https://docs.clawd.bot/gateway)** — single control plane for sessions, channels, tools, and events.
-- **[Multi-channel inbox](https://docs.clawd.bot/channels)** — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Microsoft Teams, WebChat, macOS, iOS/Android.
-- **[Multi-agent routing](https://docs.clawd.bot/gateway/configuration)** — route inbound channels/accounts/peers to isolated agents (workspaces + per-agent sessions).
-- **[Voice Wake](https://docs.clawd.bot/nodes/voicewake) + [Talk Mode](https://docs.clawd.bot/nodes/talk)** — always-on speech for macOS/iOS/Android with ElevenLabs.
-- **[Live Canvas](https://docs.clawd.bot/platforms/mac/canvas)** — agent-driven visual workspace with [A2UI](https://docs.clawd.bot/platforms/mac/canvas#canvas-a2ui).
-- **[First-class tools](https://docs.clawd.bot/tools)** — browser, canvas, nodes, cron, sessions, and Discord/Slack actions.
-- **[Companion apps](https://docs.clawd.bot/platforms/macos)** — macOS menu bar app + iOS/Android [nodes](https://docs.clawd.bot/nodes).
-- **[Onboarding](https://docs.clawd.bot/start/wizard) + [skills](https://docs.clawd.bot/tools/skills)** — wizard-driven setup with bundled/managed/workspace skills.
+- **[Local-first Gateway](https://docs.surprisebot.bot/gateway)** — single control plane for sessions, channels, tools, and events.
+- **[Multi-channel inbox](https://docs.surprisebot.bot/channels)** — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Microsoft Teams, WebChat, macOS, iOS/Android.
+- **[Multi-agent routing](https://docs.surprisebot.bot/gateway/configuration)** — route inbound channels/accounts/peers to isolated agents (workspaces + per-agent sessions).
+- **[Voice Wake](https://docs.surprisebot.bot/nodes/voicewake) + [Talk Mode](https://docs.surprisebot.bot/nodes/talk)** — always-on speech for macOS/iOS/Android with ElevenLabs.
+- **[Live Canvas](https://docs.surprisebot.bot/platforms/mac/canvas)** — agent-driven visual workspace with [A2UI](https://docs.surprisebot.bot/platforms/mac/canvas#canvas-a2ui).
+- **[First-class tools](https://docs.surprisebot.bot/tools)** — browser, canvas, nodes, cron, sessions, and Discord/Slack actions.
+- **[Companion apps](https://docs.surprisebot.bot/platforms/macos)** — macOS menu bar app + iOS/Android [nodes](https://docs.surprisebot.bot/nodes).
+- **[Onboarding](https://docs.surprisebot.bot/start/wizard) + [skills](https://docs.surprisebot.bot/tools/skills)** — wizard-driven setup with bundled/managed/workspace skills.
+
+## Surprisebot (reference deployment)
+
+[Surprisebot](https://docs.surprisebot.bot/surprisebot) is a reference deployment pattern for a high‑autonomy, multi‑agent Surprisebot stack:
+
+- **Core team agents** with focused responsibilities (recon, appsec, infra, reporting).
+- **Durable memory** with preference drift + decision history.
+- **Recon + research cadence** (daily inventories, weekly digests, OSINT pulses).
+- **Model routing + fallbacks** tuned per agent.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=clawdbot/clawdbot&type=date&legend=top-left)](https://www.star-history.com/#clawdbot/clawdbot&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=surprisebot/surprisebot&type=date&legend=top-left)](https://www.star-history.com/#surprisebot/surprisebot&type=date&legend=top-left)
 
 ## Everything we built so far
 
 ### Core platform
-- [Gateway WS control plane](https://docs.clawd.bot/gateway) with sessions, presence, config, cron, webhooks, [Control UI](https://docs.clawd.bot/web), and [Canvas host](https://docs.clawd.bot/platforms/mac/canvas#canvas-a2ui).
-- [CLI surface](https://docs.clawd.bot/tools/agent-send): gateway, agent, send, [wizard](https://docs.clawd.bot/start/wizard), and [doctor](https://docs.clawd.bot/gateway/doctor).
-- [Pi agent runtime](https://docs.clawd.bot/concepts/agent) in RPC mode with tool streaming and block streaming.
-- [Session model](https://docs.clawd.bot/concepts/session): `main` for direct chats, group isolation, activation modes, queue modes, reply-back. Group rules: [Groups](https://docs.clawd.bot/concepts/groups).
-- [Media pipeline](https://docs.clawd.bot/nodes/images): images/audio/video, transcription hooks, size caps, temp file lifecycle. Audio details: [Audio](https://docs.clawd.bot/nodes/audio).
+- [Gateway WS control plane](https://docs.surprisebot.bot/gateway) with sessions, presence, config, cron, webhooks, [Control UI](https://docs.surprisebot.bot/web), and [Canvas host](https://docs.surprisebot.bot/platforms/mac/canvas#canvas-a2ui).
+- [CLI surface](https://docs.surprisebot.bot/tools/agent-send): gateway, agent, send, [wizard](https://docs.surprisebot.bot/start/wizard), and [doctor](https://docs.surprisebot.bot/gateway/doctor).
+- [Pi agent runtime](https://docs.surprisebot.bot/concepts/agent) in RPC mode with tool streaming and block streaming.
+- [Session model](https://docs.surprisebot.bot/concepts/session): `main` for direct chats, group isolation, activation modes, queue modes, reply-back. Group rules: [Groups](https://docs.surprisebot.bot/concepts/groups).
+- [Media pipeline](https://docs.surprisebot.bot/nodes/images): images/audio/video, transcription hooks, size caps, temp file lifecycle. Audio details: [Audio](https://docs.surprisebot.bot/nodes/audio).
 
 ### Channels
-- [Channels](https://docs.clawd.bot/channels): [WhatsApp](https://docs.clawd.bot/channels/whatsapp) (Baileys), [Telegram](https://docs.clawd.bot/channels/telegram) (grammY), [Slack](https://docs.clawd.bot/channels/slack) (Bolt), [Discord](https://docs.clawd.bot/channels/discord) (discord.js), [Signal](https://docs.clawd.bot/channels/signal) (signal-cli), [iMessage](https://docs.clawd.bot/channels/imessage) (imsg), [Microsoft Teams](https://docs.clawd.bot/channels/msteams) (Bot Framework), [WebChat](https://docs.clawd.bot/web/webchat).
-- [Group routing](https://docs.clawd.bot/concepts/group-messages): mention gating, reply tags, per-channel chunking and routing. Channel rules: [Channels](https://docs.clawd.bot/channels).
+- [Channels](https://docs.surprisebot.bot/channels): [WhatsApp](https://docs.surprisebot.bot/channels/whatsapp) (Baileys), [Telegram](https://docs.surprisebot.bot/channels/telegram) (grammY), [Slack](https://docs.surprisebot.bot/channels/slack) (Bolt), [Discord](https://docs.surprisebot.bot/channels/discord) (discord.js), [Signal](https://docs.surprisebot.bot/channels/signal) (signal-cli), [iMessage](https://docs.surprisebot.bot/channels/imessage) (imsg), [Microsoft Teams](https://docs.surprisebot.bot/channels/msteams) (Bot Framework), [WebChat](https://docs.surprisebot.bot/web/webchat).
+- [Group routing](https://docs.surprisebot.bot/concepts/group-messages): mention gating, reply tags, per-channel chunking and routing. Channel rules: [Channels](https://docs.surprisebot.bot/channels).
 
 ### Apps + nodes
-- [macOS app](https://docs.clawd.bot/platforms/macos): menu bar control plane, [Voice Wake](https://docs.clawd.bot/nodes/voicewake)/PTT, [Talk Mode](https://docs.clawd.bot/nodes/talk) overlay, [WebChat](https://docs.clawd.bot/web/webchat), debug tools, [remote gateway](https://docs.clawd.bot/gateway/remote) control.
-- [iOS node](https://docs.clawd.bot/platforms/ios): [Canvas](https://docs.clawd.bot/platforms/mac/canvas), [Voice Wake](https://docs.clawd.bot/nodes/voicewake), [Talk Mode](https://docs.clawd.bot/nodes/talk), camera, screen recording, Bonjour pairing.
-- [Android node](https://docs.clawd.bot/platforms/android): [Canvas](https://docs.clawd.bot/platforms/mac/canvas), [Talk Mode](https://docs.clawd.bot/nodes/talk), camera, screen recording, optional SMS.
-- [macOS node mode](https://docs.clawd.bot/nodes): system.run/notify + canvas/camera exposure.
+- [macOS app](https://docs.surprisebot.bot/platforms/macos): menu bar control plane, [Voice Wake](https://docs.surprisebot.bot/nodes/voicewake)/PTT, [Talk Mode](https://docs.surprisebot.bot/nodes/talk) overlay, [WebChat](https://docs.surprisebot.bot/web/webchat), debug tools, [remote gateway](https://docs.surprisebot.bot/gateway/remote) control.
+- [iOS node](https://docs.surprisebot.bot/platforms/ios): [Canvas](https://docs.surprisebot.bot/platforms/mac/canvas), [Voice Wake](https://docs.surprisebot.bot/nodes/voicewake), [Talk Mode](https://docs.surprisebot.bot/nodes/talk), camera, screen recording, Bonjour pairing.
+- [Android node](https://docs.surprisebot.bot/platforms/android): [Canvas](https://docs.surprisebot.bot/platforms/mac/canvas), [Talk Mode](https://docs.surprisebot.bot/nodes/talk), camera, screen recording, optional SMS.
+- [macOS node mode](https://docs.surprisebot.bot/nodes): system.run/notify + canvas/camera exposure.
 
 ### Tools + automation
-- [Browser control](https://docs.clawd.bot/tools/browser): dedicated clawd Chrome/Chromium, snapshots, actions, uploads, profiles.
-- [Canvas](https://docs.clawd.bot/platforms/mac/canvas): [A2UI](https://docs.clawd.bot/platforms/mac/canvas#canvas-a2ui) push/reset, eval, snapshot.
-- [Nodes](https://docs.clawd.bot/nodes): camera snap/clip, screen record, [location.get](https://docs.clawd.bot/nodes/location-command), notifications.
-- [Cron + wakeups](https://docs.clawd.bot/automation/cron-jobs); [webhooks](https://docs.clawd.bot/automation/webhook); [Gmail Pub/Sub](https://docs.clawd.bot/automation/gmail-pubsub).
-- [Skills platform](https://docs.clawd.bot/tools/skills): bundled, managed, and workspace skills with install gating + UI.
+- [Browser control](https://docs.surprisebot.bot/tools/browser): dedicated surprisebot Chrome/Chromium, snapshots, actions, uploads, profiles.
+- [Canvas](https://docs.surprisebot.bot/platforms/mac/canvas): [A2UI](https://docs.surprisebot.bot/platforms/mac/canvas#canvas-a2ui) push/reset, eval, snapshot.
+- [Nodes](https://docs.surprisebot.bot/nodes): camera snap/clip, screen record, [location.get](https://docs.surprisebot.bot/nodes/location-command), notifications.
+- [Cron + wakeups](https://docs.surprisebot.bot/automation/cron-jobs); [webhooks](https://docs.surprisebot.bot/automation/webhook); [Gmail Pub/Sub](https://docs.surprisebot.bot/automation/gmail-pubsub).
+- [Skills platform](https://docs.surprisebot.bot/tools/skills): bundled, managed, and workspace skills with install gating + UI.
 
 ### Runtime + safety
-- [Channel routing](https://docs.clawd.bot/concepts/channel-routing), [retry policy](https://docs.clawd.bot/concepts/retry), and [streaming/chunking](https://docs.clawd.bot/concepts/streaming).
-- [Presence](https://docs.clawd.bot/concepts/presence), [typing indicators](https://docs.clawd.bot/concepts/typing-indicators), and [usage tracking](https://docs.clawd.bot/concepts/usage-tracking).
-- [Models](https://docs.clawd.bot/concepts/models), [model failover](https://docs.clawd.bot/concepts/model-failover), and [session pruning](https://docs.clawd.bot/concepts/session-pruning).
-- [Security](https://docs.clawd.bot/gateway/security) and [troubleshooting](https://docs.clawd.bot/channels/troubleshooting).
+- [Channel routing](https://docs.surprisebot.bot/concepts/channel-routing), [retry policy](https://docs.surprisebot.bot/concepts/retry), and [streaming/chunking](https://docs.surprisebot.bot/concepts/streaming).
+- [Presence](https://docs.surprisebot.bot/concepts/presence), [typing indicators](https://docs.surprisebot.bot/concepts/typing-indicators), and [usage tracking](https://docs.surprisebot.bot/concepts/usage-tracking).
+- [Models](https://docs.surprisebot.bot/concepts/models), [model failover](https://docs.surprisebot.bot/concepts/model-failover), and [session pruning](https://docs.surprisebot.bot/concepts/session-pruning).
+- [Security](https://docs.surprisebot.bot/gateway/security) and [troubleshooting](https://docs.surprisebot.bot/channels/troubleshooting).
 
 ### Ops + packaging
-- [Control UI](https://docs.clawd.bot/web) + [WebChat](https://docs.clawd.bot/web/webchat) served directly from the Gateway.
-- [Tailscale Serve/Funnel](https://docs.clawd.bot/gateway/tailscale) or [SSH tunnels](https://docs.clawd.bot/gateway/remote) with token/password auth.
-- [Nix mode](https://docs.clawd.bot/install/nix) for declarative config; [Docker](https://docs.clawd.bot/install/docker)-based installs.
-- [Doctor](https://docs.clawd.bot/gateway/doctor) migrations, [logging](https://docs.clawd.bot/logging).
+- [Control UI](https://docs.surprisebot.bot/web) + [WebChat](https://docs.surprisebot.bot/web/webchat) served directly from the Gateway.
+- [Tailscale Serve/Funnel](https://docs.surprisebot.bot/gateway/tailscale) or [SSH tunnels](https://docs.surprisebot.bot/gateway/remote) with token/password auth.
+- [Nix mode](https://docs.surprisebot.bot/install/nix) for declarative config; [Docker](https://docs.surprisebot.bot/install/docker)-based installs.
+- [Doctor](https://docs.surprisebot.bot/gateway/doctor) migrations, [logging](https://docs.surprisebot.bot/logging).
 
 ## How it works (short)
 
@@ -169,7 +178,7 @@ WhatsApp / Telegram / Slack / Discord / Signal / iMessage / Microsoft Teams / We
 └──────────────┬────────────────┘
                │
                ├─ Pi agent (RPC)
-               ├─ CLI (clawdbot …)
+               ├─ CLI (surprisebot …)
                ├─ WebChat UI
                ├─ macOS app
                └─ iOS / Android nodes
@@ -177,28 +186,28 @@ WhatsApp / Telegram / Slack / Discord / Signal / iMessage / Microsoft Teams / We
 
 ## Key subsystems
 
-- **[Gateway WebSocket network](https://docs.clawd.bot/concepts/architecture)** — single WS control plane for clients, tools, and events (plus ops: [Gateway runbook](https://docs.clawd.bot/gateway)).
-- **[Tailscale exposure](https://docs.clawd.bot/gateway/tailscale)** — Serve/Funnel for the Gateway dashboard + WS (remote access: [Remote](https://docs.clawd.bot/gateway/remote)).
-- **[Browser control](https://docs.clawd.bot/tools/browser)** — clawd‑managed Chrome/Chromium with CDP control.
-- **[Canvas + A2UI](https://docs.clawd.bot/platforms/mac/canvas)** — agent‑driven visual workspace (A2UI host: [Canvas/A2UI](https://docs.clawd.bot/platforms/mac/canvas#canvas-a2ui)).
-- **[Voice Wake](https://docs.clawd.bot/nodes/voicewake) + [Talk Mode](https://docs.clawd.bot/nodes/talk)** — always‑on speech and continuous conversation.
-- **[Nodes](https://docs.clawd.bot/nodes)** — Canvas, camera snap/clip, screen record, `location.get`, notifications, plus macOS‑only `system.run`/`system.notify`.
+- **[Gateway WebSocket network](https://docs.surprisebot.bot/concepts/architecture)** — single WS control plane for clients, tools, and events (plus ops: [Gateway runbook](https://docs.surprisebot.bot/gateway)).
+- **[Tailscale exposure](https://docs.surprisebot.bot/gateway/tailscale)** — Serve/Funnel for the Gateway dashboard + WS (remote access: [Remote](https://docs.surprisebot.bot/gateway/remote)).
+- **[Browser control](https://docs.surprisebot.bot/tools/browser)** — surprisebot‑managed Chrome/Chromium with CDP control.
+- **[Canvas + A2UI](https://docs.surprisebot.bot/platforms/mac/canvas)** — agent‑driven visual workspace (A2UI host: [Canvas/A2UI](https://docs.surprisebot.bot/platforms/mac/canvas#canvas-a2ui)).
+- **[Voice Wake](https://docs.surprisebot.bot/nodes/voicewake) + [Talk Mode](https://docs.surprisebot.bot/nodes/talk)** — always‑on speech and continuous conversation.
+- **[Nodes](https://docs.surprisebot.bot/nodes)** — Canvas, camera snap/clip, screen record, `location.get`, notifications, plus macOS‑only `system.run`/`system.notify`.
 
 ## Tailscale access (Gateway dashboard)
 
-Clawdbot can auto-configure Tailscale **Serve** (tailnet-only) or **Funnel** (public) while the Gateway stays bound to loopback. Configure `gateway.tailscale.mode`:
+Surprisebot can auto-configure Tailscale **Serve** (tailnet-only) or **Funnel** (public) while the Gateway stays bound to loopback. Configure `gateway.tailscale.mode`:
 
 - `off`: no Tailscale automation (default).
 - `serve`: tailnet-only HTTPS via `tailscale serve` (uses Tailscale identity headers by default).
 - `funnel`: public HTTPS via `tailscale funnel` (requires shared password auth).
 
 Notes:
-- `gateway.bind` must stay `loopback` when Serve/Funnel is enabled (Clawdbot enforces this).
+- `gateway.bind` must stay `loopback` when Serve/Funnel is enabled (Surprisebot enforces this).
 - Serve can be forced to require a password by setting `gateway.auth.mode: "password"` or `gateway.auth.allowTailscale: false`.
 - Funnel refuses to start unless `gateway.auth.mode: "password"` is set.
 - Optional: `gateway.tailscale.resetOnExit` to undo Serve/Funnel on shutdown.
 
-Details: [Tailscale guide](https://docs.clawd.bot/gateway/tailscale) · [Web surfaces](https://docs.clawd.bot/web)
+Details: [Tailscale guide](https://docs.surprisebot.bot/gateway/tailscale) · [Web surfaces](https://docs.surprisebot.bot/web)
 
 ## Remote Gateway (Linux is great)
 
@@ -208,7 +217,7 @@ It’s perfectly fine to run the Gateway on a small Linux instance. Clients (mac
 - **Device nodes** run device‑local actions (`system.run`, camera, screen recording, notifications) via `node.invoke`.
 In short: exec runs where the Gateway lives; device actions run where the device lives.
 
-Details: [Remote access](https://docs.clawd.bot/gateway/remote) · [Nodes](https://docs.clawd.bot/nodes) · [Security](https://docs.clawd.bot/gateway/security)
+Details: [Remote access](https://docs.surprisebot.bot/gateway/remote) · [Nodes](https://docs.surprisebot.bot/nodes) · [Security](https://docs.surprisebot.bot/gateway/security)
 
 ## macOS permissions via the Gateway protocol
 
@@ -223,7 +232,7 @@ Elevated bash (host permissions) is separate from macOS TCC:
 - Use `/elevated on|off` to toggle per‑session elevated access when enabled + allowlisted.
 - Gateway persists the per‑session toggle via `sessions.patch` (WS method) alongside `thinkingLevel`, `verboseLevel`, `model`, `sendPolicy`, and `groupActivation`.
 
-Details: [Nodes](https://docs.clawd.bot/nodes) · [macOS app](https://docs.clawd.bot/platforms/macos) · [Gateway protocol](https://docs.clawd.bot/concepts/architecture)
+Details: [Nodes](https://docs.surprisebot.bot/nodes) · [macOS app](https://docs.surprisebot.bot/platforms/macos) · [Gateway protocol](https://docs.surprisebot.bot/concepts/architecture)
 
 ## Agent to Agent (sessions_* tools)
 
@@ -232,13 +241,13 @@ Details: [Nodes](https://docs.clawd.bot/nodes) · [macOS app](https://docs.clawd
 - `sessions_history` — fetch transcript logs for a session.
 - `sessions_send` — message another session; optional reply‑back ping‑pong + announce step (`REPLY_SKIP`, `ANNOUNCE_SKIP`).
 
-Details: [Session tools](https://docs.clawd.bot/concepts/session-tool)
+Details: [Session tools](https://docs.surprisebot.bot/concepts/session-tool)
 
-## Skills registry (ClawdHub)
+## Skills registry (SurprisebotHub)
 
-ClawdHub is a minimal skill registry. With ClawdHub enabled, the agent can search for skills automatically and pull in new ones as needed.
+SurprisebotHub is a minimal skill registry. With SurprisebotHub enabled, the agent can search for skills automatically and pull in new ones as needed.
 
-[ClawdHub](https://ClawdHub.com)
+[SurprisebotHub](https://SurprisebotHub.com)
 
 ## Chat commands
 
@@ -264,7 +273,7 @@ git submodule update --init --recursive
 ./scripts/restart-mac.sh
 ```
 
-### macOS (Clawdbot.app) (optional)
+### macOS (Surprisebot.app) (optional)
 
 - Menu bar control for the Gateway and health.
 - Voice Wake + push-to-talk overlay.
@@ -277,25 +286,25 @@ Note: signed builds required for macOS permissions to stick across rebuilds (see
 
 - Pairs as a node via the Bridge.
 - Voice trigger forwarding + Canvas surface.
-- Controlled via `clawdbot nodes …`.
+- Controlled via `surprisebot nodes …`.
 
-Runbook: [iOS connect](https://docs.clawd.bot/platforms/ios).
+Runbook: [iOS connect](https://docs.surprisebot.bot/platforms/ios).
 
 ### Android node (optional)
 
 - Pairs via the same Bridge + pairing flow as iOS.
 - Exposes Canvas, Camera, and Screen capture commands.
-- Runbook: [Android connect](https://docs.clawd.bot/platforms/android).
+- Runbook: [Android connect](https://docs.surprisebot.bot/platforms/android).
 
 ## Agent workspace + skills
 
-- Workspace root: `~/clawd` (configurable via `agents.defaults.workspace`).
+- Workspace root: `~/surprisebot` (configurable via `agents.defaults.workspace`).
 - Injected prompt files: `AGENTS.md`, `SOUL.md`, `TOOLS.md`.
-- Skills: `~/clawd/skills/<skill>/SKILL.md`.
+- Skills: `~/surprisebot/skills/<skill>/SKILL.md`.
 
 ## Configuration
 
-Minimal `~/.clawdbot/clawdbot.json` (model + defaults):
+Minimal `~/.surprisebot/surprisebot.json` (model + defaults):
 
 ```json5
 {
@@ -305,7 +314,7 @@ Minimal `~/.clawdbot/clawdbot.json` (model + defaults):
 }
 ```
 
-[Full configuration reference (all keys + examples).](https://docs.clawd.bot/gateway/configuration)
+[Full configuration reference (all keys + examples).](https://docs.surprisebot.bot/gateway/configuration)
 
 ## Security model (important)
 
@@ -313,15 +322,15 @@ Minimal `~/.clawdbot/clawdbot.json` (model + defaults):
 - **Group/channel safety:** set `agents.defaults.sandbox.mode: "non-main"` to run **non‑main sessions** (groups/channels) inside per‑session Docker sandboxes; bash then runs in Docker for those sessions.
 - **Sandbox defaults:** allowlist `bash`, `process`, `read`, `write`, `edit`, `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`; denylist `browser`, `canvas`, `nodes`, `cron`, `discord`, `gateway`.
 
-Details: [Security guide](https://docs.clawd.bot/gateway/security) · [Docker + sandboxing](https://docs.clawd.bot/install/docker) · [Sandbox config](https://docs.clawd.bot/gateway/configuration)
+Details: [Security guide](https://docs.surprisebot.bot/gateway/security) · [Docker + sandboxing](https://docs.surprisebot.bot/install/docker) · [Sandbox config](https://docs.surprisebot.bot/gateway/configuration)
 
-### [WhatsApp](https://docs.clawd.bot/channels/whatsapp)
+### [WhatsApp](https://docs.surprisebot.bot/channels/whatsapp)
 
-- Link the device: `pnpm clawdbot channels login` (stores creds in `~/.clawdbot/credentials`).
+- Link the device: `pnpm surprisebot channels login` (stores creds in `~/.surprisebot/credentials`).
 - Allowlist who can talk to the assistant via `channels.whatsapp.allowFrom`.
 - If `channels.whatsapp.groups` is set, it becomes a group allowlist; include `"*"` to allow all.
 
-### [Telegram](https://docs.clawd.bot/channels/telegram)
+### [Telegram](https://docs.surprisebot.bot/channels/telegram)
 
 - Set `TELEGRAM_BOT_TOKEN` or `channels.telegram.botToken` (env wins).
 - Optional: set `channels.telegram.groups` (with `channels.telegram.groups."*".requireMention`); when set, it is a group allowlist (include `"*"` to allow all). Also `channels.telegram.allowFrom` or `channels.telegram.webhookUrl` as needed.
@@ -336,11 +345,11 @@ Details: [Security guide](https://docs.clawd.bot/gateway/security) · [Docker + 
 }
 ```
 
-### [Slack](https://docs.clawd.bot/channels/slack)
+### [Slack](https://docs.surprisebot.bot/channels/slack)
 
 - Set `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` (or `channels.slack.botToken` + `channels.slack.appToken`).
 
-### [Discord](https://docs.clawd.bot/channels/discord)
+### [Discord](https://docs.surprisebot.bot/channels/discord)
 
 - Set `DISCORD_BOT_TOKEN` or `channels.discord.token` (env wins).
 - Optional: set `commands.native`, `commands.text`, or `commands.useAccessGroups`, plus `channels.discord.dm.allowFrom`, `channels.discord.guilds`, or `channels.discord.mediaMaxMb` as needed.
@@ -355,21 +364,21 @@ Details: [Security guide](https://docs.clawd.bot/gateway/security) · [Docker + 
 }
 ```
 
-### [Signal](https://docs.clawd.bot/channels/signal)
+### [Signal](https://docs.surprisebot.bot/channels/signal)
 
 - Requires `signal-cli` and a `channels.signal` config section.
 
-### [iMessage](https://docs.clawd.bot/channels/imessage)
+### [iMessage](https://docs.surprisebot.bot/channels/imessage)
 
 - macOS only; Messages must be signed in.
 - If `channels.imessage.groups` is set, it becomes a group allowlist; include `"*"` to allow all.
 
-### [Microsoft Teams](https://docs.clawd.bot/channels/msteams)
+### [Microsoft Teams](https://docs.surprisebot.bot/channels/msteams)
 
 - Configure a Teams app + Bot Framework, then add a `msteams` config section.
 - Allowlist who can talk via `msteams.allowFrom`; group access via `msteams.groupAllowFrom` or `msteams.groupPolicy: "open"`.
 
-### [WebChat](https://docs.clawd.bot/web/webchat)
+### [WebChat](https://docs.surprisebot.bot/web/webchat)
 
 - Uses the Gateway WebSocket; no separate WebChat port/config.
 
@@ -388,76 +397,76 @@ Browser control (optional):
 ## Docs
 
 Use these when you’re past the onboarding flow and want the deeper reference.
-- [Start with the docs index for navigation and “what’s where.”](https://docs.clawd.bot)
-- [Read the architecture overview for the gateway + protocol model.](https://docs.clawd.bot/concepts/architecture)
-- [Use the full configuration reference when you need every key and example.](https://docs.clawd.bot/gateway/configuration)
-- [Run the Gateway by the book with the operational runbook.](https://docs.clawd.bot/gateway)
-- [Learn how the Control UI/Web surfaces work and how to expose them safely.](https://docs.clawd.bot/web)
-- [Understand remote access over SSH tunnels or tailnets.](https://docs.clawd.bot/gateway/remote)
-- [Follow the onboarding wizard flow for a guided setup.](https://docs.clawd.bot/start/wizard)
-- [Wire external triggers via the webhook surface.](https://docs.clawd.bot/automation/webhook)
-- [Set up Gmail Pub/Sub triggers.](https://docs.clawd.bot/automation/gmail-pubsub)
-- [Learn the macOS menu bar companion details.](https://docs.clawd.bot/platforms/mac/menu-bar)
-- [Platform guides: Windows (WSL2)](https://docs.clawd.bot/platforms/windows), [Linux](https://docs.clawd.bot/platforms/linux), [macOS](https://docs.clawd.bot/platforms/macos), [iOS](https://docs.clawd.bot/platforms/ios), [Android](https://docs.clawd.bot/platforms/android)
-- [Debug common failures with the troubleshooting guide.](https://docs.clawd.bot/channels/troubleshooting)
-- [Review security guidance before exposing anything.](https://docs.clawd.bot/gateway/security)
+- [Start with the docs index for navigation and “what’s where.”](https://docs.surprisebot.bot)
+- [Read the architecture overview for the gateway + protocol model.](https://docs.surprisebot.bot/concepts/architecture)
+- [Use the full configuration reference when you need every key and example.](https://docs.surprisebot.bot/gateway/configuration)
+- [Run the Gateway by the book with the operational runbook.](https://docs.surprisebot.bot/gateway)
+- [Learn how the Control UI/Web surfaces work and how to expose them safely.](https://docs.surprisebot.bot/web)
+- [Understand remote access over SSH tunnels or tailnets.](https://docs.surprisebot.bot/gateway/remote)
+- [Follow the onboarding wizard flow for a guided setup.](https://docs.surprisebot.bot/start/wizard)
+- [Wire external triggers via the webhook surface.](https://docs.surprisebot.bot/automation/webhook)
+- [Set up Gmail Pub/Sub triggers.](https://docs.surprisebot.bot/automation/gmail-pubsub)
+- [Learn the macOS menu bar companion details.](https://docs.surprisebot.bot/platforms/mac/menu-bar)
+- [Platform guides: Windows (WSL2)](https://docs.surprisebot.bot/platforms/windows), [Linux](https://docs.surprisebot.bot/platforms/linux), [macOS](https://docs.surprisebot.bot/platforms/macos), [iOS](https://docs.surprisebot.bot/platforms/ios), [Android](https://docs.surprisebot.bot/platforms/android)
+- [Debug common failures with the troubleshooting guide.](https://docs.surprisebot.bot/channels/troubleshooting)
+- [Review security guidance before exposing anything.](https://docs.surprisebot.bot/gateway/security)
 
 ## Advanced docs (discovery + control)
 
-- [Discovery + transports](https://docs.clawd.bot/gateway/discovery)
-- [Bonjour/mDNS](https://docs.clawd.bot/gateway/bonjour)
-- [Gateway pairing](https://docs.clawd.bot/gateway/pairing)
-- [Remote gateway README](https://docs.clawd.bot/gateway/remote-gateway-readme)
-- [Control UI](https://docs.clawd.bot/web/control-ui)
-- [Dashboard](https://docs.clawd.bot/web/dashboard)
+- [Discovery + transports](https://docs.surprisebot.bot/gateway/discovery)
+- [Bonjour/mDNS](https://docs.surprisebot.bot/gateway/bonjour)
+- [Gateway pairing](https://docs.surprisebot.bot/gateway/pairing)
+- [Remote gateway README](https://docs.surprisebot.bot/gateway/remote-gateway-readme)
+- [Control UI](https://docs.surprisebot.bot/web/control-ui)
+- [Dashboard](https://docs.surprisebot.bot/web/dashboard)
 
 ## Operations & troubleshooting
 
-- [Health checks](https://docs.clawd.bot/gateway/health)
-- [Gateway lock](https://docs.clawd.bot/gateway/gateway-lock)
-- [Background process](https://docs.clawd.bot/gateway/background-process)
-- [Browser troubleshooting (Linux)](https://docs.clawd.bot/tools/browser-linux-troubleshooting)
-- [Logging](https://docs.clawd.bot/logging)
+- [Health checks](https://docs.surprisebot.bot/gateway/health)
+- [Gateway lock](https://docs.surprisebot.bot/gateway/gateway-lock)
+- [Background process](https://docs.surprisebot.bot/gateway/background-process)
+- [Browser troubleshooting (Linux)](https://docs.surprisebot.bot/tools/browser-linux-troubleshooting)
+- [Logging](https://docs.surprisebot.bot/logging)
 
 ## Deep dives
 
-- [Agent loop](https://docs.clawd.bot/concepts/agent-loop)
-- [Presence](https://docs.clawd.bot/concepts/presence)
-- [TypeBox schemas](https://docs.clawd.bot/concepts/typebox)
-- [RPC adapters](https://docs.clawd.bot/reference/rpc)
-- [Queue](https://docs.clawd.bot/concepts/queue)
+- [Agent loop](https://docs.surprisebot.bot/concepts/agent-loop)
+- [Presence](https://docs.surprisebot.bot/concepts/presence)
+- [TypeBox schemas](https://docs.surprisebot.bot/concepts/typebox)
+- [RPC adapters](https://docs.surprisebot.bot/reference/rpc)
+- [Queue](https://docs.surprisebot.bot/concepts/queue)
 
 ## Workspace & skills
 
-- [Skills config](https://docs.clawd.bot/tools/skills-config)
-- [Default AGENTS](https://docs.clawd.bot/reference/AGENTS.default)
-- [Templates: AGENTS](https://docs.clawd.bot/reference/templates/AGENTS)
-- [Templates: BOOTSTRAP](https://docs.clawd.bot/reference/templates/BOOTSTRAP)
-- [Templates: IDENTITY](https://docs.clawd.bot/reference/templates/IDENTITY)
-- [Templates: SOUL](https://docs.clawd.bot/reference/templates/SOUL)
-- [Templates: TOOLS](https://docs.clawd.bot/reference/templates/TOOLS)
-- [Templates: USER](https://docs.clawd.bot/reference/templates/USER)
+- [Skills config](https://docs.surprisebot.bot/tools/skills-config)
+- [Default AGENTS](https://docs.surprisebot.bot/reference/AGENTS.default)
+- [Templates: AGENTS](https://docs.surprisebot.bot/reference/templates/AGENTS)
+- [Templates: BOOTSTRAP](https://docs.surprisebot.bot/reference/templates/BOOTSTRAP)
+- [Templates: IDENTITY](https://docs.surprisebot.bot/reference/templates/IDENTITY)
+- [Templates: SOUL](https://docs.surprisebot.bot/reference/templates/SOUL)
+- [Templates: TOOLS](https://docs.surprisebot.bot/reference/templates/TOOLS)
+- [Templates: USER](https://docs.surprisebot.bot/reference/templates/USER)
 
 ## Platform internals
 
-- [macOS dev setup](https://docs.clawd.bot/platforms/mac/dev-setup)
-- [macOS menu bar](https://docs.clawd.bot/platforms/mac/menu-bar)
-- [macOS voice wake](https://docs.clawd.bot/platforms/mac/voicewake)
-- [iOS node](https://docs.clawd.bot/platforms/ios)
-- [Android node](https://docs.clawd.bot/platforms/android)
-- [Windows (WSL2)](https://docs.clawd.bot/platforms/windows)
-- [Linux app](https://docs.clawd.bot/platforms/linux)
+- [macOS dev setup](https://docs.surprisebot.bot/platforms/mac/dev-setup)
+- [macOS menu bar](https://docs.surprisebot.bot/platforms/mac/menu-bar)
+- [macOS voice wake](https://docs.surprisebot.bot/platforms/mac/voicewake)
+- [iOS node](https://docs.surprisebot.bot/platforms/ios)
+- [Android node](https://docs.surprisebot.bot/platforms/android)
+- [Windows (WSL2)](https://docs.surprisebot.bot/platforms/windows)
+- [Linux app](https://docs.surprisebot.bot/platforms/linux)
 
 ## Email hooks (Gmail)
 
-- [docs.clawd.bot/gmail-pubsub](https://docs.clawd.bot/automation/gmail-pubsub)
+- [docs.surprisebot.bot/gmail-pubsub](https://docs.surprisebot.bot/automation/gmail-pubsub)
 
-## Clawd
+## Surprisebot
 
-Clawdbot was built for **Clawd**, a space lobster AI assistant. 🦞  
+Surprisebot was built for **Surprisebot**, a space lobster AI assistant. 🦞  
 by Peter Steinberger and the community.
 
-- [clawd.me](https://clawd.me)
+- [surprisebot.me](https://surprisebot.me)
 - [soul.md](https://soul.md)
 - [steipete.me](https://steipete.me)
 
@@ -487,7 +496,7 @@ Thanks to all clawtributors:
   <a href="https://github.com/pcty-nextgen-service-account"><img src="https://avatars.githubusercontent.com/u/112553441?v=4&s=48" width="48" height="48" alt="pcty-nextgen-service-account" title="pcty-nextgen-service-account"/></a> <a href="https://github.com/rubyrunsstuff"><img src="https://avatars.githubusercontent.com/u/246602379?v=4&s=48" width="48" height="48" alt="rubyrunsstuff" title="rubyrunsstuff"/></a> <a href="https://github.com/Syhids"><img src="https://avatars.githubusercontent.com/u/671202?v=4&s=48" width="48" height="48" alt="Syhids" title="Syhids"/></a> <a href="https://github.com/search?q=Aaron%20Konyer"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Aaron Konyer" title="Aaron Konyer"/></a> <a href="https://github.com/erik-agens"><img src="https://avatars.githubusercontent.com/u/80908960?v=4&s=48" width="48" height="48" alt="erik-agens" title="erik-agens"/></a> <a href="https://github.com/evalexpr"><img src="https://avatars.githubusercontent.com/u/23485511?v=4&s=48" width="48" height="48" alt="evalexpr" title="evalexpr"/></a> <a href="https://github.com/fcatuhe"><img src="https://avatars.githubusercontent.com/u/17382215?v=4&s=48" width="48" height="48" alt="fcatuhe" title="fcatuhe"/></a> <a href="https://github.com/gumadeiras"><img src="https://avatars.githubusercontent.com/u/5599352?v=4&s=48" width="48" height="48" alt="gumadeiras" title="gumadeiras"/></a> <a href="https://github.com/henrino3"><img src="https://avatars.githubusercontent.com/u/4260288?v=4&s=48" width="48" height="48" alt="henrino3" title="henrino3"/></a> <a href="https://github.com/jayhickey"><img src="https://avatars.githubusercontent.com/u/1676460?v=4&s=48" width="48" height="48" alt="jayhickey" title="jayhickey"/></a>
   <a href="https://github.com/jeffersonwarrior"><img src="https://avatars.githubusercontent.com/u/89030989?v=4&s=48" width="48" height="48" alt="jeffersonwarrior" title="jeffersonwarrior"/></a> <a href="https://github.com/search?q=jeffersonwarrior"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="jeffersonwarrior" title="jeffersonwarrior"/></a> <a href="https://github.com/jdrhyne"><img src="https://avatars.githubusercontent.com/u/7828464?v=4&s=48" width="48" height="48" alt="Jonathan D. Rhyne (DJ-D)" title="Jonathan D. Rhyne (DJ-D)"/></a> <a href="https://github.com/juanpablodlc"><img src="https://avatars.githubusercontent.com/u/92012363?v=4&s=48" width="48" height="48" alt="juanpablodlc" title="juanpablodlc"/></a> <a href="https://github.com/jverdi"><img src="https://avatars.githubusercontent.com/u/345050?v=4&s=48" width="48" height="48" alt="jverdi" title="jverdi"/></a> <a href="https://github.com/mickahouan"><img src="https://avatars.githubusercontent.com/u/31423109?v=4&s=48" width="48" height="48" alt="mickahouan" title="mickahouan"/></a> <a href="https://github.com/mjrussell"><img src="https://avatars.githubusercontent.com/u/1641895?v=4&s=48" width="48" height="48" alt="mjrussell" title="mjrussell"/></a> <a href="https://github.com/oswalpalash"><img src="https://avatars.githubusercontent.com/u/6431196?v=4&s=48" width="48" height="48" alt="oswalpalash" title="oswalpalash"/></a> <a href="https://github.com/p6l-richard"><img src="https://avatars.githubusercontent.com/u/18185649?v=4&s=48" width="48" height="48" alt="p6l-richard" title="p6l-richard"/></a> <a href="https://github.com/philipp-spiess"><img src="https://avatars.githubusercontent.com/u/458591?v=4&s=48" width="48" height="48" alt="philipp-spiess" title="philipp-spiess"/></a>
   <a href="https://github.com/robaxelsen"><img src="https://avatars.githubusercontent.com/u/13132899?v=4&s=48" width="48" height="48" alt="robaxelsen" title="robaxelsen"/></a> <a href="https://github.com/search?q=Sash%20Catanzarite"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Sash Catanzarite" title="Sash Catanzarite"/></a> <a href="https://github.com/search?q=VAC"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="VAC" title="VAC"/></a> <a href="https://github.com/zknicker"><img src="https://avatars.githubusercontent.com/u/1164085?v=4&s=48" width="48" height="48" alt="zknicker" title="zknicker"/></a> <a href="https://github.com/adam91holt"><img src="https://avatars.githubusercontent.com/u/9592417?v=4&s=48" width="48" height="48" alt="adam91holt" title="adam91holt"/></a> <a href="https://github.com/search?q=alejandro%20maza"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="alejandro maza" title="alejandro maza"/></a> <a href="https://github.com/andrewting19"><img src="https://avatars.githubusercontent.com/u/10536704?v=4&s=48" width="48" height="48" alt="andrewting19" title="andrewting19"/></a> <a href="https://github.com/Asleep123"><img src="https://avatars.githubusercontent.com/u/122379135?v=4&s=48" width="48" height="48" alt="Asleep123" title="Asleep123"/></a> <a href="https://github.com/bolismauro"><img src="https://avatars.githubusercontent.com/u/771999?v=4&s=48" width="48" height="48" alt="bolismauro" title="bolismauro"/></a> <a href="https://github.com/cash-echo-bot"><img src="https://avatars.githubusercontent.com/u/252747386?v=4&s=48" width="48" height="48" alt="cash-echo-bot" title="cash-echo-bot"/></a>
-  <a href="https://github.com/search?q=Clawd"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Clawd" title="Clawd"/></a> <a href="https://github.com/conhecendocontato"><img src="https://avatars.githubusercontent.com/u/82890727?v=4&s=48" width="48" height="48" alt="conhecendocontato" title="conhecendocontato"/></a> <a href="https://github.com/search?q=Drake%20Thomsen"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Drake Thomsen" title="Drake Thomsen"/></a> <a href="https://github.com/gtsifrikas"><img src="https://avatars.githubusercontent.com/u/8904378?v=4&s=48" width="48" height="48" alt="gtsifrikas" title="gtsifrikas"/></a> <a href="https://github.com/HazAT"><img src="https://avatars.githubusercontent.com/u/363802?v=4&s=48" width="48" height="48" alt="HazAT" title="HazAT"/></a> <a href="https://github.com/hrdwdmrbl"><img src="https://avatars.githubusercontent.com/u/554881?v=4&s=48" width="48" height="48" alt="hrdwdmrbl" title="hrdwdmrbl"/></a> <a href="https://github.com/hugobarauna"><img src="https://avatars.githubusercontent.com/u/2719?v=4&s=48" width="48" height="48" alt="hugobarauna" title="hugobarauna"/></a> <a href="https://github.com/search?q=Jarvis"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Jarvis" title="Jarvis"/></a> <a href="https://github.com/search?q=Jefferson%20Nunn"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Jefferson Nunn" title="Jefferson Nunn"/></a> <a href="https://github.com/kitze"><img src="https://avatars.githubusercontent.com/u/1160594?v=4&s=48" width="48" height="48" alt="kitze" title="kitze"/></a>
+  <a href="https://github.com/search?q=Surprisebot"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Surprisebot" title="Surprisebot"/></a> <a href="https://github.com/conhecendocontato"><img src="https://avatars.githubusercontent.com/u/82890727?v=4&s=48" width="48" height="48" alt="conhecendocontato" title="conhecendocontato"/></a> <a href="https://github.com/search?q=Drake%20Thomsen"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Drake Thomsen" title="Drake Thomsen"/></a> <a href="https://github.com/gtsifrikas"><img src="https://avatars.githubusercontent.com/u/8904378?v=4&s=48" width="48" height="48" alt="gtsifrikas" title="gtsifrikas"/></a> <a href="https://github.com/HazAT"><img src="https://avatars.githubusercontent.com/u/363802?v=4&s=48" width="48" height="48" alt="HazAT" title="HazAT"/></a> <a href="https://github.com/hrdwdmrbl"><img src="https://avatars.githubusercontent.com/u/554881?v=4&s=48" width="48" height="48" alt="hrdwdmrbl" title="hrdwdmrbl"/></a> <a href="https://github.com/hugobarauna"><img src="https://avatars.githubusercontent.com/u/2719?v=4&s=48" width="48" height="48" alt="hugobarauna" title="hugobarauna"/></a> <a href="https://github.com/search?q=Jarvis"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Jarvis" title="Jarvis"/></a> <a href="https://github.com/search?q=Jefferson%20Nunn"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Jefferson Nunn" title="Jefferson Nunn"/></a> <a href="https://github.com/kitze"><img src="https://avatars.githubusercontent.com/u/1160594?v=4&s=48" width="48" height="48" alt="kitze" title="kitze"/></a>
   <a href="https://github.com/kkarimi"><img src="https://avatars.githubusercontent.com/u/875218?v=4&s=48" width="48" height="48" alt="kkarimi" title="kkarimi"/></a> <a href="https://github.com/levifig"><img src="https://avatars.githubusercontent.com/u/1605?v=4&s=48" width="48" height="48" alt="levifig" title="levifig"/></a> <a href="https://github.com/search?q=Lloyd"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Lloyd" title="Lloyd"/></a> <a href="https://github.com/loukotal"><img src="https://avatars.githubusercontent.com/u/18210858?v=4&s=48" width="48" height="48" alt="loukotal" title="loukotal"/></a> <a href="https://github.com/search?q=Marc"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Marc" title="Marc"/></a> <a href="https://github.com/martinpucik"><img src="https://avatars.githubusercontent.com/u/5503097?v=4&s=48" width="48" height="48" alt="martinpucik" title="martinpucik"/></a> <a href="https://github.com/search?q=Miles"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Miles" title="Miles"/></a> <a href="https://github.com/mrdbstn"><img src="https://avatars.githubusercontent.com/u/58957632?v=4&s=48" width="48" height="48" alt="mrdbstn" title="mrdbstn"/></a> <a href="https://github.com/MSch"><img src="https://avatars.githubusercontent.com/u/7475?v=4&s=48" width="48" height="48" alt="MSch" title="MSch"/></a> <a href="https://github.com/search?q=Mustafa%20Tag%20Eldeen"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Mustafa Tag Eldeen" title="Mustafa Tag Eldeen"/></a>
   <a href="https://github.com/ndraiman"><img src="https://avatars.githubusercontent.com/u/12609607?v=4&s=48" width="48" height="48" alt="ndraiman" title="ndraiman"/></a> <a href="https://github.com/nexty5870"><img src="https://avatars.githubusercontent.com/u/3869659?v=4&s=48" width="48" height="48" alt="nexty5870" title="nexty5870"/></a> <a href="https://github.com/prathamdby"><img src="https://avatars.githubusercontent.com/u/134331217?v=4&s=48" width="48" height="48" alt="prathamdby" title="prathamdby"/></a> <a href="https://github.com/reeltimeapps"><img src="https://avatars.githubusercontent.com/u/637338?v=4&s=48" width="48" height="48" alt="reeltimeapps" title="reeltimeapps"/></a> <a href="https://github.com/RLTCmpe"><img src="https://avatars.githubusercontent.com/u/10762242?v=4&s=48" width="48" height="48" alt="RLTCmpe" title="RLTCmpe"/></a> <a href="https://github.com/search?q=Rolf%20Fredheim"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Rolf Fredheim" title="Rolf Fredheim"/></a> <a href="https://github.com/search?q=Rony%20Kelner"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Rony Kelner" title="Rony Kelner"/></a> <a href="https://github.com/search?q=Samrat%20Jha"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Samrat Jha" title="Samrat Jha"/></a> <a href="https://github.com/siraht"><img src="https://avatars.githubusercontent.com/u/73152895?v=4&s=48" width="48" height="48" alt="siraht" title="siraht"/></a> <a href="https://github.com/snopoke"><img src="https://avatars.githubusercontent.com/u/249606?v=4&s=48" width="48" height="48" alt="snopoke" title="snopoke"/></a>
   <a href="https://github.com/search?q=The%20Admiral"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="The Admiral" title="The Admiral"/></a> <a href="https://github.com/wes-davis"><img src="https://avatars.githubusercontent.com/u/16506720?v=4&s=48" width="48" height="48" alt="wes-davis" title="wes-davis"/></a> <a href="https://github.com/wstock"><img src="https://avatars.githubusercontent.com/u/1394687?v=4&s=48" width="48" height="48" alt="wstock" title="wstock"/></a> <a href="https://github.com/YuriNachos"><img src="https://avatars.githubusercontent.com/u/19365375?v=4&s=48" width="48" height="48" alt="YuriNachos" title="YuriNachos"/></a> <a href="https://github.com/search?q=Zach%20Knickerbocker"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Zach Knickerbocker" title="Zach Knickerbocker"/></a> <a href="https://github.com/search?q=Azade"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Azade" title="Azade"/></a> <a href="https://github.com/carlulsoe"><img src="https://avatars.githubusercontent.com/u/34673973?v=4&s=48" width="48" height="48" alt="carlulsoe" title="carlulsoe"/></a> <a href="https://github.com/cpojer"><img src="https://avatars.githubusercontent.com/u/13352?v=4&s=48" width="48" height="48" alt="cpojer" title="cpojer"/></a> <a href="https://github.com/search?q=ddyo"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="ddyo" title="ddyo"/></a> <a href="https://github.com/search?q=Erik"><img src="assets/avatar-placeholder.svg" width="48" height="48" alt="Erik" title="Erik"/></a>

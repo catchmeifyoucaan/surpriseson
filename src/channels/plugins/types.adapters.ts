@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { OutboundDeliveryResult, OutboundSendDeps } from "../../infra/outbound/deliver.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import type {
@@ -17,45 +17,45 @@ import type {
 } from "./types.core.js";
 
 export type ChannelSetupAdapter = {
-  resolveAccountId?: (params: { cfg: ClawdbotConfig; accountId?: string }) => string;
+  resolveAccountId?: (params: { cfg: SurprisebotConfig; accountId?: string }) => string;
   applyAccountName?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId: string;
     name?: string;
-  }) => ClawdbotConfig;
+  }) => SurprisebotConfig;
   applyAccountConfig: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId: string;
     input: ChannelSetupInput;
-  }) => ClawdbotConfig;
+  }) => SurprisebotConfig;
   validateInput?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId: string;
     input: ChannelSetupInput;
   }) => string | null;
 };
 
 export type ChannelConfigAdapter<ResolvedAccount> = {
-  listAccountIds: (cfg: ClawdbotConfig) => string[];
-  resolveAccount: (cfg: ClawdbotConfig, accountId?: string | null) => ResolvedAccount;
-  defaultAccountId?: (cfg: ClawdbotConfig) => string;
+  listAccountIds: (cfg: SurprisebotConfig) => string[];
+  resolveAccount: (cfg: SurprisebotConfig, accountId?: string | null) => ResolvedAccount;
+  defaultAccountId?: (cfg: SurprisebotConfig) => string;
   setAccountEnabled?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId: string;
     enabled: boolean;
-  }) => ClawdbotConfig;
-  deleteAccount?: (params: { cfg: ClawdbotConfig; accountId: string }) => ClawdbotConfig;
-  isEnabled?: (account: ResolvedAccount, cfg: ClawdbotConfig) => boolean;
-  disabledReason?: (account: ResolvedAccount, cfg: ClawdbotConfig) => string;
-  isConfigured?: (account: ResolvedAccount, cfg: ClawdbotConfig) => boolean | Promise<boolean>;
-  unconfiguredReason?: (account: ResolvedAccount, cfg: ClawdbotConfig) => string;
-  describeAccount?: (account: ResolvedAccount, cfg: ClawdbotConfig) => ChannelAccountSnapshot;
+  }) => SurprisebotConfig;
+  deleteAccount?: (params: { cfg: SurprisebotConfig; accountId: string }) => SurprisebotConfig;
+  isEnabled?: (account: ResolvedAccount, cfg: SurprisebotConfig) => boolean;
+  disabledReason?: (account: ResolvedAccount, cfg: SurprisebotConfig) => string;
+  isConfigured?: (account: ResolvedAccount, cfg: SurprisebotConfig) => boolean | Promise<boolean>;
+  unconfiguredReason?: (account: ResolvedAccount, cfg: SurprisebotConfig) => string;
+  describeAccount?: (account: ResolvedAccount, cfg: SurprisebotConfig) => ChannelAccountSnapshot;
   resolveAllowFrom?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId?: string | null;
   }) => string[] | undefined;
   formatAllowFrom?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId?: string | null;
     allowFrom: Array<string | number>;
   }) => string[];
@@ -67,7 +67,7 @@ export type ChannelGroupAdapter = {
 };
 
 export type ChannelOutboundContext = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   to: string;
   text: string;
   mediaUrl?: string;
@@ -84,7 +84,7 @@ export type ChannelOutboundAdapter = {
   textChunkLimit?: number;
   pollMaxOptions?: number;
   resolveTarget?: (params: {
-    cfg?: ClawdbotConfig;
+    cfg?: SurprisebotConfig;
     to?: string;
     allowFrom?: string[];
     accountId?: string | null;
@@ -99,37 +99,37 @@ export type ChannelStatusAdapter<ResolvedAccount> = {
   defaultRuntime?: ChannelAccountSnapshot;
   buildChannelSummary?: (params: {
     account: ResolvedAccount;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     defaultAccountId: string;
     snapshot: ChannelAccountSnapshot;
   }) => Record<string, unknown> | Promise<Record<string, unknown>>;
   probeAccount?: (params: {
     account: ResolvedAccount;
     timeoutMs: number;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
   }) => Promise<unknown>;
   auditAccount?: (params: {
     account: ResolvedAccount;
     timeoutMs: number;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     probe?: unknown;
   }) => Promise<unknown>;
   buildAccountSnapshot?: (params: {
     account: ResolvedAccount;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     runtime?: ChannelAccountSnapshot;
     probe?: unknown;
     audit?: unknown;
   }) => ChannelAccountSnapshot | Promise<ChannelAccountSnapshot>;
   logSelfId?: (params: {
     account: ResolvedAccount;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     runtime: RuntimeEnv;
     includeChannelPrefix?: boolean;
   }) => void;
   resolveAccountState?: (params: {
     account: ResolvedAccount;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     configured: boolean;
     enabled: boolean;
   }) => ChannelAccountState;
@@ -137,7 +137,7 @@ export type ChannelStatusAdapter<ResolvedAccount> = {
 };
 
 export type ChannelGatewayContext<ResolvedAccount = unknown> = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   accountId: string;
   account: ResolvedAccount;
   runtime: RuntimeEnv;
@@ -164,7 +164,7 @@ export type ChannelLoginWithQrWaitResult = {
 };
 
 export type ChannelLogoutContext<ResolvedAccount = unknown> = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   accountId: string;
   account: ResolvedAccount;
   runtime: RuntimeEnv;
@@ -175,7 +175,7 @@ export type ChannelPairingAdapter = {
   idLabel: string;
   normalizeAllowEntry?: (entry: string) => string;
   notifyApproval?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     id: string;
     runtime?: RuntimeEnv;
   }) => Promise<void>;
@@ -199,7 +199,7 @@ export type ChannelGatewayAdapter<ResolvedAccount = unknown> = {
 
 export type ChannelAuthAdapter = {
   login?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId?: string | null;
     runtime: RuntimeEnv;
     verbose?: boolean;
@@ -209,11 +209,11 @@ export type ChannelAuthAdapter = {
 
 export type ChannelHeartbeatAdapter = {
   checkReady?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId?: string | null;
     deps?: ChannelHeartbeatDeps;
   }) => Promise<{ ok: boolean; reason: string }>;
-  resolveRecipients?: (params: { cfg: ClawdbotConfig; opts?: { to?: string; all?: boolean } }) => {
+  resolveRecipients?: (params: { cfg: SurprisebotConfig; opts?: { to?: string; all?: boolean } }) => {
     recipients: string[];
     source: string;
   };
@@ -221,7 +221,7 @@ export type ChannelHeartbeatAdapter = {
 
 export type ChannelElevatedAdapter = {
   allowFromFallback?: (params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     accountId?: string | null;
   }) => Array<string | number> | undefined;
 };

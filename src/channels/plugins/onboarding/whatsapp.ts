@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { loginWeb } from "../../../channel-web.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import { mergeWhatsAppConfig } from "../../../config/merge-config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../../routing/session-key.js";
@@ -19,15 +19,15 @@ import { promptAccountId } from "./helpers.js";
 
 const channel = "whatsapp" as const;
 
-function setWhatsAppDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy): ClawdbotConfig {
+function setWhatsAppDmPolicy(cfg: SurprisebotConfig, dmPolicy: DmPolicy): SurprisebotConfig {
   return mergeWhatsAppConfig(cfg, { dmPolicy });
 }
 
-function setWhatsAppAllowFrom(cfg: ClawdbotConfig, allowFrom?: string[]): ClawdbotConfig {
+function setWhatsAppAllowFrom(cfg: SurprisebotConfig, allowFrom?: string[]): SurprisebotConfig {
   return mergeWhatsAppConfig(cfg, { allowFrom }, { unsetOnUndefined: ["allowFrom"] });
 }
 
-function setMessagesResponsePrefix(cfg: ClawdbotConfig, responsePrefix?: string): ClawdbotConfig {
+function setMessagesResponsePrefix(cfg: SurprisebotConfig, responsePrefix?: string): SurprisebotConfig {
   return {
     ...cfg,
     messages: {
@@ -37,7 +37,7 @@ function setMessagesResponsePrefix(cfg: ClawdbotConfig, responsePrefix?: string)
   };
 }
 
-function setWhatsAppSelfChatMode(cfg: ClawdbotConfig, selfChatMode: boolean): ClawdbotConfig {
+function setWhatsAppSelfChatMode(cfg: SurprisebotConfig, selfChatMode: boolean): SurprisebotConfig {
   return mergeWhatsAppConfig(cfg, { selfChatMode });
 }
 
@@ -50,18 +50,18 @@ async function pathExists(filePath: string): Promise<boolean> {
   }
 }
 
-async function detectWhatsAppLinked(cfg: ClawdbotConfig, accountId: string): Promise<boolean> {
+async function detectWhatsAppLinked(cfg: SurprisebotConfig, accountId: string): Promise<boolean> {
   const { authDir } = resolveWhatsAppAuthDir({ cfg, accountId });
   const credsPath = path.join(authDir, "creds.json");
   return await pathExists(credsPath);
 }
 
 async function promptWhatsAppAllowFrom(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   _runtime: RuntimeEnv,
   prompter: WizardPrompter,
   options?: { forceAllowlist?: boolean },
-): Promise<ClawdbotConfig> {
+): Promise<SurprisebotConfig> {
   const existingPolicy = cfg.channels?.whatsapp?.dmPolicy ?? "pairing";
   const existingAllowFrom = cfg.channels?.whatsapp?.allowFrom ?? [];
   const existingLabel = existingAllowFrom.length > 0 ? existingAllowFrom.join(", ") : "unset";
@@ -69,7 +69,7 @@ async function promptWhatsAppAllowFrom(
 
   if (options?.forceAllowlist) {
     await prompter.note(
-      "We need the sender/owner number so Clawdbot can allowlist you.",
+      "We need the sender/owner number so Surprisebot can allowlist you.",
       "WhatsApp number",
     );
     const entry = await prompter.text({
@@ -97,14 +97,14 @@ async function promptWhatsAppAllowFrom(
     next = setWhatsAppDmPolicy(next, "allowlist");
     next = setWhatsAppAllowFrom(next, unique);
     if (existingResponsePrefix === undefined) {
-      next = setMessagesResponsePrefix(next, "[clawdbot]");
+      next = setMessagesResponsePrefix(next, "[surprisebot]");
     }
     await prompter.note(
       [
         "Allowlist mode enabled.",
         `- allowFrom includes ${normalized}`,
         existingResponsePrefix === undefined
-          ? "- responsePrefix set to [clawdbot]"
+          ? "- responsePrefix set to [surprisebot]"
           : "- responsePrefix left unchanged",
       ].join("\n"),
       "WhatsApp allowlist",
@@ -130,13 +130,13 @@ async function promptWhatsAppAllowFrom(
     message: "WhatsApp phone setup",
     options: [
       { value: "personal", label: "This is my personal phone number" },
-      { value: "separate", label: "Separate phone just for Clawdbot" },
+      { value: "separate", label: "Separate phone just for Surprisebot" },
     ],
   })) as "personal" | "separate";
 
   if (phoneMode === "personal") {
     await prompter.note(
-      "We need the sender/owner number so Clawdbot can allowlist you.",
+      "We need the sender/owner number so Surprisebot can allowlist you.",
       "WhatsApp number",
     );
     const entry = await prompter.text({
@@ -164,7 +164,7 @@ async function promptWhatsAppAllowFrom(
     next = setWhatsAppDmPolicy(next, "allowlist");
     next = setWhatsAppAllowFrom(next, unique);
     if (existingResponsePrefix === undefined) {
-      next = setMessagesResponsePrefix(next, "[clawdbot]");
+      next = setMessagesResponsePrefix(next, "[surprisebot]");
     }
     await prompter.note(
       [
@@ -172,7 +172,7 @@ async function promptWhatsAppAllowFrom(
         "- dmPolicy set to allowlist (pairing skipped)",
         `- allowFrom includes ${normalized}`,
         existingResponsePrefix === undefined
-          ? "- responsePrefix set to [clawdbot]"
+          ? "- responsePrefix set to [surprisebot]"
           : "- responsePrefix left unchanged",
       ].join("\n"),
       "WhatsApp personal phone",
@@ -347,7 +347,7 @@ export const whatsappOnboardingAdapter: ChannelOnboardingAdapter = {
         await prompter.note(`Docs: ${formatDocsLink("/whatsapp", "whatsapp")}`, "WhatsApp help");
       }
     } else if (!linked) {
-      await prompter.note("Run `clawdbot channels login` later to link WhatsApp.", "WhatsApp");
+      await prompter.note("Run `surprisebot channels login` later to link WhatsApp.", "WhatsApp");
     }
 
     next = await promptWhatsAppAllowFrom(next, runtime, prompter, {

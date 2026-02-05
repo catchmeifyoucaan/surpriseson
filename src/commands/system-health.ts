@@ -12,7 +12,9 @@ export type SystemHealthCheck = {
     freeMemGb: number;
     minRamGb: number;
     minDiskGb: number;
-    diskFreeByPath: Record<string, number | null>;
+    diskFreeByPath: Record<string, number | null>
+    cpuCount: number;
+    load1: number;
   };
 };
 
@@ -49,6 +51,8 @@ export async function checkSystemHealth(opts: SystemHealthOptions = {}): Promise
   );
 
   const totalMemGb = toGb(os.totalmem());
+  const cpuCount = os.cpus().length;
+  const load1 = Array.isArray(os.loadavg()) ? os.loadavg()[0] : 0;
   const freeMemGb = toGb(os.freemem());
 
   const errors: string[] = [];
@@ -60,6 +64,14 @@ export async function checkSystemHealth(opts: SystemHealthOptions = {}): Promise
 
   if (freeMemGb < Math.max(0.25, minRamGb * 0.1)) {
     warnings.push(`Low free RAM: ${freeMemGb} GiB available.`);
+  }
+
+
+  if (cpuCount < 2) {
+    warnings.push(`Low CPU count: ${cpuCount} core(s).`);
+  }
+  if (load1 && load1 > cpuCount * 2) {
+    warnings.push(`High 1m load: ${load1.toFixed(2)} (cores ${cpuCount}).`);
   }
 
   const diskFreeByPath: Record<string, number | null> = {};
@@ -90,6 +102,8 @@ export async function checkSystemHealth(opts: SystemHealthOptions = {}): Promise
       minRamGb,
       minDiskGb,
       diskFreeByPath,
+    cpuCount,
+    load1,
     },
   };
 }
@@ -97,6 +111,7 @@ export async function checkSystemHealth(opts: SystemHealthOptions = {}): Promise
 export function formatSystemHealthSummary(check: SystemHealthCheck): string[] {
   const lines: string[] = [];
   lines.push(`RAM total: ${check.details.totalMemGb} GiB (min ${check.details.minRamGb} GiB)`);
+  lines.push(`CPU cores: ${check.details.cpuCount} (load1: ${check.details.load1.toFixed(2)})`);
   lines.push(`RAM free: ${check.details.freeMemGb} GiB`);
   for (const [p, free] of Object.entries(check.details.diskFreeByPath)) {
     lines.push(

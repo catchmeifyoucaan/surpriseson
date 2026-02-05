@@ -1,7 +1,10 @@
+import { stat } from "node:fs/promises";
+import path from "node:path";
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import { createEditTool, createReadTool, createWriteTool } from "@mariozechner/pi-coding-agent";
 
 import { detectMime } from "../media/mime.js";
+import { clampNumber, readEnvInt } from "./bash-tools.shared.js";
 import type { AnyAgentTool } from "./pi-tools.types.js";
 import { assertSandboxPath } from "./sandbox-paths.js";
 import { sanitizeToolResultImages } from "./tool-images.js";
@@ -11,6 +14,13 @@ import { sanitizeToolResultImages } from "./tool-images.js";
 type ToolContentBlock = AgentToolResult<unknown>["content"][number];
 type ImageContentBlock = Extract<ToolContentBlock, { type: "image" }>;
 type TextContentBlock = Extract<ToolContentBlock, { type: "text" }>;
+
+const DEFAULT_READ_MAX_BYTES = clampNumber(
+  readEnvInt("PI_READ_MAX_BYTES"),
+  2_000_000,
+  50_000,
+  50_000_000,
+);
 
 async function sniffMimeFromBase64(base64: string): Promise<string | undefined> {
   const trimmed = base64.trim();
@@ -249,7 +259,7 @@ function wrapSandboxPathGuard(tool: AnyAgentTool, root: string): AnyAgentTool {
 
 export function createSandboxedReadTool(root: string) {
   const base = createReadTool(root) as unknown as AnyAgentTool;
-  return wrapSandboxPathGuard(createClawdbotReadTool(base), root);
+  return wrapSandboxPathGuard(createSurprisebotReadTool(base, { workspaceRoot: root }), root);
 }
 
 export function createSandboxedWriteTool(root: string) {
@@ -262,7 +272,10 @@ export function createSandboxedEditTool(root: string) {
   return wrapSandboxPathGuard(wrapToolParamNormalization(base, CLAUDE_PARAM_GROUPS.edit), root);
 }
 
-export function createClawdbotReadTool(base: AnyAgentTool): AnyAgentTool {
+export function createSurprisebotReadTool(
+  base: AnyAgentTool,
+  opts?: { workspaceRoot?: string },
+): AnyAgentTool {
   const patched = patchToolSchemaForClaudeCompatibility(base);
   return {
     ...patched,
@@ -272,12 +285,35 @@ export function createClawdbotReadTool(base: AnyAgentTool): AnyAgentTool {
         normalized ??
         (params && typeof params === "object" ? (params as Record<string, unknown>) : undefined);
       assertRequiredParams(record, CLAUDE_PARAM_GROUPS.read, base.name);
+      const filePath = typeof record?.path === "string" ? String(record.path) : "<unknown>";
+      if (filePath !== "<unknown>") {
+        const resolvedPath = path.isAbsolute(filePath)
+          ? filePath
+          : opts?.workspaceRoot
+            ? path.join(opts.workspaceRoot, filePath)
+            : path.resolve(filePath);
+        try {
+          const stats = await stat(resolvedPath);
+          if (stats.size > DEFAULT_READ_MAX_BYTES) {
+            const sizeMb = (stats.size / (1024 * 1024)).toFixed(1);
+            const limitMb = (DEFAULT_READ_MAX_BYTES / (1024 * 1024)).toFixed(1);
+            throw new Error(
+              `read: ${resolvedPath} is ${sizeMb}MB (limit ${limitMb}MB). ` +
+                "Use exec with head/tail/wc/rg to sample large files.",
+            );
+          }
+        } catch (err) {
+          const code = err && typeof err === "object" ? (err as { code?: string }).code : undefined;
+          if (code !== "ENOENT") {
+            throw err;
+          }
+        }
+      }
       const result = (await base.execute(
         toolCallId,
         normalized ?? params,
         signal,
       )) as AgentToolResult<unknown>;
-      const filePath = typeof record?.path === "string" ? String(record.path) : "<unknown>";
       const normalizedResult = await normalizeReadImageResult(result, filePath);
       return sanitizeToolResultImages(normalizedResult, `read:${filePath}`);
     },

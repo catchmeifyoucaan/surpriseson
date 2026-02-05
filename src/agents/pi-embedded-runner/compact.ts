@@ -6,18 +6,18 @@ import { createAgentSession, SessionManager, SettingsManager } from "@mariozechn
 import { resolveHeartbeatPrompt } from "../../auto-reply/heartbeat.js";
 import type { ReasoningLevel, ThinkLevel } from "../../auto-reply/thinking.js";
 import { resolveChannelCapabilities } from "../../config/channel-capabilities.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { getMachineDisplayName } from "../../infra/machine-name.js";
 import { type enqueueCommand, enqueueCommandInLane } from "../../process/command-queue.js";
 import { normalizeMessageChannel } from "../../utils/message-channel.js";
 import { isReasoningTagProvider } from "../../utils/provider-utils.js";
 import { resolveUserPath } from "../../utils.js";
-import { resolveClawdbotAgentDir } from "../agent-paths.js";
+import { resolveSurprisebotAgentDir } from "../agent-paths.js";
 import { resolveSessionAgentIds } from "../agent-scope.js";
 import type { ExecElevatedDefaults } from "../bash-tools.js";
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "../defaults.js";
 import { getApiKeyForModel, resolveModelAuthMode } from "../model-auth.js";
-import { ensureClawdbotModelsJson } from "../models-config.js";
+import { ensureSurprisebotModelsJson } from "../models-config.js";
 import {
   buildBootstrapContextFiles,
   type EmbeddedContextFile,
@@ -30,7 +30,7 @@ import {
   ensurePiCompactionReserveTokens,
   resolveCompactionReserveTokensFloor,
 } from "../pi-settings.js";
-import { createClawdbotCodingTools } from "../pi-tools.js";
+import { createSurprisebotCodingTools } from "../pi-tools.js";
 import { resolveSandboxContext } from "../sandbox.js";
 import { guardSessionManager } from "../session-tool-result-guard-wrapper.js";
 import { acquireSessionWriteLock } from "../session-write-lock.js";
@@ -70,7 +70,7 @@ export async function compactEmbeddedPiSession(params: {
   sessionFile: string;
   workspaceDir: string;
   agentDir?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   skillsSnapshot?: SkillSnapshot;
   provider?: string;
   model?: string;
@@ -94,8 +94,8 @@ export async function compactEmbeddedPiSession(params: {
 
       const provider = (params.provider ?? DEFAULT_PROVIDER).trim() || DEFAULT_PROVIDER;
       const modelId = (params.model ?? DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-      const agentDir = params.agentDir ?? resolveClawdbotAgentDir();
-      await ensureClawdbotModelsJson(params.config, agentDir);
+      const agentDir = params.agentDir ?? resolveSurprisebotAgentDir();
+      await ensureSurprisebotModelsJson(params.config, agentDir);
       const { model, error, authStorage, modelRegistry } = resolveModel(
         provider,
         modelId,
@@ -187,7 +187,7 @@ export async function compactEmbeddedPiSession(params: {
           warn: (message) => log.warn(`${message} (sessionKey=${sessionLabel})`),
         });
         const runAbortController = new AbortController();
-        const tools = createClawdbotCodingTools({
+        const tools = createSurprisebotCodingTools({
           exec: {
             ...resolveExecToolDefaults(params.config),
             elevated: params.bashElevated,

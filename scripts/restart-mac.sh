@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
-# Reset Clawdbot like Trimmy: kill running instances, rebuild, repackage, relaunch, verify.
+# Reset Surprisebot like Trimmy: kill running instances, rebuild, repackage, relaunch, verify.
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_BUNDLE="${CLAWDBOT_APP_BUNDLE:-}"
-APP_PROCESS_PATTERN="Clawdbot.app/Contents/MacOS/Clawdbot"
-DEBUG_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/debug/Clawdbot"
-LOCAL_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build-local/debug/Clawdbot"
-RELEASE_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/release/Clawdbot"
-LAUNCH_AGENT="${HOME}/Library/LaunchAgents/com.clawdbot.mac.plist"
+APP_BUNDLE="${SURPRISEBOT_APP_BUNDLE:-}"
+APP_PROCESS_PATTERN="Surprisebot.app/Contents/MacOS/Surprisebot"
+DEBUG_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/debug/Surprisebot"
+LOCAL_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build-local/debug/Surprisebot"
+RELEASE_PROCESS_PATTERN="${ROOT_DIR}/apps/macos/.build/release/Surprisebot"
+LAUNCH_AGENT="${HOME}/Library/LaunchAgents/com.surprisebot.mac.plist"
 LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
-LOCK_DIR="${TMPDIR:-/tmp}/clawdbot-restart-${LOCK_KEY}"
+LOCK_DIR="${TMPDIR:-/tmp}/surprisebot-restart-${LOCK_KEY}"
 LOCK_PID_FILE="${LOCK_DIR}/pid"
 WAIT_FOR_LOCK=0
-LOG_PATH="${CLAWDBOT_RESTART_LOG:-/tmp/clawdbot-restart.log}"
+LOG_PATH="${SURPRISEBOT_RESTART_LOG:-/tmp/surprisebot-restart.log}"
 NO_SIGN=0
 SIGN=0
 AUTO_DETECT_SIGNING=1
-GATEWAY_WAIT_SECONDS="${CLAWDBOT_GATEWAY_WAIT_SECONDS:-0}"
-LAUNCHAGENT_DISABLE_MARKER="${HOME}/.clawdbot/disable-launchagent"
+GATEWAY_WAIT_SECONDS="${SURPRISEBOT_GATEWAY_WAIT_SECONDS:-0}"
+LAUNCHAGENT_DISABLE_MARKER="${HOME}/.surprisebot/disable-launchagent"
 
 log()  { printf '%s\n' "$*"; }
 fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -88,14 +88,14 @@ for arg in "$@"; do
       log "  --sign    Force code signing (will fail if no signing key available)"
       log ""
       log "Env:"
-      log "  CLAWDBOT_GATEWAY_WAIT_SECONDS=0  Wait time before gateway port check (unsigned only)"
+      log "  SURPRISEBOT_GATEWAY_WAIT_SECONDS=0  Wait time before gateway port check (unsigned only)"
       log ""
       log "Unsigned recovery:"
       log "  node dist/entry.js daemon install --force --runtime node"
       log "  node dist/entry.js daemon restart"
       log ""
       log "Reset unsigned overrides:"
-      log "  rm ~/.clawdbot/disable-launchagent"
+      log "  rm ~/.surprisebot/disable-launchagent"
       log ""
       log "Default behavior: Auto-detect signing keys, fallback to --no-sign if none found"
       exit 0
@@ -118,18 +118,18 @@ fi
 
 acquire_lock
 
-kill_all_clawdbot() {
+kill_all_surprisebot() {
   for _ in {1..10}; do
     pkill -f "${APP_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${LOCAL_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -x "Clawdbot" 2>/dev/null || true
+    pkill -x "Surprisebot" 2>/dev/null || true
     if ! pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
        && ! pgrep -f "${DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
        && ! pgrep -f "${LOCAL_PROCESS_PATTERN}" >/dev/null 2>&1 \
        && ! pgrep -f "${RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
-       && ! pgrep -x "Clawdbot" >/dev/null 2>&1; then
+       && ! pgrep -x "Surprisebot" >/dev/null 2>&1; then
       return 0
     fi
     sleep 0.3
@@ -137,12 +137,12 @@ kill_all_clawdbot() {
 }
 
 stop_launch_agent() {
-  launchctl bootout gui/"$UID"/com.clawdbot.mac 2>/dev/null || true
+  launchctl bootout gui/"$UID"/com.surprisebot.mac 2>/dev/null || true
 }
 
 # 1) Kill all running instances first.
-log "==> Killing existing Clawdbot instances"
-kill_all_clawdbot
+log "==> Killing existing Surprisebot instances"
+kill_all_surprisebot
 stop_launch_agent
 
 # Bundle Gateway-hosted Canvas A2UI assets.
@@ -150,7 +150,7 @@ run_step "bundle canvas a2ui" bash -lc "cd '${ROOT_DIR}' && pnpm canvas:a2ui:bun
 
 # 2) Rebuild into the same path the packager consumes (.build).
 run_step "clean build cache" bash -lc "cd '${ROOT_DIR}/apps/macos' && rm -rf .build .build-swift .swiftpm 2>/dev/null || true"
-run_step "swift build" bash -lc "cd '${ROOT_DIR}/apps/macos' && swift build -q --product Clawdbot"
+run_step "swift build" bash -lc "cd '${ROOT_DIR}/apps/macos' && swift build -q --product Surprisebot"
 
 if [ "$AUTO_DETECT_SIGNING" -eq 1 ]; then
   if check_signing_keys; then
@@ -165,7 +165,7 @@ fi
 if [ "$NO_SIGN" -eq 1 ]; then
   export ALLOW_ADHOC_SIGNING=1
   export SIGN_IDENTITY="-"
-  mkdir -p "${HOME}/.clawdbot"
+  mkdir -p "${HOME}/.surprisebot"
   run_step "disable launchagent writes" /usr/bin/touch "${LAUNCHAGENT_DISABLE_MARKER}"
 elif [ "$SIGN" -eq 1 ]; then
   if ! check_signing_keys; then
@@ -183,20 +183,20 @@ choose_app_bundle() {
     return 0
   fi
 
-  if [[ -d "/Applications/Clawdbot.app" ]]; then
-    APP_BUNDLE="/Applications/Clawdbot.app"
+  if [[ -d "/Applications/Surprisebot.app" ]]; then
+    APP_BUNDLE="/Applications/Surprisebot.app"
     return 0
   fi
 
-  if [[ -d "${ROOT_DIR}/dist/Clawdbot.app" ]]; then
-    APP_BUNDLE="${ROOT_DIR}/dist/Clawdbot.app"
+  if [[ -d "${ROOT_DIR}/dist/Surprisebot.app" ]]; then
+    APP_BUNDLE="${ROOT_DIR}/dist/Surprisebot.app"
     if [[ ! -d "${APP_BUNDLE}/Contents/Frameworks/Sparkle.framework" ]]; then
-      fail "dist/Clawdbot.app missing Sparkle after packaging"
+      fail "dist/Surprisebot.app missing Sparkle after packaging"
     fi
     return 0
   fi
 
-  fail "App bundle not found. Set CLAWDBOT_APP_BUNDLE to your installed Clawdbot.app"
+  fail "App bundle not found. Set SURPRISEBOT_APP_BUNDLE to your installed Surprisebot.app"
 }
 
 choose_app_bundle
@@ -221,7 +221,7 @@ run_step "launch app" env -i \
 # 5) Verify the app is alive.
 sleep 1.5
 if pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1; then
-  log "OK: Clawdbot is running."
+  log "OK: Surprisebot is running."
 else
   fail "App exited immediately. Check ${LOG_PATH} or Console.app (User Reports)."
 fi
@@ -234,5 +234,5 @@ if [ "$NO_SIGN" -eq 1 ]; then
     run_step "wait for gateway (unsigned)" sleep "${GATEWAY_WAIT_SECONDS}"
   fi
   run_step "verify gateway port 18789 (unsigned)" bash -lc "lsof -iTCP:18789 -sTCP:LISTEN | head -n 5 || true"
-  run_step "show gateway launch agent args (unsigned)" bash -lc "/usr/bin/plutil -p '${HOME}/Library/LaunchAgents/com.clawdbot.gateway.plist' | head -n 40 || true"
+  run_step "show gateway launch agent args (unsigned)" bash -lc "/usr/bin/plutil -p '${HOME}/Library/LaunchAgents/com.surprisebot.gateway.plist' | head -n 40 || true"
 fi

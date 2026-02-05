@@ -10,7 +10,7 @@ export type SkillInstallSpec = {
   module?: string;
 };
 
-export type ClawdbotSkillMetadata = {
+export type SurprisebotSkillMetadata = {
   always?: boolean;
   skillKey?: string;
   primaryEnv?: string;
@@ -36,7 +36,7 @@ export type ParsedSkillFrontmatter = Record<string, string>;
 export type SkillEntry = {
   skill: Skill;
   frontmatter: ParsedSkillFrontmatter;
-  clawdbot?: ClawdbotSkillMetadata;
+  surprisebot?: SurprisebotSkillMetadata;
 };
 
 export type SkillSnapshot = {

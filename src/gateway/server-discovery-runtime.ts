@@ -17,7 +17,7 @@ export async function startGatewayDiscovery(params: {
 }) {
   let bonjourStop: (() => Promise<void>) | null = null;
   const tailnetDns = await resolveTailnetDnsHint();
-  const sshPortEnv = process.env.CLAWDBOT_SSH_PORT?.trim();
+  const sshPortEnv = process.env.SURPRISEBOT_SSH_PORT?.trim();
   const sshPortParsed = sshPortEnv ? Number.parseInt(sshPortEnv, 10) : NaN;
   const sshPort = Number.isFinite(sshPortParsed) && sshPortParsed > 0 ? sshPortParsed : undefined;
 

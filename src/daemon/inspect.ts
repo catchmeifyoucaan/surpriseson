@@ -25,13 +25,13 @@ export type FindExtraGatewayServicesOptions = {
   deep?: boolean;
 };
 
-const EXTRA_MARKERS = ["clawdbot"];
+const EXTRA_MARKERS = ["surprisebot"];
 const execFileAsync = promisify(execFile);
 
 export function renderGatewayServiceCleanupHints(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
 ): string[] {
-  const profile = env.CLAWDBOT_PROFILE;
+  const profile = env.SURPRISEBOT_PROFILE;
   switch (process.platform) {
     case "darwin": {
       const label = resolveGatewayLaunchAgentLabel(profile);
@@ -67,31 +67,31 @@ function containsMarker(content: string): boolean {
 function hasGatewayServiceMarker(content: string): boolean {
   const lower = content.toLowerCase();
   return (
-    lower.includes("clawdbot_service_marker") &&
+    lower.includes("surprisebot_service_marker") &&
     lower.includes(GATEWAY_SERVICE_MARKER.toLowerCase()) &&
-    lower.includes("clawdbot_service_kind") &&
+    lower.includes("surprisebot_service_kind") &&
     lower.includes(GATEWAY_SERVICE_KIND.toLowerCase())
   );
 }
 
-function isClawdbotGatewayLaunchdService(label: string, contents: string): boolean {
+function isSurprisebotGatewayLaunchdService(label: string, contents: string): boolean {
   if (hasGatewayServiceMarker(contents)) return true;
   const lowerContents = contents.toLowerCase();
   if (!lowerContents.includes("gateway")) return false;
-  return label.startsWith("com.clawdbot.");
+  return label.startsWith("com.surprisebot.");
 }
 
-function isClawdbotGatewaySystemdService(name: string, contents: string): boolean {
+function isSurprisebotGatewaySystemdService(name: string, contents: string): boolean {
   if (hasGatewayServiceMarker(contents)) return true;
-  if (!name.startsWith("clawdbot-gateway")) return false;
+  if (!name.startsWith("surprisebot-gateway")) return false;
   return contents.toLowerCase().includes("gateway");
 }
 
-function isClawdbotGatewayTaskName(name: string): boolean {
+function isSurprisebotGatewayTaskName(name: string): boolean {
   const normalized = name.trim().toLowerCase();
   if (!normalized) return false;
   const defaultName = resolveGatewayWindowsTaskName().toLowerCase();
-  return normalized === defaultName || normalized.startsWith("clawdbot gateway");
+  return normalized === defaultName || normalized.startsWith("surprisebot gateway");
 }
 
 function tryExtractPlistLabel(contents: string): string | null {
@@ -139,7 +139,7 @@ async function scanLaunchdDir(params: {
     if (!containsMarker(contents)) continue;
     const label = tryExtractPlistLabel(contents) ?? labelFromName;
     if (isIgnoredLaunchdLabel(label)) continue;
-    if (isClawdbotGatewayLaunchdService(label, contents)) continue;
+    if (isSurprisebotGatewayLaunchdService(label, contents)) continue;
     results.push({
       platform: "darwin",
       label,
@@ -175,7 +175,7 @@ async function scanSystemdDir(params: {
       continue;
     }
     if (!containsMarker(contents)) continue;
-    if (isClawdbotGatewaySystemdService(name, contents)) continue;
+    if (isSurprisebotGatewaySystemdService(name, contents)) continue;
     results.push({
       platform: "linux",
       label: entry,
@@ -335,7 +335,7 @@ export async function findExtraGatewayServices(
     for (const task of tasks) {
       const name = task.name.trim();
       if (!name) continue;
-      if (isClawdbotGatewayTaskName(name)) continue;
+      if (isSurprisebotGatewayTaskName(name)) continue;
       if (LEGACY_GATEWAY_WINDOWS_TASK_NAMES.includes(name)) continue;
       const lowerName = name.toLowerCase();
       const lowerCommand = task.taskToRun?.toLowerCase() ?? "";

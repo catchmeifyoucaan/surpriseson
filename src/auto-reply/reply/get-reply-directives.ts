@@ -1,6 +1,6 @@
 import type { ModelAliasIndex } from "../../agents/model-selection.js";
 import { resolveSandboxRuntimeStatus } from "../../agents/sandbox.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import { listChatCommands, shouldHandleTextCommands } from "../commands-registry.js";
 import type { MsgContext, TemplateContext } from "../templating.js";
@@ -18,7 +18,7 @@ import { formatElevatedUnavailableMessage, resolveElevatedPermissions } from "./
 import { stripInlineStatus } from "./reply-inline.js";
 import type { TypingController } from "./typing.js";
 
-type AgentDefaults = NonNullable<ClawdbotConfig["agents"]>["defaults"];
+type AgentDefaults = NonNullable<SurprisebotConfig["agents"]>["defaults"];
 
 export type ReplyDirectiveContinuation = {
   commandSource: string;
@@ -62,7 +62,7 @@ export type ReplyDirectiveResult =
 
 export async function resolveReplyDirectives(params: {
   ctx: MsgContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   agentDir: string;
   agentCfg: AgentDefaults;

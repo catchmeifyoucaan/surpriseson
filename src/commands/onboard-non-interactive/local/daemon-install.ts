@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import { resolveGatewayLaunchAgentLabel } from "../../../daemon/constants.js";
 import { resolveGatewayProgramArguments } from "../../../daemon/program-args.js";
 import {
@@ -17,7 +17,7 @@ import type { OnboardOptions } from "../../onboard-types.js";
 import { ensureSystemdUserLingerNonInteractive } from "../../systemd-linger.js";
 
 export async function installGatewayDaemonNonInteractive(params: {
-  nextConfig: ClawdbotConfig;
+  nextConfig: SurprisebotConfig;
   opts: OnboardOptions;
   runtime: RuntimeEnv;
   port: number;
@@ -66,7 +66,7 @@ export async function installGatewayDaemonNonInteractive(params: {
     token: gatewayToken,
     launchdLabel:
       process.platform === "darwin"
-        ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+        ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
         : undefined,
   });
   await service.install({

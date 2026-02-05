@@ -9,7 +9,7 @@ import {
   normalizeProviderId,
   resolveConfiguredModelRef,
 } from "../agents/model-selection.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { WizardPrompter, WizardSelectOption } from "../wizard/prompts.js";
 import { formatTokenK } from "./models/shared.js";
 
@@ -18,7 +18,7 @@ const MANUAL_VALUE = "__manual__";
 const PROVIDER_FILTER_THRESHOLD = 30;
 
 type PromptDefaultModelParams = {
-  config: ClawdbotConfig;
+  config: SurprisebotConfig;
   prompter: WizardPrompter;
   allowKeep?: boolean;
   includeManual?: boolean;
@@ -32,7 +32,7 @@ type PromptDefaultModelResult = { model?: string };
 
 function hasAuthForProvider(
   provider: string,
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   store: ReturnType<typeof ensureAuthProfileStore>,
 ) {
   if (listProfilesForProvider(store, provider).length > 0) return true;
@@ -41,7 +41,7 @@ function hasAuthForProvider(
   return false;
 }
 
-function resolveConfiguredModelRaw(cfg: ClawdbotConfig): string {
+function resolveConfiguredModelRaw(cfg: SurprisebotConfig): string {
   const raw = cfg.agents?.defaults?.model as { primary?: string } | string | undefined;
   if (typeof raw === "string") return raw.trim();
   return raw?.primary?.trim() ?? "";
@@ -238,7 +238,7 @@ export async function promptDefaultModel(
   return { model: String(selection) };
 }
 
-export function applyPrimaryModel(cfg: ClawdbotConfig, model: string): ClawdbotConfig {
+export function applyPrimaryModel(cfg: SurprisebotConfig, model: string): SurprisebotConfig {
   const defaults = cfg.agents?.defaults;
   const existingModel = defaults?.model;
   const existingModels = defaults?.models;

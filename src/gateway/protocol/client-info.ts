@@ -1,13 +1,13 @@
 export const GATEWAY_CLIENT_IDS = {
   WEBCHAT_UI: "webchat-ui",
-  CONTROL_UI: "clawdbot-control-ui",
+  CONTROL_UI: "surprisebot-control-ui",
   WEBCHAT: "webchat",
   CLI: "cli",
   GATEWAY_CLIENT: "gateway-client",
-  MACOS_APP: "clawdbot-macos",
+  MACOS_APP: "surprisebot-macos",
   TEST: "test",
   FINGERPRINT: "fingerprint",
-  PROBE: "clawdbot-probe",
+  PROBE: "surprisebot-probe",
 } as const;
 
 export type GatewayClientId = (typeof GATEWAY_CLIENT_IDS)[keyof typeof GATEWAY_CLIENT_IDS];

@@ -6,7 +6,7 @@ import path from "node:path";
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import type { ImageContent } from "@mariozechner/pi-ai";
 import type { ThinkLevel } from "../../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { CliBackendConfig } from "../../config/types.js";
 import { runExec } from "../../process/exec.js";
 import type { EmbeddedContextFile } from "../pi-embedded-helpers.js";
@@ -52,7 +52,7 @@ export function enqueueCliRun<T>(key: string, task: () => Promise<T>): Promise<T
     }
   });
   CLI_RUN_QUEUE.set(key, tracked);
-  return chained;
+  return tracked;
 }
 
 type CliUsage = {
@@ -63,10 +63,29 @@ type CliUsage = {
   total?: number;
 };
 
+type CliToolResults = {
+  started: number;
+  ended: number;
+  pending: Array<{
+    id: string;
+    name: string;
+    meta?: string;
+    startedAt?: number;
+    timedOut?: boolean;
+  }>;
+  timedOut: Array<{
+    id: string;
+    name: string;
+    meta?: string;
+    startedAt?: number;
+  }>;
+};
+
 export type CliOutput = {
   text: string;
   sessionId?: string;
   usage?: CliUsage;
+  toolResults?: CliToolResults;
 };
 
 function resolveUserTimezone(configured?: string): string {
@@ -107,7 +126,7 @@ function formatUserTime(date: Date, timeZone: string): string | undefined {
   }
 }
 
-function buildModelAliasLines(cfg?: ClawdbotConfig) {
+function buildModelAliasLines(cfg?: SurprisebotConfig) {
   const models = cfg?.agents?.defaults?.models ?? {};
   const entries: Array<{ alias: string; model: string }> = [];
   for (const [keyRaw, entryRaw] of Object.entries(models)) {
@@ -124,7 +143,7 @@ function buildModelAliasLines(cfg?: ClawdbotConfig) {
 
 export function buildSystemPrompt(params: {
   workspaceDir: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   defaultThinkLevel?: ThinkLevel;
   extraSystemPrompt?: string;
   ownerNumbers?: string[];
@@ -143,7 +162,7 @@ export function buildSystemPrompt(params: {
     reasoningTagHint: false,
     heartbeatPrompt: params.heartbeatPrompt,
     runtimeInfo: {
-      host: "clawdbot",
+      host: "surprisebot",
       os: `${os.type()} ${os.release()}`,
       arch: os.arch(),
       node: process.version,
@@ -198,6 +217,237 @@ function collectText(value: unknown): string {
   return "";
 }
 
+function coerceString(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function truncateMeta(value: string, limit = 500): string {
+  if (value.length <= limit) return value;
+  return `${value.slice(0, limit)}...`;
+}
+
+function coerceMeta(value: unknown): string | undefined {
+  if (!value) return undefined;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed ? truncateMeta(trimmed) : undefined;
+  }
+  if (Array.isArray(value) || isRecord(value)) {
+    try {
+      const raw = JSON.stringify(value);
+      if (!raw) return undefined;
+      return truncateMeta(raw);
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+function toToolName(item: Record<string, unknown>, itemType?: string): string | undefined {
+  const normalizedType = itemType?.toLowerCase() ?? "";
+  if (normalizedType.includes("command_execution") || normalizedType.includes("command")) return "exec";
+  const direct =
+    coerceString(item.tool_name) ||
+    coerceString(item.tool) ||
+    (isRecord(item.tool) ? coerceString(item.tool.name) : undefined) ||
+    coerceString(item.name) ||
+    coerceString(item.action) ||
+    (isRecord(item.action) ? coerceString(item.action.name) : undefined) ||
+    (isRecord(item.function) ? coerceString(item.function.name) : undefined);
+  if (direct) return direct;
+  if (normalizedType &&
+      normalizedType !== "agent_message" &&
+      normalizedType !== "assistant_message" &&
+      normalizedType !== "message" &&
+      normalizedType !== "reasoning" &&
+      normalizedType !== "thinking" &&
+      normalizedType !== "analysis") {
+    return normalizedType;
+  }
+  return undefined;
+}
+
+function isToolItem(item: Record<string, unknown>, itemType?: string): boolean {
+  const normalizedType = itemType?.toLowerCase() ?? "";
+  if (
+    normalizedType === "agent_message" ||
+    normalizedType === "assistant_message" ||
+    normalizedType === "message" ||
+    normalizedType === "reasoning" ||
+    normalizedType === "thinking" ||
+    normalizedType === "analysis"
+  ) {
+    return false;
+  }
+  if (normalizedType.includes("command_execution")) return true;
+  if (normalizedType.includes("tool")) return true;
+  if (normalizedType.includes("function")) return true;
+  if (normalizedType.includes("action")) return true;
+  if (typeof item.command === "string" && item.command.trim()) return true;
+  if (item.tool || item.tool_name || item.function || item.arguments || item.args || item.parameters) return true;
+  return false;
+}
+
+type ToolEventEntry = {
+  id: string;
+  name: string;
+  meta?: string;
+  startedAt?: number;
+  ended?: boolean;
+  timedOut?: boolean;
+};
+
+function collectToolResultsFromRecords(records: Record<string, unknown>[]): CliToolResults | undefined {
+  const toolEvents = new Map<string, ToolEventEntry>();
+  let counter = 0;
+
+  const recordToolEvent = (item: Record<string, unknown>, eventTypeOverride?: string) => {
+    const itemType = coerceString(item.type);
+    if (!isToolItem(item, itemType)) return;
+    const toolName = toToolName(item, itemType) ?? "tool";
+    const command = coerceString(item.command);
+    const id =
+      coerceString(item.id) ||
+      coerceString(item.tool_call_id) ||
+      coerceString(item.call_id) ||
+      coerceString(item.invocation_id) ||
+      coerceString(item.tool_result_id) ||
+      coerceString(item.result_id) ||
+      coerceString(item.request_id) ||
+      (command ? `cmd:${command}` : undefined) ||
+      (toolName ? `tool:${toolName}:${++counter}` : `tool:${++counter}`);
+
+    const existing = toolEvents.get(id) ?? { id, name: toolName };
+    if (!existing.meta) {
+      const meta =
+        command ||
+        coerceMeta(item.arguments) ||
+        coerceMeta(item.args) ||
+        coerceMeta(item.parameters) ||
+        coerceMeta(item.input) ||
+        coerceMeta(item.payload);
+      if (meta) existing.meta = meta;
+    }
+
+    const eventType = (eventTypeOverride ?? coerceString((item as { _eventType?: unknown })._eventType))
+      ? (eventTypeOverride ?? coerceString((item as { _eventType?: unknown })._eventType))!.toLowerCase()
+      : "";
+    const status = (coerceString(item.status) ?? "").toLowerCase();
+    const hasOutput =
+      typeof item.aggregated_output === "string" ||
+      typeof item.output === "string" ||
+      typeof item.result === "string" ||
+      typeof item.exit_code === "number";
+    const started =
+      eventType.includes("started") ||
+      status === "in_progress" ||
+      status === "running" ||
+      status === "started" ||
+      status === "queued";
+    const timedOut =
+      eventType.includes("timeout") || status === "timed_out" || status === "timeout";
+    const ended =
+      timedOut ||
+      eventType.includes("completed") ||
+      eventType.includes("finished") ||
+      eventType.includes("done") ||
+      eventType.includes("failed") ||
+      eventType.includes("error") ||
+      status === "completed" ||
+      status === "succeeded" ||
+      status === "success" ||
+      status === "done" ||
+      status === "failed" ||
+      status === "error" ||
+      status === "canceled" ||
+      status === "cancelled" ||
+      hasOutput;
+
+    if (started || ended || timedOut || hasOutput) {
+      existing.startedAt = existing.startedAt ?? Date.now();
+    }
+    if (ended) existing.ended = true;
+    if (timedOut) existing.timedOut = true;
+
+    toolEvents.set(id, existing);
+  };
+
+  const handleToolList = (list: unknown, eventTypeOverride?: string) => {
+    if (!Array.isArray(list)) return;
+    for (const entry of list) {
+      if (!isRecord(entry)) continue;
+      recordToolEvent(entry, eventTypeOverride);
+    }
+  };
+
+  for (const record of records) {
+    const eventType = coerceString(record.type)?.toLowerCase() ?? "";
+    const item = isRecord(record.item) ? record.item : null;
+    if (item) {
+      (item as { _eventType?: string })._eventType = eventType;
+      recordToolEvent(item);
+    }
+
+    const handleItemList = (list: unknown) => {
+      if (!Array.isArray(list)) return;
+      for (const entry of list) {
+        if (!isRecord(entry)) continue;
+        (entry as { _eventType?: string })._eventType = eventType;
+        recordToolEvent(entry);
+      }
+    };
+
+    handleToolList(record.tool_calls ?? record.toolCalls ?? record.tool_call ?? record.toolCall, "started");
+    handleToolList(record.tool_results ?? record.toolResults ?? record.tool_result ?? record.toolResult, "completed");
+
+    const singleToolResult = record.tool_result ?? record.toolResult;
+    if (isRecord(singleToolResult)) {
+      recordToolEvent(singleToolResult, "completed");
+    }
+    const singleToolCall = record.tool_call ?? record.toolCall;
+    if (isRecord(singleToolCall)) {
+      recordToolEvent(singleToolCall, "started");
+    }
+
+    handleItemList(record.content);
+    handleItemList(record.items);
+    const message = isRecord(record.message) ? record.message : null;
+    if (message) {
+      handleItemList(message.content);
+    }
+  }
+
+  if (toolEvents.size === 0) return undefined;
+  const pending: CliToolResults["pending"] = [];
+  const timedOut: CliToolResults["timedOut"] = [];
+  let ended = 0;
+  for (const entry of toolEvents.values()) {
+    if (entry.timedOut) {
+      timedOut.push({
+        id: entry.id,
+        name: entry.name,
+        meta: entry.meta,
+        startedAt: entry.startedAt,
+      });
+      continue;
+    }
+    if (entry.ended) {
+      ended += 1;
+    } else {
+      pending.push({
+        id: entry.id,
+        name: entry.name,
+        meta: entry.meta,
+        startedAt: entry.startedAt,
+      });
+    }
+  }
+  return { started: toolEvents.size, ended, pending, timedOut };
+}
+
 function pickSessionId(
   parsed: Record<string, unknown>,
   backend: CliBackendConfig,
@@ -232,7 +482,10 @@ export function parseCliJson(raw: string, backend: CliBackendConfig): CliOutput 
     collectText(parsed.content) ||
     collectText(parsed.result) ||
     collectText(parsed);
-  return { text: text.trim(), sessionId, usage };
+  const toolResults = collectToolResultsFromRecords([parsed]);
+  const trimmedText = text.trim();
+  if (!trimmedText && !toolResults) return null;
+  return { text: trimmedText, sessionId, usage, toolResults };
 }
 
 export function parseCliJsonl(raw: string, backend: CliBackendConfig): CliOutput | null {
@@ -244,6 +497,7 @@ export function parseCliJsonl(raw: string, backend: CliBackendConfig): CliOutput
   let sessionId: string | undefined;
   let usage: CliUsage | undefined;
   const texts: string[] = [];
+  const records: Record<string, unknown>[] = [];
   for (const line of lines) {
     let parsed: unknown;
     try {
@@ -252,6 +506,7 @@ export function parseCliJsonl(raw: string, backend: CliBackendConfig): CliOutput
       continue;
     }
     if (!isRecord(parsed)) continue;
+    records.push(parsed);
     if (!sessionId) sessionId = pickSessionId(parsed, backend);
     if (!sessionId && typeof parsed.thread_id === "string") {
       sessionId = parsed.thread_id.trim();
@@ -268,8 +523,9 @@ export function parseCliJsonl(raw: string, backend: CliBackendConfig): CliOutput
     }
   }
   const text = texts.join("\n").trim();
-  if (!text) return null;
-  return { text, sessionId, usage };
+  const toolResults = collectToolResultsFromRecords(records);
+  if (!text && !toolResults) return null;
+  return { text, sessionId, usage, toolResults };
 }
 
 export function resolveSystemPromptUsage(params: {
@@ -331,7 +587,7 @@ export function appendImagePathsToPrompt(prompt: string, paths: string[]): strin
 export async function writeCliImages(
   images: ImageContent[],
 ): Promise<{ paths: string[]; cleanup: () => Promise<void> }> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-cli-images-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-cli-images-"));
   const paths: string[] = [];
   for (let i = 0; i < images.length; i += 1) {
     const image = images[i];

@@ -3,7 +3,7 @@
 ## 2026.1.14
 
 ### Changes
-- Version alignment with core Clawdbot release numbers.
+- Version alignment with core Surprisebot release numbers.
 
 ## 0.1.0
 

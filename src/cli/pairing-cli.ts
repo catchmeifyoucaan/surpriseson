@@ -32,7 +32,7 @@ export function registerPairingCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/pairing", "docs.clawd.bot/cli/pairing")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/pairing", "docs.surprisebot.bot/cli/pairing")}\n`,
     );
 
   pairing
@@ -77,12 +77,12 @@ export function registerPairingCli(program: Command) {
       const resolvedCode = opts.channel ? codeOrChannel : code;
       if (!opts.channel && !code) {
         throw new Error(
-          `Usage: clawdbot pairing approve <channel> <code> (or: clawdbot pairing approve --channel <channel> <code>)`,
+          `Usage: surprisebot pairing approve <channel> <code> (or: surprisebot pairing approve --channel <channel> <code>)`,
         );
       }
       if (opts.channel && code != null) {
         throw new Error(
-          `Too many arguments. Use: clawdbot pairing approve --channel <channel> <code>`,
+          `Too many arguments. Use: surprisebot pairing approve --channel <channel> <code>`,
         );
       }
       const channel = parseChannel(channelRaw);

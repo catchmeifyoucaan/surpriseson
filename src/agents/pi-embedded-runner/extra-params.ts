@@ -2,7 +2,7 @@ import type { StreamFn } from "@mariozechner/pi-agent-core";
 import type { Api, Model, SimpleStreamOptions } from "@mariozechner/pi-ai";
 import { streamSimple } from "@mariozechner/pi-ai";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { log } from "./logger.js";
 
 /**
@@ -24,7 +24,7 @@ import { log } from "./logger.js";
  * @internal Exported for testing only
  */
 export function resolveExtraParams(params: {
-  cfg: ClawdbotConfig | undefined;
+  cfg: SurprisebotConfig | undefined;
   provider: string;
   modelId: string;
   thinkLevel?: string;
@@ -103,7 +103,7 @@ function createStreamFnWithExtraParams(
  */
 export function applyExtraParamsToAgent(
   agent: { streamFn?: StreamFn },
-  cfg: ClawdbotConfig | undefined,
+  cfg: SurprisebotConfig | undefined,
   provider: string,
   modelId: string,
   thinkLevel?: string,

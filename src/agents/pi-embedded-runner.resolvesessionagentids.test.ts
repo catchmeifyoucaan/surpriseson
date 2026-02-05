@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveSessionAgentIds } from "./agent-scope.js";
-import { ensureClawdbotModelsJson } from "./models-config.js";
+import { ensureSurprisebotModelsJson } from "./models-config.js";
 
 vi.mock("@mariozechner/pi-ai", async () => {
   const actual = await vi.importActual<typeof import("@mariozechner/pi-ai")>("@mariozechner/pi-ai");
@@ -67,10 +67,10 @@ const _makeOpenAiConfig = (modelIds: string[]) =>
         },
       },
     },
-  }) satisfies ClawdbotConfig;
+  }) satisfies SurprisebotConfig;
 
-const _ensureModels = (cfg: ClawdbotConfig, agentDir: string) =>
-  ensureClawdbotModelsJson(cfg, agentDir);
+const _ensureModels = (cfg: SurprisebotConfig, agentDir: string) =>
+  ensureSurprisebotModelsJson(cfg, agentDir);
 
 const _textFromContent = (content: unknown) => {
   if (typeof content === "string") return content;
@@ -101,7 +101,7 @@ describe("resolveSessionAgentIds", () => {
     agents: {
       list: [{ id: "main" }, { id: "beta", default: true }],
     },
-  } as ClawdbotConfig;
+  } as SurprisebotConfig;
 
   it("falls back to the configured default when sessionKey is missing", () => {
     const { defaultAgentId, sessionAgentId } = resolveSessionAgentIds({

@@ -80,15 +80,15 @@ export async function startGatewayBridgeRuntime(params: {
 
   const bridgeEnabled = (() => {
     if (params.cfg.bridge?.enabled !== undefined) return params.cfg.bridge.enabled === true;
-    return process.env.CLAWDBOT_BRIDGE_ENABLED !== "0";
+    return process.env.SURPRISEBOT_BRIDGE_ENABLED !== "0";
   })();
 
   const bridgePort = (() => {
     if (typeof params.cfg.bridge?.port === "number" && params.cfg.bridge.port > 0) {
       return params.cfg.bridge.port;
     }
-    if (process.env.CLAWDBOT_BRIDGE_PORT !== undefined) {
-      const parsed = Number.parseInt(process.env.CLAWDBOT_BRIDGE_PORT, 10);
+    if (process.env.SURPRISEBOT_BRIDGE_PORT !== undefined) {
+      const parsed = Number.parseInt(process.env.SURPRISEBOT_BRIDGE_PORT, 10);
       return Number.isFinite(parsed) && parsed > 0 ? parsed : deriveDefaultBridgePort(params.port);
     }
     return deriveDefaultBridgePort(params.port);
@@ -97,7 +97,7 @@ export async function startGatewayBridgeRuntime(params: {
   const bridgeHost = (() => {
     // Back-compat: allow an env var override when no bind policy is configured.
     if (params.cfg.bridge?.bind === undefined) {
-      const env = process.env.CLAWDBOT_BRIDGE_HOST?.trim();
+      const env = process.env.SURPRISEBOT_BRIDGE_HOST?.trim();
       if (env) return env;
     }
 
@@ -119,8 +119,8 @@ export async function startGatewayBridgeRuntime(params: {
   })();
 
   const canvasHostPort = (() => {
-    if (process.env.CLAWDBOT_CANVAS_HOST_PORT !== undefined) {
-      const parsed = Number.parseInt(process.env.CLAWDBOT_CANVAS_HOST_PORT, 10);
+    if (process.env.SURPRISEBOT_CANVAS_HOST_PORT !== undefined) {
+      const parsed = Number.parseInt(process.env.SURPRISEBOT_CANVAS_HOST_PORT, 10);
       if (Number.isFinite(parsed) && parsed > 0) return parsed;
       return deriveDefaultCanvasHostPort(params.port);
     }

@@ -81,36 +81,36 @@ vi.mock("./progress.js", () => ({
 
 describe("daemon-cli coverage", () => {
   const originalEnv = {
-    CLAWDBOT_STATE_DIR: process.env.CLAWDBOT_STATE_DIR,
-    CLAWDBOT_CONFIG_PATH: process.env.CLAWDBOT_CONFIG_PATH,
-    CLAWDBOT_GATEWAY_PORT: process.env.CLAWDBOT_GATEWAY_PORT,
-    CLAWDBOT_PROFILE: process.env.CLAWDBOT_PROFILE,
+    SURPRISEBOT_STATE_DIR: process.env.SURPRISEBOT_STATE_DIR,
+    SURPRISEBOT_CONFIG_PATH: process.env.SURPRISEBOT_CONFIG_PATH,
+    SURPRISEBOT_GATEWAY_PORT: process.env.SURPRISEBOT_GATEWAY_PORT,
+    SURPRISEBOT_PROFILE: process.env.SURPRISEBOT_PROFILE,
   };
 
   beforeEach(() => {
-    process.env.CLAWDBOT_STATE_DIR = "/tmp/clawdbot-cli-state";
-    process.env.CLAWDBOT_CONFIG_PATH = "/tmp/clawdbot-cli-state/clawdbot.json";
-    delete process.env.CLAWDBOT_GATEWAY_PORT;
-    delete process.env.CLAWDBOT_PROFILE;
+    process.env.SURPRISEBOT_STATE_DIR = "/tmp/surprisebot-cli-state";
+    process.env.SURPRISEBOT_CONFIG_PATH = "/tmp/surprisebot-cli-state/surprisebot.json";
+    delete process.env.SURPRISEBOT_GATEWAY_PORT;
+    delete process.env.SURPRISEBOT_PROFILE;
     serviceReadCommand.mockResolvedValue(null);
   });
 
   afterEach(() => {
-    if (originalEnv.CLAWDBOT_STATE_DIR !== undefined)
-      process.env.CLAWDBOT_STATE_DIR = originalEnv.CLAWDBOT_STATE_DIR;
-    else delete process.env.CLAWDBOT_STATE_DIR;
+    if (originalEnv.SURPRISEBOT_STATE_DIR !== undefined)
+      process.env.SURPRISEBOT_STATE_DIR = originalEnv.SURPRISEBOT_STATE_DIR;
+    else delete process.env.SURPRISEBOT_STATE_DIR;
 
-    if (originalEnv.CLAWDBOT_CONFIG_PATH !== undefined)
-      process.env.CLAWDBOT_CONFIG_PATH = originalEnv.CLAWDBOT_CONFIG_PATH;
-    else delete process.env.CLAWDBOT_CONFIG_PATH;
+    if (originalEnv.SURPRISEBOT_CONFIG_PATH !== undefined)
+      process.env.SURPRISEBOT_CONFIG_PATH = originalEnv.SURPRISEBOT_CONFIG_PATH;
+    else delete process.env.SURPRISEBOT_CONFIG_PATH;
 
-    if (originalEnv.CLAWDBOT_GATEWAY_PORT !== undefined)
-      process.env.CLAWDBOT_GATEWAY_PORT = originalEnv.CLAWDBOT_GATEWAY_PORT;
-    else delete process.env.CLAWDBOT_GATEWAY_PORT;
+    if (originalEnv.SURPRISEBOT_GATEWAY_PORT !== undefined)
+      process.env.SURPRISEBOT_GATEWAY_PORT = originalEnv.SURPRISEBOT_GATEWAY_PORT;
+    else delete process.env.SURPRISEBOT_GATEWAY_PORT;
 
-    if (originalEnv.CLAWDBOT_PROFILE !== undefined)
-      process.env.CLAWDBOT_PROFILE = originalEnv.CLAWDBOT_PROFILE;
-    else delete process.env.CLAWDBOT_PROFILE;
+    if (originalEnv.SURPRISEBOT_PROFILE !== undefined)
+      process.env.SURPRISEBOT_PROFILE = originalEnv.SURPRISEBOT_PROFILE;
+    else delete process.env.SURPRISEBOT_PROFILE;
   });
 
   it("probes gateway status by default", async () => {
@@ -140,12 +140,12 @@ describe("daemon-cli coverage", () => {
     serviceReadCommand.mockResolvedValueOnce({
       programArguments: ["/bin/node", "cli", "gateway", "--port", "19001"],
       environment: {
-        CLAWDBOT_PROFILE: "dev",
-        CLAWDBOT_STATE_DIR: "/tmp/clawdbot-daemon-state",
-        CLAWDBOT_CONFIG_PATH: "/tmp/clawdbot-daemon-state/clawdbot.json",
-        CLAWDBOT_GATEWAY_PORT: "19001",
+        SURPRISEBOT_PROFILE: "dev",
+        SURPRISEBOT_STATE_DIR: "/tmp/surprisebot-daemon-state",
+        SURPRISEBOT_CONFIG_PATH: "/tmp/surprisebot-daemon-state/surprisebot.json",
+        SURPRISEBOT_GATEWAY_PORT: "19001",
       },
-      sourcePath: "/tmp/com.clawdbot.gateway.plist",
+      sourcePath: "/tmp/com.surprisebot.gateway.plist",
     });
 
     const { registerDaemonCli } = await import("./daemon-cli.js");

@@ -20,7 +20,11 @@ import {
 } from "../../browser/client-actions.js";
 import { resolveBrowserConfig } from "../../browser/config.js";
 import { DEFAULT_AI_SNAPSHOT_MAX_CHARS } from "../../browser/constants.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { loadConfig } from "../../config/config.js";
+import { resolveSessionAgentId, resolveDefaultAgentId } from "../agent-scope.js";
+import { getJobContext, incrementJobQueryCount } from "../../infra/job-context.js";
+import { resolveBudgetCaps } from "../../infra/budget-manager.js";
 import { BrowserToolSchema } from "./browser-tool.schema.js";
 import { type AnyAgentTool, imageResultFromFile, jsonResult, readStringParam } from "./common.js";
 
@@ -96,7 +100,7 @@ function resolveBrowserBaseUrl(params: {
   }
   if (!resolved.enabled) {
     throw new Error(
-      "Browser control is disabled. Set browser.enabled=true in ~/.clawdbot/clawdbot.json.",
+      "Browser control is disabled. Set browser.enabled=true in ~/.surprisebot/surprisebot.json.",
     );
   }
   const normalized = resolved.controlUrl.replace(/\/$/, "");
@@ -105,6 +109,8 @@ function resolveBrowserBaseUrl(params: {
 }
 
 export function createBrowserTool(opts?: {
+  config?: SurprisebotConfig;
+  agentSessionKey?: string;
   defaultControlUrl?: string;
   allowHostControl?: boolean;
   allowedControlUrls?: string[];
@@ -124,10 +130,10 @@ export function createBrowserTool(opts?: {
     label: "Browser",
     name: "browser",
     description: [
-      "Control the browser via Clawdbot's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",
-      'Profiles: use profile="chrome" for Chrome extension relay takeover (your existing Chrome tabs). Use profile="clawd" for the isolated clawd-managed browser.',
+      "Control the browser via Surprisebot's browser control server (status/start/stop/profiles/tabs/open/snapshot/screenshot/actions).",
+      'Profiles: use profile="chrome" for Chrome extension relay takeover (your existing Chrome tabs). Use profile="surprisebot" for the isolated surprisebot-managed browser.',
       'If the user mentions the Chrome extension / Browser Relay / toolbar button / “attach tab”, ALWAYS use profile="chrome" (do not ask which profile).',
-      "Chrome extension relay needs an attached tab: user must click the Clawdbot Browser Relay toolbar icon on the tab (badge ON). If no tab is connected, ask them to attach it.",
+      "Chrome extension relay needs an attached tab: user must click the Surprisebot Browser Relay toolbar icon on the tab (badge ON). If no tab is connected, ask them to attach it.",
       "When using refs from snapshot (e.g. e12), keep the same tab: prefer passing targetId from the snapshot response into subsequent actions (act/click/type/etc).",
       'For stable, self-resolving refs across calls, use snapshot with refs="aria" (Playwright aria-ref ids). Default refs="role" are role+name-based.',
       "Use snapshot+act for UI automation. Avoid act:wait by default; use only in exceptional cases when no reliable UI state exists.",
@@ -138,6 +144,28 @@ export function createBrowserTool(opts?: {
     ].join(" "),
     parameters: BrowserToolSchema,
     execute: async (_toolCallId, args) => {
+      const cfg = opts?.config ?? loadConfig();
+      const sessionKey = opts?.agentSessionKey;
+      const agentId =
+        resolveSessionAgentId({ sessionKey, config: cfg }) ??
+        resolveDefaultAgentId(cfg);
+      const jobContext = getJobContext(sessionKey);
+      const caps = resolveBudgetCaps({
+        cfg,
+        agentId: agentId ?? "default",
+        jobType: jobContext?.jobType ?? undefined,
+      });
+      if (jobContext && typeof caps.queryLimit === "number" && caps.queryLimit >= 0) {
+        const count = incrementJobQueryCount(sessionKey) ?? 0;
+        if (count > caps.queryLimit) {
+          return jsonResult({
+            error: "query budget exceeded",
+            queryCount: count,
+            queryLimit: caps.queryLimit,
+            jobType: jobContext.jobType ?? null,
+          });
+        }
+      }
       const params = args as Record<string, unknown>;
       const action = readStringParam(params, "action", { required: true });
       const controlUrl = readStringParam(params, "controlUrl");
@@ -360,7 +388,7 @@ export function createBrowserTool(opts?: {
               const tabs = await browserTabs(baseUrl, { profile }).catch(() => []);
               if (!tabs.length) {
                 throw new Error(
-                  "No Chrome tabs are attached via the Clawdbot Browser Relay extension. Click the toolbar icon on the tab you want to control (badge ON), then retry.",
+                  "No Chrome tabs are attached via the Surprisebot Browser Relay extension. Click the toolbar icon on the tab you want to control (badge ON), then retry.",
                 );
               }
               throw new Error(

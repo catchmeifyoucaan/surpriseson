@@ -10,6 +10,7 @@ import { formatErrorMessage } from "../infra/errors.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { theme } from "../terminal/theme.js";
 import { resolveHeartbeatSeconds } from "../web/reconnect.js";
+import { checkSystemHealth, formatSystemHealthSummary } from "./system-health.js";
 
 export type ChannelHealthSummary = {
   configured?: boolean;
@@ -323,6 +324,33 @@ export async function healthCommand(
   }
 
   if (fatal) {
+    runtime.exit(1);
+  }
+}
+
+export async function preflightCommand(
+  opts: { json?: boolean; minRamGb?: number; minDiskGb?: number; paths?: string[] },
+  runtime: RuntimeEnv,
+) {
+  const check = await checkSystemHealth({
+    minRamGb: opts.minRamGb,
+    minDiskGb: opts.minDiskGb,
+    paths: opts.paths,
+  });
+  if (opts.json) {
+    runtime.log(JSON.stringify(check, null, 2));
+  } else {
+    for (const line of formatSystemHealthSummary(check)) {
+      runtime.log(line);
+    }
+    if (check.warnings.length > 0) {
+      runtime.log(`Warnings: ${check.warnings.join(" ")}`);
+    }
+    if (!check.ok) {
+      runtime.error(`Health guard failed: ${check.errors.join(" ")}`);
+    }
+  }
+  if (!check.ok) {
     runtime.exit(1);
   }
 }

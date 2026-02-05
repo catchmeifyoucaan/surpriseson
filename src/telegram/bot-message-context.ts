@@ -144,14 +144,14 @@ export const buildTelegramMessageContext = async ({
               await bot.api.sendMessage(
                 chatId,
                 [
-                  "Clawdbot: access not configured.",
+                  "Surprisebot: access not configured.",
                   "",
                   `Your Telegram user id: ${telegramUserId}`,
                   "",
                   `Pairing code: ${code}`,
                   "",
                   "Ask the bot owner to approve with:",
-                  "clawdbot pairing approve telegram <code>",
+                  "surprisebot pairing approve telegram <code>",
                 ].join("\n"),
               );
             }

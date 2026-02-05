@@ -1,5 +1,5 @@
 import { buildModelAliasIndex, resolveModelRefFromString } from "../../agents/model-selection.js";
-import { CONFIG_PATH_CLAWDBOT, loadConfig } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, loadConfig } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import {
   DEFAULT_PROVIDER,
@@ -78,7 +78,7 @@ export async function modelsFallbacksAddCommand(modelRaw: string, runtime: Runti
     };
   });
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Fallbacks: ${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
 }
 
@@ -124,7 +124,7 @@ export async function modelsFallbacksRemoveCommand(modelRaw: string, runtime: Ru
     };
   });
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Fallbacks: ${(updated.agents?.defaults?.model?.fallbacks ?? []).join(", ")}`);
 }
 
@@ -148,6 +148,6 @@ export async function modelsFallbacksClearCommand(runtime: RuntimeEnv) {
     };
   });
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log("Fallback list cleared.");
 }

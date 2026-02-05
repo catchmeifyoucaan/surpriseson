@@ -3,10 +3,11 @@ import type { Api, AssistantMessage, ImageContent, Model } from "@mariozechner/p
 import type { discoverAuthStorage, discoverModels } from "@mariozechner/pi-coding-agent";
 
 import type { ReasoningLevel, ThinkLevel, VerboseLevel } from "../../../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { ExecElevatedDefaults } from "../../bash-tools.js";
 import type { MessagingToolSend } from "../../pi-embedded-messaging.js";
 import type { BlockReplyChunking } from "../../pi-embedded-subscribe.js";
+import type { PendingToolCall, ToolResultPolicy } from "../../pi-embedded-subscribe.types.js";
 import type { SkillSnapshot } from "../../skills.js";
 import type { SessionSystemPromptReport } from "../../../config/sessions/types.js";
 
@@ -26,7 +27,7 @@ export type EmbeddedRunAttemptParams = {
   sessionFile: string;
   workspaceDir: string;
   agentDir?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   skillsSnapshot?: SkillSnapshot;
   prompt: string;
   images?: ImageContent[];
@@ -42,6 +43,7 @@ export type EmbeddedRunAttemptParams = {
   timeoutMs: number;
   runId: string;
   abortSignal?: AbortSignal;
+  toolResultPolicy?: ToolResultPolicy;
   shouldEmitToolResult?: () => boolean;
   onPartialReply?: (payload: { text?: string; mediaUrls?: string[] }) => void | Promise<void>;
   onAssistantMessageStart?: () => void | Promise<void>;
@@ -70,6 +72,13 @@ export type EmbeddedRunAttemptResult = {
   messagesSnapshot: AgentMessage[];
   assistantTexts: string[];
   toolMetas: Array<{ toolName: string; meta?: string }>;
+  pendingToolCalls: PendingToolCall[];
+  toolCallCounts?: {
+    started: number;
+    ended: number;
+    pending: number;
+    timedOut: number;
+  };
   lastAssistant: AssistantMessage | undefined;
   didSendViaMessagingTool: boolean;
   messagingToolSentTexts: string[];

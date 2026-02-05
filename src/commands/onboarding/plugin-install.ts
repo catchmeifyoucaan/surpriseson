@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../../agents/agent-scope.js";
 import type { ChannelPluginCatalogEntry } from "../../channels/plugins/catalog.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { createSubsystemLogger } from "../../logging.js";
-import { loadClawdbotPlugins } from "../../plugins/loader.js";
+import { loadSurprisebotPlugins } from "../../plugins/loader.js";
 import { installPluginFromNpmSpec } from "../../plugins/install.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import type { WizardPrompter } from "../../wizard/prompts.js";
@@ -12,7 +12,7 @@ import type { WizardPrompter } from "../../wizard/prompts.js";
 type InstallChoice = "npm" | "local" | "skip";
 
 type InstallResult = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   installed: boolean;
 };
 
@@ -47,7 +47,7 @@ function resolveLocalPath(
   return null;
 }
 
-function ensurePluginEnabled(cfg: ClawdbotConfig, pluginId: string): ClawdbotConfig {
+function ensurePluginEnabled(cfg: SurprisebotConfig, pluginId: string): SurprisebotConfig {
   const entries = {
     ...cfg.plugins?.entries,
     [pluginId]: {
@@ -55,7 +55,7 @@ function ensurePluginEnabled(cfg: ClawdbotConfig, pluginId: string): ClawdbotCon
       enabled: true,
     },
   };
-  const next: ClawdbotConfig = {
+  const next: SurprisebotConfig = {
     ...cfg,
     plugins: {
       ...cfg.plugins,
@@ -66,7 +66,7 @@ function ensurePluginEnabled(cfg: ClawdbotConfig, pluginId: string): ClawdbotCon
   return ensurePluginAllowlist(next, pluginId);
 }
 
-function ensurePluginAllowlist(cfg: ClawdbotConfig, pluginId: string): ClawdbotConfig {
+function ensurePluginAllowlist(cfg: SurprisebotConfig, pluginId: string): SurprisebotConfig {
   const allow = cfg.plugins?.allow;
   if (!allow || allow.includes(pluginId)) return cfg;
   return {
@@ -78,7 +78,7 @@ function ensurePluginAllowlist(cfg: ClawdbotConfig, pluginId: string): ClawdbotC
   };
 }
 
-function addPluginLoadPath(cfg: ClawdbotConfig, pluginPath: string): ClawdbotConfig {
+function addPluginLoadPath(cfg: SurprisebotConfig, pluginPath: string): SurprisebotConfig {
   const existing = cfg.plugins?.load?.paths ?? [];
   const merged = Array.from(new Set([...existing, pluginPath]));
   return {
@@ -122,7 +122,7 @@ async function promptInstallChoice(params: {
 }
 
 export async function ensureOnboardingPluginInstalled(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   entry: ChannelPluginCatalogEntry;
   prompter: WizardPrompter;
   runtime: RuntimeEnv;
@@ -183,14 +183,14 @@ export async function ensureOnboardingPluginInstalled(params: {
 }
 
 export function reloadOnboardingPluginRegistry(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   runtime: RuntimeEnv;
   workspaceDir?: string;
 }): void {
   const workspaceDir =
     params.workspaceDir ?? resolveAgentWorkspaceDir(params.cfg, resolveDefaultAgentId(params.cfg));
   const log = createSubsystemLogger("plugins");
-  loadClawdbotPlugins({
+  loadSurprisebotPlugins({
     config: params.cfg,
     workspaceDir,
     cache: false,

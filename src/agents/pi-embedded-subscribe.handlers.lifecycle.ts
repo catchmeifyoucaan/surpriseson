@@ -64,6 +64,39 @@ export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
     data: { phase: "end" },
   });
 
+  ctx.state.toolTimeouts.forEach((timer) => clearTimeout(timer));
+  ctx.state.toolTimeouts.clear();
+  ctx.state.toolHeartbeats.forEach((timer) => clearInterval(timer));
+  ctx.state.toolHeartbeats.clear();
+
+  if (ctx.state.toolMetaById.size > 0) {
+    const pending = Array.from(ctx.state.toolMetaById.entries());
+    const preview = pending
+      .slice(0, 5)
+      .map(([id, entry]) => `${entry.name}(${id}${entry.meta ? ` ${entry.meta}` : ""})`)
+      .join(", ");
+    ctx.log.warn(
+      `embedded run ended with missing tool results: runId=${ctx.params.runId} count=${pending.length} pending=${preview}`,
+    );
+    if (ctx.params.toolResultPolicy?.warnOnMissing && ctx.params.onToolResult) {
+      const lines = [
+        "⚠️ Missing tool results detected (tool execution may not have completed):",
+        ...pending
+          .slice(0, 5)
+          .map(
+            ([id, entry]) =>
+              `- ${entry.name} (${id}${entry.meta ? ` ${entry.meta}` : ""})`,
+          ),
+        pending.length > 5 ? `… +${pending.length - 5} more` : "",
+      ].filter(Boolean);
+      try {
+        void ctx.params.onToolResult({ text: lines.join("\n") });
+      } catch {
+        // avoid throwing during agent end
+      }
+    }
+  }
+
   if (ctx.params.onBlockReply) {
     if (ctx.blockChunker?.hasBuffered()) {
       ctx.blockChunker.drain({ force: true, emit: ctx.emitBlockChunk });

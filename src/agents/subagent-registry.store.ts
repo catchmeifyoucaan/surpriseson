@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { STATE_DIR_CLAWDBOT } from "../config/paths.js";
+import { STATE_DIR_SURPRISEBOT } from "../config/paths.js";
 import { loadJsonFile, saveJsonFile } from "../infra/json-file.js";
 import type { SubagentRunRecord } from "./subagent-registry.js";
 
@@ -16,7 +16,7 @@ const REGISTRY_VERSION = 1 as const;
 type PersistedSubagentRunRecord = Omit<SubagentRunRecord, "announceHandled">;
 
 export function resolveSubagentRegistryPath(): string {
-  return path.join(STATE_DIR_CLAWDBOT, "subagents", "runs.json");
+  return path.join(STATE_DIR_SURPRISEBOT, "subagents", "runs.json");
 }
 
 export function loadSubagentRegistryFromDisk(): Map<string, SubagentRunRecord> {

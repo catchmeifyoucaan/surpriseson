@@ -13,7 +13,7 @@ const requiredPaths = [
   "dist/msteams/send.js",
   "dist/whatsapp/normalize.js",
 ];
-const forbiddenPrefixes = ["dist/Clawdbot.app/"];
+const forbiddenPrefixes = ["dist/Surprisebot.app/"];
 
 type PackageJson = {
   name?: string;

@@ -6,10 +6,10 @@ import { withTempHome } from "./test-helpers.js";
 describe("config pruning defaults", () => {
   it("defaults contextPruning mode to adaptive", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".clawdbot");
+      const configDir = path.join(home, ".surprisebot");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
-        path.join(configDir, "clawdbot.json"),
+        path.join(configDir, "surprisebot.json"),
         JSON.stringify({ agents: { defaults: {} } }, null, 2),
         "utf-8",
       );
@@ -24,10 +24,10 @@ describe("config pruning defaults", () => {
 
   it("does not override explicit contextPruning mode", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".clawdbot");
+      const configDir = path.join(home, ".surprisebot");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
-        path.join(configDir, "clawdbot.json"),
+        path.join(configDir, "surprisebot.json"),
         JSON.stringify({ agents: { defaults: { contextPruning: { mode: "off" } } } }, null, 2),
         "utf-8",
       );

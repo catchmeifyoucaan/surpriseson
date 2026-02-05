@@ -1,20 +1,20 @@
 import os from "node:os";
 import path from "node:path";
 
-import type { ClawdbotConfig, MemorySearchConfig } from "../config/config.js";
+import type { SurprisebotConfig, MemorySearchConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import { resolveUserPath } from "../utils.js";
 import { resolveAgentConfig } from "./agent-scope.js";
 
 export type ResolvedMemorySearchConfig = {
   enabled: boolean;
-  provider: "openai" | "local";
+  provider: "openai" | "local" | "google";
   remote?: {
     baseUrl?: string;
     apiKey?: string;
     headers?: Record<string, string>;
   };
-  fallback: "openai" | "none";
+  fallback: "openai" | "google" | "none";
   model: string;
   local: {
     modelPath?: string;
@@ -42,11 +42,27 @@ export type ResolvedMemorySearchConfig = {
 };
 
 const DEFAULT_MODEL = "text-embedding-3-small";
+const DEFAULT_GOOGLE_MODEL = "gemini-embedding-001";
 const DEFAULT_CHUNK_TOKENS = 400;
 const DEFAULT_CHUNK_OVERLAP = 80;
 const DEFAULT_WATCH_DEBOUNCE_MS = 1500;
 const DEFAULT_MAX_RESULTS = 6;
 const DEFAULT_MIN_SCORE = 0.35;
+
+function normalizeMemoryProvider(raw?: string): "openai" | "local" | "google" {
+  const value = (raw ?? "").trim().toLowerCase();
+  if (value == "local") return "local";
+  if (value == "google" || value == "gemini") return "google";
+  return "openai";
+}
+
+function normalizeMemoryFallback(raw?: string): "openai" | "google" | "none" {
+  const value = (raw ?? "").trim().toLowerCase();
+  if (value == "none") return "none";
+  if (value == "google" || value == "gemini") return "google";
+  if (value == "openai") return "openai";
+  return "openai";
+}
 
 function resolveStorePath(agentId: string, raw?: string): string {
   const stateDir = resolveStateDir(process.env, os.homedir);
@@ -62,7 +78,7 @@ function mergeConfig(
   agentId: string,
 ): ResolvedMemorySearchConfig {
   const enabled = overrides?.enabled ?? defaults?.enabled ?? true;
-  const provider = overrides?.provider ?? defaults?.provider ?? "openai";
+  const provider = normalizeMemoryProvider(overrides?.provider ?? defaults?.provider);
   const hasRemote = Boolean(defaults?.remote || overrides?.remote);
   const remote = hasRemote
     ? {
@@ -71,8 +87,9 @@ function mergeConfig(
         headers: overrides?.remote?.headers ?? defaults?.remote?.headers,
       }
     : undefined;
-  const fallback = overrides?.fallback ?? defaults?.fallback ?? "openai";
-  const model = overrides?.model ?? defaults?.model ?? DEFAULT_MODEL;
+  const fallback = normalizeMemoryFallback(overrides?.fallback ?? defaults?.fallback);
+  const defaultModel = provider === "google" ? DEFAULT_GOOGLE_MODEL : DEFAULT_MODEL;
+  const model = overrides?.model ?? defaults?.model ?? defaultModel;
   const local = {
     modelPath: overrides?.local?.modelPath ?? defaults?.local?.modelPath,
     modelCacheDir: overrides?.local?.modelCacheDir ?? defaults?.local?.modelCacheDir,
@@ -117,7 +134,7 @@ function mergeConfig(
 }
 
 export function resolveMemorySearchConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   agentId: string,
 ): ResolvedMemorySearchConfig | null {
   const defaults = cfg.agents?.defaults?.memorySearch;

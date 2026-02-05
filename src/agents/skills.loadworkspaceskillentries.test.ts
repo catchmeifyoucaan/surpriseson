@@ -28,7 +28,7 @@ ${body ?? `# ${name}\n`}
 
 describe("loadWorkspaceSkillEntries", () => {
   it("handles an empty managed skills dir without throwing", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-"));
     const managedDir = path.join(workspaceDir, ".managed");
     await fs.mkdir(managedDir, { recursive: true });
 

@@ -16,7 +16,7 @@ vi.mock("../agents/model-catalog.js", () => ({
 
 import { loadModelCatalog } from "../agents/model-catalog.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import * as configModule from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { agentCommand } from "./agent.js";
@@ -32,21 +32,21 @@ const runtime: RuntimeEnv = {
 const configSpy = vi.spyOn(configModule, "loadConfig");
 
 async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "clawdbot-agent-" });
+  return withTempHomeBase(fn, { prefix: "surprisebot-agent-" });
 }
 
 function mockConfig(
   home: string,
   storePath: string,
-  agentOverrides?: Partial<NonNullable<NonNullable<ClawdbotConfig["agents"]>["defaults"]>>,
-  telegramOverrides?: Partial<NonNullable<ClawdbotConfig["telegram"]>>,
+  agentOverrides?: Partial<NonNullable<NonNullable<SurprisebotConfig["agents"]>["defaults"]>>,
+  telegramOverrides?: Partial<NonNullable<SurprisebotConfig["telegram"]>>,
 ) {
   configSpy.mockReturnValue({
     agents: {
       defaults: {
         model: { primary: "anthropic/claude-opus-4-5" },
         models: { "anthropic/claude-opus-4-5": {} },
-        workspace: path.join(home, "clawd"),
+        workspace: path.join(home, "surprisebot"),
         ...agentOverrides,
       },
     },

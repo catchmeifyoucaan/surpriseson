@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { resolveMSTeamsCredentials } from "../../../msteams/token.js";
 import { DEFAULT_ACCOUNT_ID } from "../../../routing/session-key.js";
@@ -9,7 +9,7 @@ import { addWildcardAllowFrom } from "./helpers.js";
 
 const channel = "msteams" as const;
 
-function setMSTeamsDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy) {
+function setMSTeamsDmPolicy(cfg: SurprisebotConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open"
       ? addWildcardAllowFrom(cfg.channels?.msteams?.allowFrom)?.map((entry) => String(entry))

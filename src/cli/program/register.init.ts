@@ -23,6 +23,7 @@ export function registerInitCommand(program: Command) {
     .option("--home <dir>", "Set SURPRISEBOT_HOME for this run")
     .option("--state-dir <dir>", "Set SURPRISEBOT_STATE_DIR for this run")
     .option("--workspace <dir>", "Agent workspace directory")
+    .option("--profile-template <name>", "Preseed agent roster from a bundled profile")
     .option("--skip-health", "Skip system health guard", false)
     .option("--allow-low-resources", "Override low resource guard", false)
     .option("--min-ram-gb <gb>", "Minimum RAM required (GiB)")
@@ -49,13 +50,15 @@ export function registerInitCommand(program: Command) {
     .option("--install-qmd", "Install qmd (requires Bun)", false)
     .option("--install-docker", "Install Docker (Linux only)", false)
     .option("--yes", "Auto-confirm optional installs", false)
+    .option("--json", "Output JSON summary", false)
     .action(async (opts) => {
       try {
-        await initCommand(
+        const summary = await initCommand(
           {
             home: opts.home,
             stateDir: opts.stateDir,
             workspace: opts.workspace,
+            profileTemplate: opts.profileTemplate,
             skipHealth: Boolean(opts.skipHealth),
             allowLowResources: Boolean(opts.allowLowResources),
             minRamGb: parseOptionalFloat(opts.minRamGb),
@@ -85,6 +88,9 @@ export function registerInitCommand(program: Command) {
           },
           defaultRuntime,
         );
+        if (opts.json) {
+          defaultRuntime.log(JSON.stringify(summary, null, 2));
+        }
       } catch (err) {
         defaultRuntime.error(String(err));
         defaultRuntime.exit(1);

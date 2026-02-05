@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import { resolveAgentModelFallbacksOverride } from "../../agents/agent-scope.js";
+import { resolveAgentModelFallbacksOverride, resolveDefaultAgentId } from "../../agents/agent-scope.js";
 import { runCliAgent } from "../../agents/cli-runner.js";
 import { getCliSessionId } from "../../agents/cli-session.js";
 import { runWithModelFallback } from "../../agents/model-fallback.js";
@@ -17,13 +17,16 @@ import {
   saveSessionStore,
 } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
-import { emitAgentEvent, registerAgentRunContext } from "../../infra/agent-events.js";
+import { clearAgentRunContext, emitAgentEvent, registerAgentRunContext } from "../../infra/agent-events.js";
 import { defaultRuntime } from "../../runtime.js";
+import { clearJobContext, registerJobContext } from "../../infra/job-context.js";
 import { stripHeartbeatToken } from "../heartbeat.js";
 import type { TemplateContext } from "../templating.js";
 import type { VerboseLevel } from "../thinking.js";
 import { isSilentReplyText, SILENT_REPLY_TOKEN } from "../tokens.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
+import type { ToolResultPolicy } from "../../agents/pi-embedded-subscribe.types.js";
+import { appendMissionControlRecord } from "../../infra/mission-control/ledger.js";
 import { buildThreadingToolContext, resolveEnforceFinalTag } from "./agent-runner-utils.js";
 import type { BlockReplyPipeline } from "./block-reply-pipeline.js";
 import type { FollowupRun } from "./queue.js";
@@ -69,24 +72,73 @@ export async function runAgentTurnWithFallback(params: {
 }): Promise<AgentRunLoopResult> {
   let didLogHeartbeatStrip = false;
   let autoCompactionCompleted = false;
+  const toolResultPolicy: ToolResultPolicy | undefined = (() => {
+    const cfg = params.followupRun.run.config;
+    const raw = cfg?.tools?.toolResults;
+    if (!raw) return undefined;
+    return {
+      timeoutMs: raw.timeoutMs,
+      heartbeatMs: raw.heartbeatMs,
+      warnOnTimeout: raw.warnOnTimeout,
+      warnOnMissing: raw.warnOnMissing,
+    };
+  })();
 
   const runId = crypto.randomUUID();
+  const jobType = params.isHeartbeat ? "heartbeat" : "interactive";
+  const ledgerCfg = params.followupRun.run.config;
+  const agentIdForLedger =
+    resolveAgentIdFromSessionKey(params.followupRun.run.sessionKey) ??
+    resolveDefaultAgentId(ledgerCfg) ??
+    "default";
+  const runStartedAt = new Date().toISOString();
+  const runLedgerId = `run-${runId}`;
+  let runOutcome: "done" | "failed" = "done";
+  let runError: string | null = null;
+  let runEstimatedTokens: number | null = null;
+
   if (params.sessionKey) {
     registerAgentRunContext(runId, {
       sessionKey: params.sessionKey,
       verboseLevel: params.resolvedVerboseLevel,
     });
+    registerJobContext({ sessionKey: params.sessionKey, jobType, runId });
   }
+
+  await appendMissionControlRecord({
+    cfg: ledgerCfg,
+    kind: "run-ledger",
+    record: {
+      id: runLedgerId,
+      ts: runStartedAt,
+      source: jobType,
+      version: 1,
+      agentId: agentIdForLedger,
+      status: "running",
+      command: "reply",
+      startedAt: runStartedAt,
+      jobType,
+      meta: {
+        sessionKey: params.sessionKey,
+        messageId: params.followupRun.messageId,
+      },
+    },
+  }).catch(() => {});
+
   let runResult: Awaited<ReturnType<typeof runEmbeddedPiAgent>>;
   let fallbackProvider = params.followupRun.run.provider;
   let fallbackModel = params.followupRun.run.model;
   let didResetAfterCompactionFailure = false;
 
+  try {
   while (true) {
     try {
-      const allowPartialStream = !(
-        params.followupRun.run.reasoningLevel === "stream" && params.opts?.onReasoningStream
-      );
+      const strictToolResults = params.followupRun.run.config?.tools?.toolResults?.strict === true;
+      const allowPartialStream =
+        !strictToolResults &&
+        !(
+          params.followupRun.run.reasoningLevel === "stream" && params.opts?.onReasoningStream
+        );
       const normalizeStreamingText = (payload: ReplyPayload): { text?: string; skip: boolean } => {
         if (!allowPartialStream) return { skip: true };
         let text = payload.text;
@@ -215,6 +267,7 @@ export async function runAgentTurnWithFallback(params: {
             bashElevated: params.followupRun.run.bashElevated,
             timeoutMs: params.followupRun.run.timeoutMs,
             runId,
+            toolResultPolicy,
             blockReplyBreak: params.resolvedBlockStreamingBreak,
             blockReplyChunking: params.blockReplyChunking,
             onPartialReply: allowPartialStream
@@ -408,6 +461,8 @@ export async function runAgentTurnWithFallback(params: {
           );
         }
 
+        runOutcome = "failed";
+        runError = message;
         return {
           kind: "final",
           payload: {
@@ -416,7 +471,17 @@ export async function runAgentTurnWithFallback(params: {
         };
       }
 
+      emitAgentEvent({
+        runId,
+        stream: "error",
+        data: {
+          phase: "error",
+          error: message,
+        },
+      });
       defaultRuntime.error(`Embedded agent failed before reply: ${message}`);
+      runOutcome = "failed";
+      runError = message;
       return {
         kind: "final",
         payload: {
@@ -428,6 +493,17 @@ export async function runAgentTurnWithFallback(params: {
     }
   }
 
+  const usage = runResult.meta?.agentMeta?.usage;
+  if (usage) {
+    const total = usage.total ?? 0;
+    const input = usage.input ?? 0;
+    const output = usage.output ?? 0;
+    const cacheRead = usage.cacheRead ?? 0;
+    const cacheWrite = usage.cacheWrite ?? 0;
+    const computed = total || input + output + cacheRead + cacheWrite;
+    runEstimatedTokens = computed || null;
+  }
+
   return {
     kind: "success",
     runResult,
@@ -436,4 +512,34 @@ export async function runAgentTurnWithFallback(params: {
     didLogHeartbeatStrip,
     autoCompactionCompleted,
   };
+  } finally {
+    await appendMissionControlRecord({
+      cfg: ledgerCfg,
+      kind: "run-ledger",
+      record: {
+        id: runLedgerId,
+        ts: new Date().toISOString(),
+        source: jobType,
+        version: 1,
+        agentId: agentIdForLedger,
+        status: runOutcome,
+        command: "reply",
+        startedAt: runStartedAt,
+        finishedAt: new Date().toISOString(),
+        exitCode: runOutcome === "failed" ? 1 : 0,
+        jobType,
+        estimatedTokens: runEstimatedTokens ?? undefined,
+        meta: {
+          sessionKey: params.sessionKey,
+          messageId: params.followupRun.messageId,
+          error: runError ?? undefined,
+        },
+      },
+    }).catch(() => {});
+
+    if (params.sessionKey) {
+      clearJobContext(params.sessionKey);
+    }
+    clearAgentRunContext(runId);
+  }
 }

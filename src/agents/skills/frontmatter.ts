@@ -1,7 +1,7 @@
 import type { Skill } from "@mariozechner/pi-coding-agent";
 
 import type {
-  ClawdbotSkillMetadata,
+  SurprisebotSkillMetadata,
   ParsedSkillFrontmatter,
   SkillEntry,
   SkillInstallSpec,
@@ -79,32 +79,32 @@ function getFrontmatterValue(frontmatter: ParsedSkillFrontmatter, key: string): 
   return typeof raw === "string" ? raw : undefined;
 }
 
-export function resolveClawdbotMetadata(
+export function resolveSurprisebotMetadata(
   frontmatter: ParsedSkillFrontmatter,
-): ClawdbotSkillMetadata | undefined {
+): SurprisebotSkillMetadata | undefined {
   const raw = getFrontmatterValue(frontmatter, "metadata");
   if (!raw) return undefined;
   try {
-    const parsed = JSON.parse(raw) as { clawdbot?: unknown };
+    const parsed = JSON.parse(raw) as { surprisebot?: unknown };
     if (!parsed || typeof parsed !== "object") return undefined;
-    const clawdbot = (parsed as { clawdbot?: unknown }).clawdbot;
-    if (!clawdbot || typeof clawdbot !== "object") return undefined;
-    const clawdbotObj = clawdbot as Record<string, unknown>;
+    const surprisebot = (parsed as { surprisebot?: unknown }).surprisebot;
+    if (!surprisebot || typeof surprisebot !== "object") return undefined;
+    const surprisebotObj = surprisebot as Record<string, unknown>;
     const requiresRaw =
-      typeof clawdbotObj.requires === "object" && clawdbotObj.requires !== null
-        ? (clawdbotObj.requires as Record<string, unknown>)
+      typeof surprisebotObj.requires === "object" && surprisebotObj.requires !== null
+        ? (surprisebotObj.requires as Record<string, unknown>)
         : undefined;
-    const installRaw = Array.isArray(clawdbotObj.install) ? (clawdbotObj.install as unknown[]) : [];
+    const installRaw = Array.isArray(surprisebotObj.install) ? (surprisebotObj.install as unknown[]) : [];
     const install = installRaw
       .map((entry) => parseInstallSpec(entry))
       .filter((entry): entry is SkillInstallSpec => Boolean(entry));
-    const osRaw = normalizeStringList(clawdbotObj.os);
+    const osRaw = normalizeStringList(surprisebotObj.os);
     return {
-      always: typeof clawdbotObj.always === "boolean" ? clawdbotObj.always : undefined,
-      emoji: typeof clawdbotObj.emoji === "string" ? clawdbotObj.emoji : undefined,
-      homepage: typeof clawdbotObj.homepage === "string" ? clawdbotObj.homepage : undefined,
-      skillKey: typeof clawdbotObj.skillKey === "string" ? clawdbotObj.skillKey : undefined,
-      primaryEnv: typeof clawdbotObj.primaryEnv === "string" ? clawdbotObj.primaryEnv : undefined,
+      always: typeof surprisebotObj.always === "boolean" ? surprisebotObj.always : undefined,
+      emoji: typeof surprisebotObj.emoji === "string" ? surprisebotObj.emoji : undefined,
+      homepage: typeof surprisebotObj.homepage === "string" ? surprisebotObj.homepage : undefined,
+      skillKey: typeof surprisebotObj.skillKey === "string" ? surprisebotObj.skillKey : undefined,
+      primaryEnv: typeof surprisebotObj.primaryEnv === "string" ? surprisebotObj.primaryEnv : undefined,
       os: osRaw.length > 0 ? osRaw : undefined,
       requires: requiresRaw
         ? {
@@ -122,5 +122,5 @@ export function resolveClawdbotMetadata(
 }
 
 export function resolveSkillKey(skill: Skill, entry?: SkillEntry): string {
-  return entry?.clawdbot?.skillKey ?? skill.name;
+  return entry?.surprisebot?.skillKey ?? skill.name;
 }

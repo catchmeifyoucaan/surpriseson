@@ -1,12 +1,12 @@
 ---
-summary: "How Clawdbot memory works (workspace files + automatic memory flush)"
+summary: "How Surprisebot memory works (workspace files + automatic memory flush)"
 read_when:
   - You want the memory file layout and workflow
   - You want to tune the automatic pre-compaction memory flush
 ---
 # Memory
 
-Clawdbot memory is **plain Markdown in the agent workspace**. The files are the
+Surprisebot memory is **plain Markdown in the agent workspace**. The files are the
 source of truth; the model only "remembers" what gets written to disk.
 
 ## Memory files (Markdown)
@@ -21,7 +21,7 @@ The default workspace layout uses two memory layers:
   - **Only load in the main, private session** (never in group contexts).
 
 These files live under the workspace (`agents.defaults.workspace`, default
-`~/clawd`). See [Agent workspace](/concepts/agent-workspace) for the full layout.
+`~/surprisebot`). See [Agent workspace](/concepts/agent-workspace) for the full layout.
 
 ## When to write memory
 
@@ -29,9 +29,24 @@ These files live under the workspace (`agents.defaults.workspace`, default
 - Day-to-day notes and running context go to `memory/YYYY-MM-DD.md`.
 - If someone says "remember this," write it down (do not keep it in RAM).
 
+## Memory commands (optional)
+
+Surprisebot can expose structured memory commands on chat surfaces (owner‑only):
+
+- `/remember`, `/prefer`, `/decide`, `/active`, `/forget`, `/deprecate`
+
+Enable them with:
+
+```json5
+commands: {
+  memory: true,
+  memoryForgetPolicy: "hard" // or "deprecate"
+}
+```
+
 ## Automatic memory flush (pre-compaction ping)
 
-When a session is **close to auto-compaction**, Clawdbot triggers a **silent,
+When a session is **close to auto-compaction**, Surprisebot triggers a **silent,
 agentic turn** that reminds the model to write durable memory **before** the
 context is compacted. The default prompts explicitly say the model *may reply*,
 but usually `NO_REPLY` is the correct response so the user never sees this turn.
@@ -70,7 +85,7 @@ For the full compaction lifecycle, see
 
 ## Vector memory search
 
-Clawdbot can build a small vector index over `MEMORY.md` and `memory/*.md` so
+Surprisebot can build a small vector index over `MEMORY.md` and `memory/*.md` so
 semantic queries can find related notes even when wording differs.
 
 Defaults:
@@ -104,6 +119,20 @@ agents: {
 }
 ```
 
+Native Gemini embeddings (uses your GEMINI_API_KEY or memorySearch.remote.apiKey):
+
+```json5
+agents: {
+  defaults: {
+    memorySearch: {
+      provider: "google", // or "gemini"
+      model: "gemini-embedding-001"
+    }
+  }
+}
+```
+
+
 If you don't want to set an API key, use `memorySearch.provider = "local"` or set
 `memorySearch.fallback = "none"`.
 
@@ -131,6 +160,44 @@ Local mode:
 - Provide `agents.defaults.memorySearch.local.modelPath` (GGUF or `hf:` URI).
 - Optional: set `agents.defaults.memorySearch.fallback = "none"` to avoid remote fallback.
 
+## Memory graph (GraphRAG)
+
+Surprisebot can also build a **memory graph** alongside vector search. The graph
+captures structured relationships (preferences → decisions → active goals) and
+supports **multi‑hop queries** that vectors alone can’t answer.
+
+Memory graph uses **Neo4j** as a local store and syncs from:
+`MEMORY.md` + `memory/*.md`.
+
+Tools:
+- `memory_graph_query` — query the Neo4j memory graph by tag (preferences,
+  decisions, active goals, daily logs) and expand related nodes.
+- `memory_rag_query` — hybrid retrieval: runs vector search + graph query and
+  returns a combined digest.
+
+Example config:
+
+```json5
+agents: {
+  defaults: {
+    memoryGraph: {
+      enabled: true,
+      url: "bolt://127.0.0.1:7687",
+      username: "neo4j",
+      password: "YOUR_PASSWORD",
+      database: "neo4j",
+      sync: { watch: true },
+      query: { maxResults: 30, maxHops: 2 }
+    }
+  }
+}
+```
+
+Notes:
+- Graph sync runs on session start, on searches, and when memory files change.
+- Use `memory_graph_query` when you need **relationship reasoning** or
+  **preference drift** history.
+
 ### How the memory tools work
 
 - `memory_search` semantically searches Markdown chunks (~400 token target, 80-token overlap) from `MEMORY.md` + `memory/**/*.md`. It returns snippet text (capped ~700 chars), file path, line range, score, provider/model, and whether we fell back from local → remote embeddings. No full file payload is returned.
@@ -140,7 +207,7 @@ Local mode:
 ### What gets indexed (and when)
 
 - File type: Markdown only (`MEMORY.md`, `memory/**/*.md`).
-- Index storage: per-agent SQLite at `~/.clawdbot/state/memory/<agentId>.sqlite` (configurable via `agents.defaults.memorySearch.store.path`, supports `{agentId}` token).
+- Index storage: per-agent SQLite at `~/.surprisebot/state/memory/<agentId>.sqlite` (configurable via `agents.defaults.memorySearch.store.path`, supports `{agentId}` token).
 - Freshness: watcher on `MEMORY.md` + `memory/` marks the index dirty (debounce 1.5s). Sync runs on session start, on first search when dirty, and optionally on an interval. Reindex triggers when embedding model/provider or chunk sizes change.
 
 ### Local embedding auto-download

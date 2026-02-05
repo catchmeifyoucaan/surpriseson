@@ -27,7 +27,7 @@ export async function maybeInstallDaemon(params: {
   daemonRuntime?: GatewayDaemonRuntime;
 }) {
   const service = resolveGatewayService();
-  const loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+  const loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
   let shouldCheckLinger = false;
   let shouldInstall = true;
   let daemonRuntime = params.daemonRuntime ?? DEFAULT_GATEWAY_DAEMON_RUNTIME;
@@ -49,7 +49,7 @@ export async function maybeInstallDaemon(params: {
         async (progress) => {
           progress.setLabel("Restarting Gateway daemon…");
           await service.restart({
-            profile: process.env.CLAWDBOT_PROFILE,
+            profile: process.env.SURPRISEBOT_PROFILE,
             stdout: process.stdout,
           });
           progress.setLabel("Gateway daemon restarted.");
@@ -112,7 +112,7 @@ export async function maybeInstallDaemon(params: {
           token: params.gatewayToken,
           launchdLabel:
             process.platform === "darwin"
-              ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+              ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
               : undefined,
         });
 

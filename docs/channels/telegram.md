@@ -99,7 +99,7 @@ group messages, so use admin if you need full visibility.
 - Outbound Telegram text uses `parse_mode: "HTML"` (Telegram’s supported tag subset).
 - Markdown-ish input is rendered into **Telegram-safe HTML** (bold/italic/strike/code/links); block elements are flattened to text with newlines/bullets.
 - Raw HTML from models is escaped to avoid Telegram parse errors.
-- If Telegram rejects the HTML payload, Clawdbot retries the same message as plain text.
+- If Telegram rejects the HTML payload, Surprisebot retries the same message as plain text.
 
 ## Limits
 - Outbound text is chunked to `channels.telegram.textChunkLimit` (default 4000).
@@ -168,13 +168,13 @@ Forward any message from the group to `@userinfobot` or `@getidsbot` on Telegram
 
 **Tip:** For your own user ID, DM the bot and it will reply with your user ID (pairing message), or use `/whoami` once commands are enabled.
 
-**Privacy note:** `@userinfobot` is a third-party bot. If you prefer, add the bot to the group, send a message, and use `clawdbot logs --follow` to read `chat.id`, or use the Bot API `getUpdates`.
+**Privacy note:** `@userinfobot` is a third-party bot. If you prefer, add the bot to the group, send a message, and use `surprisebot logs --follow` to read `chat.id`, or use the Bot API `getUpdates`.
 
 ## Config writes
 By default, Telegram is allowed to write config updates triggered by channel events or `/config set|unset`.
 
 This happens when:
-- A group is upgraded to a supergroup and Telegram emits `migrate_to_chat_id` (chat ID changes). Clawdbot can migrate `channels.telegram.groups` automatically.
+- A group is upgraded to a supergroup and Telegram emits `migrate_to_chat_id` (chat ID changes). Surprisebot can migrate `channels.telegram.groups` automatically.
 - You run `/config set` or `/config unset` in a Telegram chat (requires `commands.config: true`).
 
 Disable with:
@@ -185,28 +185,28 @@ Disable with:
 ```
 
 ## Topics (forum supergroups)
-Telegram forum topics include a `message_thread_id` per message. Clawdbot:
+Telegram forum topics include a `message_thread_id` per message. Surprisebot:
 - Appends `:topic:<threadId>` to the Telegram group session key so each topic is isolated.
 - Sends typing indicators and replies with `message_thread_id` so responses stay in the topic.
 - Exposes `MessageThreadId` + `IsForum` in template context for routing/templating.
 - Topic-specific configuration is available under `channels.telegram.groups.<chatId>.topics.<threadId>` (skills, allowlists, auto-reply, system prompts, disable).
 
-Private chats can include `message_thread_id` in some edge cases. Clawdbot keeps the DM session key unchanged, but still uses the thread id for replies/draft streaming when it is present.
+Private chats can include `message_thread_id` in some edge cases. Surprisebot keeps the DM session key unchanged, but still uses the thread id for replies/draft streaming when it is present.
 
 ## Access control (DMs + groups)
 
 ### DM access
 - Default: `channels.telegram.dmPolicy = "pairing"`. Unknown senders receive a pairing code; messages are ignored until approved (codes expire after 1 hour).
 - Approve via:
-  - `clawdbot pairing list telegram`
-  - `clawdbot pairing approve telegram <CODE>`
+  - `surprisebot pairing list telegram`
+  - `surprisebot pairing approve telegram <CODE>`
 - Pairing is the default token exchange used for Telegram DMs. Details: [Pairing](/start/pairing)
 - `channels.telegram.allowFrom` accepts numeric user IDs (recommended) or `@username` entries. It is **not** the bot username; use the human sender’s ID.
 
 #### Finding your Telegram user ID
 Safer (no third-party bot):
 1) Start the gateway and DM your bot.
-2) Run `clawdbot logs --follow` and look for `from.id`.
+2) Run `surprisebot logs --follow` and look for `from.id`.
 
 Alternate (official Bot API):
 1) DM your bot.
@@ -251,7 +251,7 @@ Controlled by `channels.telegram.replyToMode`:
 
 ## Audio messages (voice vs file)
 Telegram distinguishes **voice notes** (round bubble) from **audio files** (metadata card).
-Clawdbot defaults to audio files for backward compatibility.
+Surprisebot defaults to audio files for backward compatibility.
 
 To force a voice note bubble in agent replies, include this tag anywhere in the reply:
 - `[[audio_as_voice]]` — send audio as a voice note instead of a file.
@@ -260,7 +260,7 @@ The tag is stripped from the delivered text. Other channels ignore this tag.
 
 ## Streaming (drafts)
 Telegram can stream **draft bubbles** while the agent is generating a response.
-Clawdbot uses Bot API `sendMessageDraft` (not real messages) and then sends the
+Surprisebot uses Bot API `sendMessageDraft` (not real messages) and then sends the
 final reply as a normal message.
 
 Requirements (Telegram Bot API 9.3+):
@@ -299,22 +299,22 @@ Outbound Telegram API calls retry on transient network/429 errors with exponenti
 
 ## Delivery targets (CLI/cron)
 - Use a chat id (`123456789`) or a username (`@name`) as the target.
-- Example: `clawdbot message send --channel telegram --to 123456789 --message "hi"`.
+- Example: `surprisebot message send --channel telegram --to 123456789 --message "hi"`.
 
 ## Troubleshooting
 
 **Bot doesn’t respond to non-mention messages in a group:**
 - If you set `channels.telegram.groups.*.requireMention=false`, Telegram’s Bot API **privacy mode** must be disabled.
   - BotFather: `/setprivacy` → **Disable** (then remove + re-add the bot to the group)
-- `clawdbot channels status` shows a warning when config expects unmentioned group messages.
-- `clawdbot channels status --probe` can additionally check membership for explicit numeric group IDs (it can’t audit wildcard `"*"` rules).
+- `surprisebot channels status` shows a warning when config expects unmentioned group messages.
+- `surprisebot channels status --probe` can additionally check membership for explicit numeric group IDs (it can’t audit wildcard `"*"` rules).
 - Quick test: `/activation always` (session-only; use config for persistence)
 
 **Bot not seeing group messages at all:**
 - If `channels.telegram.groups` is set, the group must be listed or use `"*"`
 - Check Privacy Settings in @BotFather → "Group Privacy" should be **OFF**
 - Verify bot is actually a member (not just an admin with no read access)
-- Check gateway logs: `clawdbot logs --follow` (look for "skipping group message")
+- Check gateway logs: `surprisebot logs --follow` (look for "skipping group message")
 
 **Bot responds to mentions but not `/activation always`:**
 - The `/activation` command updates session state but doesn't persist to config

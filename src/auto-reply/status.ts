@@ -6,7 +6,7 @@ import { resolveModelAuthMode } from "../agents/model-auth.js";
 import { resolveConfiguredModelRef } from "../agents/model-selection.js";
 import { resolveSandboxRuntimeStatus } from "../agents/sandbox.js";
 import { derivePromptTokens, normalizeUsage, type UsageLike } from "../agents/usage.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import {
   resolveMainSessionKey,
   resolveSessionFilePath,
@@ -24,7 +24,7 @@ import { VERSION } from "../version.js";
 import { listChatCommands, listChatCommandsForConfig } from "./commands-registry.js";
 import type { ElevatedLevel, ReasoningLevel, ThinkLevel, VerboseLevel } from "./thinking.js";
 
-type AgentConfig = Partial<NonNullable<NonNullable<ClawdbotConfig["agents"]>["defaults"]>>;
+type AgentConfig = Partial<NonNullable<NonNullable<SurprisebotConfig["agents"]>["defaults"]>>;
 
 export const formatTokenCount = formatTokenCountShared;
 
@@ -38,7 +38,7 @@ type QueueStatus = {
 };
 
 type StatusArgs = {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   agent: AgentConfig;
   sessionEntry?: SessionEntry;
   sessionKey?: string;
@@ -114,7 +114,7 @@ const readUsageFromSessionLog = (
       model?: string;
     }
   | undefined => {
-  // Transcripts are stored at the session file path (fallback: ~/.clawdbot/sessions/<SessionId>.jsonl)
+  // Transcripts are stored at the session file path (fallback: ~/.surprisebot/sessions/<SessionId>.jsonl)
   if (!sessionId) return undefined;
   const logPath = resolveSessionFilePath(sessionId, sessionEntry);
   if (!fs.existsSync(logPath)) return undefined;
@@ -174,7 +174,7 @@ export function buildStatusMessage(args: StatusArgs): string {
       agents: {
         defaults: args.agent ?? {},
       },
-    } as ClawdbotConfig,
+    } as SurprisebotConfig,
     defaultProvider: DEFAULT_PROVIDER,
     defaultModel: DEFAULT_MODEL,
   });
@@ -313,7 +313,7 @@ export function buildStatusMessage(args: StatusArgs): string {
   const authLabel = authLabelValue ? ` · 🔑 ${authLabelValue}` : "";
   const modelLine = `🧠 Model: ${modelLabel}${authLabel}`;
   const commit = resolveCommitHash();
-  const versionLine = `🦞 Clawdbot ${VERSION}${commit ? ` (${commit})` : ""}`;
+  const versionLine = `🦞 Surprisebot ${VERSION}${commit ? ` (${commit})` : ""}`;
   const usagePair = formatUsagePair(inputTokens, outputTokens);
   const costLine = costLabel ? `💵 Cost: ${costLabel}` : null;
   const usageCostLine =
@@ -333,7 +333,7 @@ export function buildStatusMessage(args: StatusArgs): string {
     .join("\n");
 }
 
-export function buildHelpMessage(cfg?: ClawdbotConfig): string {
+export function buildHelpMessage(cfg?: SurprisebotConfig): string {
   const options = [
     "/think <level>",
     "/verbose on|off",
@@ -352,7 +352,7 @@ export function buildHelpMessage(cfg?: ClawdbotConfig): string {
   ].join("\n");
 }
 
-export function buildCommandsMessage(cfg?: ClawdbotConfig): string {
+export function buildCommandsMessage(cfg?: SurprisebotConfig): string {
   const lines = ["ℹ️ Slash commands"];
   const commands = cfg ? listChatCommandsForConfig(cfg) : listChatCommands();
   for (const command of commands) {

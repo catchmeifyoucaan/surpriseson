@@ -13,11 +13,11 @@ For model selection rules, see [/concepts/models](/concepts/models).
 
 - Model refs use `provider/model` (example: `opencode/claude-opus-4-5`).
 - If you set `agents.defaults.models`, it becomes the allowlist.
-- CLI helpers: `clawdbot onboard`, `clawdbot models list`, `clawdbot models set <provider/model>`.
+- CLI helpers: `surprisebot onboard`, `surprisebot models list`, `surprisebot models set <provider/model>`.
 
 ## Built-in providers (pi-ai catalog)
 
-Clawdbot ships with the pi‑ai catalog. These providers require **no**
+Surprisebot ships with the pi‑ai catalog. These providers require **no**
 `models.providers` config; just set auth + pick a model.
 
 ### OpenAI
@@ -25,7 +25,7 @@ Clawdbot ships with the pi‑ai catalog. These providers require **no**
 - Provider: `openai`
 - Auth: `OPENAI_API_KEY`
 - Example model: `openai/gpt-5.2`
-- CLI: `clawdbot onboard --auth-choice openai-api-key`
+- CLI: `surprisebot onboard --auth-choice openai-api-key`
 
 ```json5
 {
@@ -38,7 +38,7 @@ Clawdbot ships with the pi‑ai catalog. These providers require **no**
 - Provider: `anthropic`
 - Auth: `ANTHROPIC_API_KEY` or `claude setup-token`
 - Example model: `anthropic/claude-opus-4-5`
-- CLI: `clawdbot onboard --auth-choice setup-token`
+- CLI: `surprisebot onboard --auth-choice setup-token`
 
 ```json5
 {
@@ -51,7 +51,7 @@ Clawdbot ships with the pi‑ai catalog. These providers require **no**
 - Provider: `openai-codex`
 - Auth: OAuth or Codex CLI (`~/.codex/auth.json`)
 - Example model: `openai-codex/gpt-5.2`
-- CLI: `clawdbot onboard --auth-choice openai-codex` or `codex-cli`
+- CLI: `surprisebot onboard --auth-choice openai-codex` or `codex-cli`
 
 ```json5
 {
@@ -64,7 +64,7 @@ Clawdbot ships with the pi‑ai catalog. These providers require **no**
 - Provider: `opencode`
 - Auth: `OPENCODE_API_KEY` (or `OPENCODE_ZEN_API_KEY`)
 - Example model: `opencode/claude-opus-4-5`
-- CLI: `clawdbot onboard --auth-choice opencode-zen`
+- CLI: `surprisebot onboard --auth-choice opencode-zen`
 
 ```json5
 {
@@ -77,26 +77,28 @@ Clawdbot ships with the pi‑ai catalog. These providers require **no**
 - Provider: `google`
 - Auth: `GEMINI_API_KEY`
 - Example model: `google/gemini-3-pro-preview`
-- CLI: `clawdbot onboard --auth-choice gemini-api-key`
+- CLI: `surprisebot onboard --auth-choice gemini-api-key`
 
 ### Google Vertex / Antigravity / Gemini CLI
 
 - Providers: `google-vertex`, `google-antigravity`, `google-gemini-cli`
 - Auth: Vertex uses gcloud ADC; Antigravity/Gemini CLI use their respective auth flows
-- CLI: `clawdbot onboard --auth-choice antigravity` (others via interactive wizard)
+- CLI: `surprisebot onboard --auth-choice antigravity` (others via interactive wizard)
 
 ### Z.AI (GLM)
 
 - Provider: `zai`
 - Auth: `ZAI_API_KEY`
 - Example model: `zai/glm-4.7`
-- CLI: `clawdbot onboard --auth-choice zai-api-key`
+- CLI: `surprisebot onboard --auth-choice zai-api-key`
   - Aliases: `z.ai/*` and `z-ai/*` normalize to `zai/*`
 
 ### Other built-in providers
 
 - OpenRouter: `openrouter` (`OPENROUTER_API_KEY`)
 - Example model: `openrouter/anthropic/claude-sonnet-4-5`
+- Perplexity: `perplexity` (`PPLX_API_KEY`)
+- Example model: `perplexity/sonar-pro`
 - xAI: `xai` (`XAI_API_KEY`)
 - Groq: `groq` (`GROQ_API_KEY`)
 - Cerebras: `cerebras` (`CEREBRAS_API_KEY`)
@@ -150,7 +152,7 @@ Synthetic provides Anthropic-compatible models behind the `synthetic` provider:
 - Provider: `synthetic`
 - Auth: `SYNTHETIC_API_KEY`
 - Example model: `synthetic/hf:MiniMaxAI/MiniMax-M2.1`
-- CLI: `clawdbot onboard --auth-choice synthetic-api-key`
+- CLI: `surprisebot onboard --auth-choice synthetic-api-key`
 
 ```json5
 {
@@ -218,9 +220,9 @@ Example (OpenAI‑compatible):
 ## CLI examples
 
 ```bash
-clawdbot onboard --auth-choice opencode-zen
-clawdbot models set opencode/claude-opus-4-5
-clawdbot models list
+surprisebot onboard --auth-choice opencode-zen
+surprisebot models set opencode/claude-opus-4-5
+surprisebot models list
 ```
 
 See also: [/gateway/configuration](/gateway/configuration) for full configuration examples.

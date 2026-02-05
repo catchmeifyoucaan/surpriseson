@@ -1,23 +1,23 @@
 ---
-summary: "CLI reference for `clawdbot update` (safe-ish source update + optional daemon restart)"
+summary: "CLI reference for `surprisebot update` (safe-ish source update + optional daemon restart)"
 read_when:
   - You want to update a source checkout safely
   - You need to understand `--update` shorthand behavior
 ---
 
-# `clawdbot update`
+# `surprisebot update`
 
-Safely update a **source checkout** (git install) of Clawdbot.
+Safely update a **source checkout** (git install) of Surprisebot.
 
 If you installed via **npm/pnpm** (global install, no git metadata), use the package manager flow in [Updating](/install/updating).
 
 ## Usage
 
 ```bash
-clawdbot update
-clawdbot update --restart
-clawdbot update --json
-clawdbot --update
+surprisebot update
+surprisebot update --restart
+surprisebot update --json
+surprisebot --update
 ```
 
 ## Options
@@ -34,14 +34,14 @@ High-level:
 2. Fetches and rebases against `@{upstream}`.
 3. Installs deps (pnpm preferred; npm fallback).
 4. Builds + builds the Control UI.
-5. Runs `clawdbot doctor` as the final “safe update” check.
+5. Runs `surprisebot doctor` as the final “safe update” check.
 
 ## `--update` shorthand
 
-`clawdbot --update` rewrites to `clawdbot update` (useful for shells and launcher scripts).
+`surprisebot --update` rewrites to `surprisebot update` (useful for shells and launcher scripts).
 
 ## See also
 
-- `clawdbot doctor` (offers to run update first on git checkouts)
+- `surprisebot doctor` (offers to run update first on git checkouts)
 - [Updating](/install/updating)
 - [CLI reference](/cli)

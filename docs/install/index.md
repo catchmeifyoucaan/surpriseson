@@ -17,6 +17,20 @@ curl -fsSL https://surprisebot.bot/install.sh | bash
 
 This installs the `surprisebot` CLI globally via npm. After install, run `surprisebot init --quickstart`.
 
+
+This installer **runs `surprisebot init --quickstart` by default**. To skip onboarding:
+
+```bash
+curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --no-onboard
+```
+
+For minimal mode:
+
+```bash
+curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --minimal
+```
+
+
 See installer flags:
 
 ```bash

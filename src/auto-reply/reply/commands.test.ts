@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { MsgContext } from "../templating.js";
 import { resetBashChatCommandForTests } from "./bash-command.js";
 import { buildCommandContext, handleCommands } from "./commands.js";
 import { parseInlineDirectives } from "./directive-handling.js";
 
-function buildParams(commandBody: string, cfg: ClawdbotConfig, ctxOverrides?: Partial<MsgContext>) {
+function buildParams(commandBody: string, cfg: SurprisebotConfig, ctxOverrides?: Partial<MsgContext>) {
   const ctx = {
     Body: commandBody,
     CommandBody: commandBody,
@@ -50,7 +50,7 @@ describe("handleCommands gating", () => {
     const cfg = {
       commands: { bash: false, text: true },
       whatsapp: { allowFrom: ["*"] },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/bash echo hi", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -62,7 +62,7 @@ describe("handleCommands gating", () => {
     const cfg = {
       commands: { bash: true, text: true },
       whatsapp: { allowFrom: ["*"] },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/bash echo hi", cfg);
     params.elevated = {
       enabled: true,
@@ -78,7 +78,7 @@ describe("handleCommands gating", () => {
     const cfg = {
       commands: { config: false, debug: false, text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/config show", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -89,7 +89,7 @@ describe("handleCommands gating", () => {
     const cfg = {
       commands: { config: false, debug: false, text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/debug show", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -103,7 +103,7 @@ describe("handleCommands bash alias", () => {
     const cfg = {
       commands: { bash: true, text: true },
       whatsapp: { allowFrom: ["*"] },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("!poll", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -115,7 +115,7 @@ describe("handleCommands bash alias", () => {
     const cfg = {
       commands: { bash: true, text: true },
       whatsapp: { allowFrom: ["*"] },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("!stop", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -128,7 +128,7 @@ describe("handleCommands identity", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/whoami", cfg, {
       SenderId: "12345",
       SenderUsername: "TestUser",
@@ -148,7 +148,7 @@ describe("handleCommands context", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/context", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -160,7 +160,7 @@ describe("handleCommands context", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/context list", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);
@@ -172,7 +172,7 @@ describe("handleCommands context", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const params = buildParams("/context detail", cfg);
     const result = await handleCommands(params);
     expect(result.shouldContinue).toBe(false);

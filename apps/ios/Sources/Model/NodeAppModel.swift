@@ -1,4 +1,4 @@
-import ClawdbotKit
+import SurprisebotKit
 import Network
 import Observation
 import SwiftUI
@@ -89,7 +89,7 @@ final class NodeAppModel {
         }()
         guard !userAction.isEmpty else { return }
 
-        guard let name = ClawdbotCanvasA2UIAction.extractActionName(userAction) else { return }
+        guard let name = SurprisebotCanvasA2UIAction.extractActionName(userAction) else { return }
         let actionId: String = {
             let id = (userAction["id"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             return id.isEmpty ? UUID().uuidString : id
@@ -108,15 +108,15 @@ final class NodeAppModel {
 
         let host = UserDefaults.standard.string(forKey: "node.displayName") ?? UIDevice.current.name
         let instanceId = (UserDefaults.standard.string(forKey: "node.instanceId") ?? "ios-node").lowercased()
-        let contextJSON = ClawdbotCanvasA2UIAction.compactJSON(userAction["context"])
+        let contextJSON = SurprisebotCanvasA2UIAction.compactJSON(userAction["context"])
         let sessionKey = self.mainSessionKey
 
-        let messageContext = ClawdbotCanvasA2UIAction.AgentMessageContext(
+        let messageContext = SurprisebotCanvasA2UIAction.AgentMessageContext(
             actionName: name,
             session: .init(key: sessionKey, surfaceId: surfaceId),
             component: .init(id: sourceComponentId, host: host, instanceId: instanceId),
             contextJSON: contextJSON)
-        let message = ClawdbotCanvasA2UIAction.formatAgentMessage(messageContext)
+        let message = SurprisebotCanvasA2UIAction.formatAgentMessage(messageContext)
 
         let ok: Bool
         var errorText: String?
@@ -141,7 +141,7 @@ final class NodeAppModel {
             }
         }
 
-        let js = ClawdbotCanvasA2UIAction.jsDispatchA2UIActionStatus(actionId: actionId, ok: ok, error: errorText)
+        let js = SurprisebotCanvasA2UIAction.jsDispatchA2UIActionStatus(actionId: actionId, ok: ok, error: errorText)
         do {
             _ = try await self.screen.eval(javaScript: js)
         } catch {
@@ -153,7 +153,7 @@ final class NodeAppModel {
         guard let raw = await self.bridge.currentCanvasHostUrl() else { return nil }
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let base = URL(string: trimmed) else { return nil }
-        return base.appendingPathComponent("__clawdbot__/a2ui/").absoluteString + "?platform=ios"
+        return base.appendingPathComponent("__surprisebot__/a2ui/").absoluteString + "?platform=ios"
     }
 
     private func showA2UIOnConnectIfNeeded() async {
@@ -189,7 +189,7 @@ final class NodeAppModel {
         self.talkMode.setEnabled(enabled)
     }
 
-    func requestLocationPermissions(mode: ClawdbotLocationMode) async -> Bool {
+    func requestLocationPermissions(mode: SurprisebotLocationMode) async -> Bool {
         guard mode != .off else { return true }
         let status = await self.locationService.ensureAuthorization(mode: mode)
         switch status {
@@ -255,7 +255,7 @@ final class NodeAppModel {
                                 return BridgeInvokeResponse(
                                     id: req.id,
                                     ok: false,
-                                    error: ClawdbotNodeError(
+                                    error: SurprisebotNodeError(
                                         code: .unavailable,
                                         message: "UNAVAILABLE: node not ready"))
                             }
@@ -464,7 +464,7 @@ final class NodeAppModel {
         }
 
         // iOS bridge forwards to the gateway; no local auth prompts here.
-        // (Key-based unattended auth is handled on macOS for clawdbot:// links.)
+        // (Key-based unattended auth is handled on macOS for surprisebot:// links.)
         let data = try JSONEncoder().encode(link)
         guard let json = String(bytes: data, encoding: .utf8) else {
             throw NSError(domain: "NodeAppModel", code: 2, userInfo: [
@@ -486,7 +486,7 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .backgroundUnavailable,
                     message: "NODE_BACKGROUND_UNAVAILABLE: canvas/camera/screen commands require foreground"))
         }
@@ -495,36 +495,36 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .unavailable,
                     message: "CAMERA_DISABLED: enable Camera in iOS Settings → Camera → Allow Camera"))
         }
 
         do {
             switch command {
-            case ClawdbotLocationCommand.get.rawValue:
+            case SurprisebotLocationCommand.get.rawValue:
                 return try await self.handleLocationInvoke(req)
-            case ClawdbotCanvasCommand.present.rawValue,
-                 ClawdbotCanvasCommand.hide.rawValue,
-                 ClawdbotCanvasCommand.navigate.rawValue,
-                 ClawdbotCanvasCommand.evalJS.rawValue,
-                 ClawdbotCanvasCommand.snapshot.rawValue:
+            case SurprisebotCanvasCommand.present.rawValue,
+                 SurprisebotCanvasCommand.hide.rawValue,
+                 SurprisebotCanvasCommand.navigate.rawValue,
+                 SurprisebotCanvasCommand.evalJS.rawValue,
+                 SurprisebotCanvasCommand.snapshot.rawValue:
                 return try await self.handleCanvasInvoke(req)
-            case ClawdbotCanvasA2UICommand.reset.rawValue,
-                 ClawdbotCanvasA2UICommand.push.rawValue,
-                 ClawdbotCanvasA2UICommand.pushJSONL.rawValue:
+            case SurprisebotCanvasA2UICommand.reset.rawValue,
+                 SurprisebotCanvasA2UICommand.push.rawValue,
+                 SurprisebotCanvasA2UICommand.pushJSONL.rawValue:
                 return try await self.handleCanvasA2UIInvoke(req)
-            case ClawdbotCameraCommand.list.rawValue,
-                 ClawdbotCameraCommand.snap.rawValue,
-                 ClawdbotCameraCommand.clip.rawValue:
+            case SurprisebotCameraCommand.list.rawValue,
+                 SurprisebotCameraCommand.snap.rawValue,
+                 SurprisebotCameraCommand.clip.rawValue:
                 return try await self.handleCameraInvoke(req)
-            case ClawdbotScreenCommand.record.rawValue:
+            case SurprisebotScreenCommand.record.rawValue:
                 return try await self.handleScreenRecordInvoke(req)
             default:
                 return BridgeInvokeResponse(
                     id: req.id,
                     ok: false,
-                    error: ClawdbotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
+                    error: SurprisebotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
             }
         } catch {
             if command.hasPrefix("camera.") {
@@ -534,7 +534,7 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(code: .unavailable, message: error.localizedDescription))
+                error: SurprisebotNodeError(code: .unavailable, message: error.localizedDescription))
         }
     }
 
@@ -548,7 +548,7 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .unavailable,
                     message: "LOCATION_DISABLED: enable Location in Settings"))
         }
@@ -556,12 +556,12 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .backgroundUnavailable,
                     message: "LOCATION_BACKGROUND_UNAVAILABLE: background location requires Always"))
         }
-        let params = (try? Self.decodeParams(ClawdbotLocationGetParams.self, from: req.paramsJSON)) ??
-            ClawdbotLocationGetParams()
+        let params = (try? Self.decodeParams(SurprisebotLocationGetParams.self, from: req.paramsJSON)) ??
+            SurprisebotLocationGetParams()
         let desired = params.desiredAccuracy ??
             (self.isLocationPreciseEnabled() ? .precise : .balanced)
         let status = self.locationService.authorizationStatus()
@@ -569,7 +569,7 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .unavailable,
                     message: "LOCATION_PERMISSION_REQUIRED: grant Location permission"))
         }
@@ -577,7 +577,7 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(
+                error: SurprisebotNodeError(
                     code: .unavailable,
                     message: "LOCATION_PERMISSION_REQUIRED: enable Always for background access"))
         }
@@ -587,7 +587,7 @@ final class NodeAppModel {
             maxAgeMs: params.maxAgeMs,
             timeoutMs: params.timeoutMs)
         let isPrecise = self.locationService.accuracyAuthorization() == .fullAccuracy
-        let payload = ClawdbotLocationPayload(
+        let payload = SurprisebotLocationPayload(
             lat: location.coordinate.latitude,
             lon: location.coordinate.longitude,
             accuracyMeters: location.horizontalAccuracy,
@@ -603,9 +603,9 @@ final class NodeAppModel {
 
     private func handleCanvasInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
         switch req.command {
-        case ClawdbotCanvasCommand.present.rawValue:
-            let params = (try? Self.decodeParams(ClawdbotCanvasPresentParams.self, from: req.paramsJSON)) ??
-                ClawdbotCanvasPresentParams()
+        case SurprisebotCanvasCommand.present.rawValue:
+            let params = (try? Self.decodeParams(SurprisebotCanvasPresentParams.self, from: req.paramsJSON)) ??
+                SurprisebotCanvasPresentParams()
             let url = params.url?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             if url.isEmpty {
                 self.screen.showDefaultCanvas()
@@ -613,19 +613,19 @@ final class NodeAppModel {
                 self.screen.navigate(to: url)
             }
             return BridgeInvokeResponse(id: req.id, ok: true)
-        case ClawdbotCanvasCommand.hide.rawValue:
+        case SurprisebotCanvasCommand.hide.rawValue:
             return BridgeInvokeResponse(id: req.id, ok: true)
-        case ClawdbotCanvasCommand.navigate.rawValue:
-            let params = try Self.decodeParams(ClawdbotCanvasNavigateParams.self, from: req.paramsJSON)
+        case SurprisebotCanvasCommand.navigate.rawValue:
+            let params = try Self.decodeParams(SurprisebotCanvasNavigateParams.self, from: req.paramsJSON)
             self.screen.navigate(to: params.url)
             return BridgeInvokeResponse(id: req.id, ok: true)
-        case ClawdbotCanvasCommand.evalJS.rawValue:
-            let params = try Self.decodeParams(ClawdbotCanvasEvalParams.self, from: req.paramsJSON)
+        case SurprisebotCanvasCommand.evalJS.rawValue:
+            let params = try Self.decodeParams(SurprisebotCanvasEvalParams.self, from: req.paramsJSON)
             let result = try await self.screen.eval(javaScript: params.javaScript)
             let payload = try Self.encodePayload(["result": result])
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
-        case ClawdbotCanvasCommand.snapshot.rawValue:
-            let params = try? Self.decodeParams(ClawdbotCanvasSnapshotParams.self, from: req.paramsJSON)
+        case SurprisebotCanvasCommand.snapshot.rawValue:
+            let params = try? Self.decodeParams(SurprisebotCanvasSnapshotParams.self, from: req.paramsJSON)
             let format = params?.format ?? .jpeg
             let maxWidth: CGFloat? = {
                 if let raw = params?.maxWidth, raw > 0 { return CGFloat(raw) }
@@ -649,19 +649,19 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
+                error: SurprisebotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
         }
     }
 
     private func handleCanvasA2UIInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
         let command = req.command
         switch command {
-        case ClawdbotCanvasA2UICommand.reset.rawValue:
+        case SurprisebotCanvasA2UICommand.reset.rawValue:
             guard let a2uiUrl = await self.resolveA2UIHostURL() else {
                 return BridgeInvokeResponse(
                     id: req.id,
                     ok: false,
-                    error: ClawdbotNodeError(
+                    error: SurprisebotNodeError(
                         code: .unavailable,
                         message: "A2UI_HOST_NOT_CONFIGURED: gateway did not advertise canvas host"))
             }
@@ -670,31 +670,31 @@ final class NodeAppModel {
                 return BridgeInvokeResponse(
                     id: req.id,
                     ok: false,
-                    error: ClawdbotNodeError(
+                    error: SurprisebotNodeError(
                         code: .unavailable,
                         message: "A2UI_HOST_UNAVAILABLE: A2UI host not reachable"))
             }
 
             let json = try await self.screen.eval(javaScript: """
             (() => {
-              if (!globalThis.clawdbotA2UI) return JSON.stringify({ ok: false, error: "missing clawdbotA2UI" });
-              return JSON.stringify(globalThis.clawdbotA2UI.reset());
+              if (!globalThis.surprisebotA2UI) return JSON.stringify({ ok: false, error: "missing surprisebotA2UI" });
+              return JSON.stringify(globalThis.surprisebotA2UI.reset());
             })()
             """)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: json)
-        case ClawdbotCanvasA2UICommand.push.rawValue, ClawdbotCanvasA2UICommand.pushJSONL.rawValue:
+        case SurprisebotCanvasA2UICommand.push.rawValue, SurprisebotCanvasA2UICommand.pushJSONL.rawValue:
             let messages: [AnyCodable]
-            if command == ClawdbotCanvasA2UICommand.pushJSONL.rawValue {
-                let params = try Self.decodeParams(ClawdbotCanvasA2UIPushJSONLParams.self, from: req.paramsJSON)
-                messages = try ClawdbotCanvasA2UIJSONL.decodeMessagesFromJSONL(params.jsonl)
+            if command == SurprisebotCanvasA2UICommand.pushJSONL.rawValue {
+                let params = try Self.decodeParams(SurprisebotCanvasA2UIPushJSONLParams.self, from: req.paramsJSON)
+                messages = try SurprisebotCanvasA2UIJSONL.decodeMessagesFromJSONL(params.jsonl)
             } else {
                 do {
-                    let params = try Self.decodeParams(ClawdbotCanvasA2UIPushParams.self, from: req.paramsJSON)
+                    let params = try Self.decodeParams(SurprisebotCanvasA2UIPushParams.self, from: req.paramsJSON)
                     messages = params.messages
                 } catch {
                     // Be forgiving: some clients still send JSONL payloads to `canvas.a2ui.push`.
-                    let params = try Self.decodeParams(ClawdbotCanvasA2UIPushJSONLParams.self, from: req.paramsJSON)
-                    messages = try ClawdbotCanvasA2UIJSONL.decodeMessagesFromJSONL(params.jsonl)
+                    let params = try Self.decodeParams(SurprisebotCanvasA2UIPushJSONLParams.self, from: req.paramsJSON)
+                    messages = try SurprisebotCanvasA2UIJSONL.decodeMessagesFromJSONL(params.jsonl)
                 }
             }
 
@@ -702,7 +702,7 @@ final class NodeAppModel {
                 return BridgeInvokeResponse(
                     id: req.id,
                     ok: false,
-                    error: ClawdbotNodeError(
+                    error: SurprisebotNodeError(
                         code: .unavailable,
                         message: "A2UI_HOST_NOT_CONFIGURED: gateway did not advertise canvas host"))
             }
@@ -711,18 +711,18 @@ final class NodeAppModel {
                 return BridgeInvokeResponse(
                     id: req.id,
                     ok: false,
-                    error: ClawdbotNodeError(
+                    error: SurprisebotNodeError(
                         code: .unavailable,
                         message: "A2UI_HOST_UNAVAILABLE: A2UI host not reachable"))
             }
 
-            let messagesJSON = try ClawdbotCanvasA2UIJSONL.encodeMessagesJSONArray(messages)
+            let messagesJSON = try SurprisebotCanvasA2UIJSONL.encodeMessagesJSONArray(messages)
             let js = """
             (() => {
               try {
-                if (!globalThis.clawdbotA2UI) return JSON.stringify({ ok: false, error: "missing clawdbotA2UI" });
+                if (!globalThis.surprisebotA2UI) return JSON.stringify({ ok: false, error: "missing surprisebotA2UI" });
                 const messages = \(messagesJSON);
-                return JSON.stringify(globalThis.clawdbotA2UI.applyMessages(messages));
+                return JSON.stringify(globalThis.surprisebotA2UI.applyMessages(messages));
               } catch (e) {
                 return JSON.stringify({ ok: false, error: String(e?.message ?? e) });
               }
@@ -734,24 +734,24 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
+                error: SurprisebotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
         }
     }
 
     private func handleCameraInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
         switch req.command {
-        case ClawdbotCameraCommand.list.rawValue:
+        case SurprisebotCameraCommand.list.rawValue:
             let devices = await self.camera.listDevices()
             struct Payload: Codable {
                 var devices: [CameraController.CameraDeviceInfo]
             }
             let payload = try Self.encodePayload(Payload(devices: devices))
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
-        case ClawdbotCameraCommand.snap.rawValue:
+        case SurprisebotCameraCommand.snap.rawValue:
             self.showCameraHUD(text: "Taking photo…", kind: .photo)
             self.triggerCameraFlash()
-            let params = (try? Self.decodeParams(ClawdbotCameraSnapParams.self, from: req.paramsJSON)) ??
-                ClawdbotCameraSnapParams()
+            let params = (try? Self.decodeParams(SurprisebotCameraSnapParams.self, from: req.paramsJSON)) ??
+                SurprisebotCameraSnapParams()
             let res = try await self.camera.snap(params: params)
 
             struct Payload: Codable {
@@ -767,9 +767,9 @@ final class NodeAppModel {
                 height: res.height))
             self.showCameraHUD(text: "Photo captured", kind: .success, autoHideSeconds: 1.6)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
-        case ClawdbotCameraCommand.clip.rawValue:
-            let params = (try? Self.decodeParams(ClawdbotCameraClipParams.self, from: req.paramsJSON)) ??
-                ClawdbotCameraClipParams()
+        case SurprisebotCameraCommand.clip.rawValue:
+            let params = (try? Self.decodeParams(SurprisebotCameraClipParams.self, from: req.paramsJSON)) ??
+                SurprisebotCameraClipParams()
 
             let suspended = (params.includeAudio ?? true) ? self.voiceWake.suspendForExternalAudioCapture() : false
             defer { self.voiceWake.resumeAfterExternalAudioCapture(wasSuspended: suspended) }
@@ -794,13 +794,13 @@ final class NodeAppModel {
             return BridgeInvokeResponse(
                 id: req.id,
                 ok: false,
-                error: ClawdbotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
+                error: SurprisebotNodeError(code: .invalidRequest, message: "INVALID_REQUEST: unknown command"))
         }
     }
 
     private func handleScreenRecordInvoke(_ req: BridgeInvokeRequest) async throws -> BridgeInvokeResponse {
-        let params = (try? Self.decodeParams(ClawdbotScreenRecordParams.self, from: req.paramsJSON)) ??
-            ClawdbotScreenRecordParams()
+        let params = (try? Self.decodeParams(SurprisebotScreenRecordParams.self, from: req.paramsJSON)) ??
+            SurprisebotScreenRecordParams()
         if let format = params.format, format.lowercased() != "mp4" {
             throw NSError(domain: "Screen", code: 30, userInfo: [
                 NSLocalizedDescriptionKey: "INVALID_REQUEST: screen format must be mp4",
@@ -835,9 +835,9 @@ final class NodeAppModel {
         return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
     }
 
-    private func locationMode() -> ClawdbotLocationMode {
+    private func locationMode() -> SurprisebotLocationMode {
         let raw = UserDefaults.standard.string(forKey: "location.enabledMode") ?? "off"
-        return ClawdbotLocationMode(rawValue: raw) ?? .off
+        return SurprisebotLocationMode(rawValue: raw) ?? .off
     }
 
     private func isLocationPreciseEnabled() -> Bool {

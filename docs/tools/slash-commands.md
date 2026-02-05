@@ -45,7 +45,7 @@ They run immediately, are stripped before the model sees the message, and the re
   - `false` clears previously registered commands on Discord/Telegram at startup. Slack commands are managed in the Slack app and are not removed automatically.
 - `commands.bash` (default `false`) enables `! <cmd>` to run host shell commands (`/bash <cmd>` is an alias; requires `tools.elevated` allowlists).
 - `commands.bashForegroundMs` (default `2000`) controls how long bash waits before switching to background mode (`0` backgrounds immediately).
-- `commands.config` (default `false`) enables `/config` (reads/writes `clawdbot.json`).
+- `commands.config` (default `false`) enables `/config` (reads/writes `surprisebot.json`).
 - `commands.debug` (default `false`) enables `/debug` (runtime-only overrides).
 - `commands.useAccessGroups` (default `true`) enforces allowlists/policies for commands.
 
@@ -79,17 +79,24 @@ Text + native (when enabled):
 
 Text-only:
 - `/compact [instructions]` (see [/concepts/compaction](/concepts/compaction))
+- `/remember <text>` (memory note; requires `commands.memory: true`)
+- `/prefer <text>` (log a preference; requires `commands.memory: true`)
+- `/decide <text>` (record a decision; requires `commands.memory: true`)
+- `/active <text>` (update current goals; requires `commands.memory: true`)
+- `/forget <text>` (remove memory; policy via `commands.memoryForgetPolicy`)
+- `/deprecate <text>` (mark a decision or preference as deprecated)
 - `! <command>` (host-only; one at a time; use `!poll` + `!stop` for long-running jobs)
 - `!poll` (check output / status; accepts optional `sessionId`; `/bash poll` also works)
 - `!stop` (stop the running bash job; accepts optional `sessionId`; `/bash stop` also works)
 
 Notes:
 - Commands accept an optional `:` between the command and args (e.g. `/think: high`, `/send: on`, `/help:`).
-- `/status` and `/usage` show the same status output; for full provider usage breakdown, use `clawdbot status --usage`.
+- `/status` and `/usage` show the same status output; for full provider usage breakdown, use `surprisebot status --usage`.
 - `/cost` appends per-response token usage; it only shows dollar cost when the model uses an API key (OAuth hides cost).
 - `/restart` is disabled by default; set `commands.restart: true` to enable it.
 - `/verbose` is meant for debugging and extra visibility; keep it **off** in normal use.
 - `/reasoning` (and `/verbose`) are risky in group settings: they may reveal internal reasoning or tool output you did not intend to expose. Prefer leaving them off, especially in group chats.
+- Memory commands (`/remember`, `/prefer`, `/decide`, `/active`, `/forget`, `/deprecate`) only run for **authorized senders** and when `commands.memory: true`.
 - **Fast path:** command-only messages from allowlisted senders are handled immediately (bypass queue + model).
 - **Group mention gating:** command-only messages from allowlisted senders bypass mention requirements.
 - **Inline shortcuts (allowlisted senders only):** certain commands also work when embedded in a normal message and are stripped before the model sees the remaining text.
@@ -132,19 +139,19 @@ Examples:
 
 ```
 /debug show
-/debug set messages.responsePrefix="[clawdbot]"
+/debug set messages.responsePrefix="[surprisebot]"
 /debug set channels.whatsapp.allowFrom=["+1555","+4477"]
 /debug unset messages.responsePrefix
 /debug reset
 ```
 
 Notes:
-- Overrides apply immediately to new config reads, but do **not** write to `clawdbot.json`.
+- Overrides apply immediately to new config reads, but do **not** write to `surprisebot.json`.
 - Use `/debug reset` to clear all overrides and return to the on-disk config.
 
 ## Config updates
 
-`/config` writes to your on-disk config (`clawdbot.json`). Owner-only. Disabled by default; enable with `commands.config: true`.
+`/config` writes to your on-disk config (`surprisebot.json`). Owner-only. Disabled by default; enable with `commands.config: true`.
 
 Examples:
 
@@ -152,7 +159,7 @@ Examples:
 /config show
 /config show messages.responsePrefix
 /config get messages.responsePrefix
-/config set messages.responsePrefix="[clawdbot]"
+/config set messages.responsePrefix="[surprisebot]"
 /config unset messages.responsePrefix
 ```
 
@@ -168,4 +175,4 @@ Notes:
   - Slack: `agent:<agentId>:slack:slash:<userId>` (prefix configurable via `channels.slack.slashCommand.sessionPrefix`)
   - Telegram: `telegram:slash:<userId>` (targets the chat session via `CommandTargetSessionKey`)
 - **`/stop`** targets the active chat session so it can abort the current run.
-- **Slack:** `channels.slack.slashCommand` is still supported for a single `/clawd`-style command. If you enable `commands.native`, you must create one Slack slash command per built-in command (same names as `/help`). Command argument menus for Slack are delivered as ephemeral Block Kit buttons.
+- **Slack:** `channels.slack.slashCommand` is still supported for a single `/surprisebot`-style command. If you enable `commands.native`, you must create one Slack slash command per built-in command (same names as `/help`). Command argument menus for Slack are delivered as ephemeral Block Kit buttons.

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { MsgContext } from "../templating.js";
 import type { GetReplyOptions } from "../types.js";
 import type { DispatchFromConfigResult } from "./dispatch-from-config.js";
@@ -12,7 +12,7 @@ import {
 
 export async function dispatchReplyWithBufferedBlockDispatcher(params: {
   ctx: MsgContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   dispatcherOptions: ReplyDispatcherWithTypingOptions;
   replyOptions?: Omit<GetReplyOptions, "onToolResult" | "onBlockReply">;
   replyResolver?: typeof import("../reply.js").getReplyFromConfig;
@@ -38,7 +38,7 @@ export async function dispatchReplyWithBufferedBlockDispatcher(params: {
 
 export async function dispatchReplyWithDispatcher(params: {
   ctx: MsgContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   dispatcherOptions: ReplyDispatcherOptions;
   replyOptions?: Omit<GetReplyOptions, "onToolResult" | "onBlockReply">;
   replyResolver?: typeof import("../reply.js").getReplyFromConfig;

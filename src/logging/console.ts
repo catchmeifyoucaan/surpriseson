@@ -1,6 +1,6 @@
 import util from "node:util";
 
-import { type ClawdbotConfig, loadConfig } from "../config/config.js";
+import { type SurprisebotConfig, loadConfig } from "../config/config.js";
 import { isVerbose } from "../globals.js";
 import { type LogLevel, normalizeLogLevel } from "./levels.js";
 import { getLogger, type LoggerSettings } from "./logger.js";
@@ -27,7 +27,7 @@ function normalizeConsoleStyle(style?: string): ConsoleStyle {
 }
 
 function resolveConsoleSettings(): ConsoleSettings {
-  const cfg: ClawdbotConfig["logging"] | undefined =
+  const cfg: SurprisebotConfig["logging"] | undefined =
     (loggingState.overrideSettings as LoggerSettings | null) ?? loadConfig().logging;
   const level = normalizeConsoleLevel(cfg?.consoleLevel);
   const style = normalizeConsoleStyle(cfg?.consoleStyle);

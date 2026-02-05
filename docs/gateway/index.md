@@ -9,35 +9,35 @@ Last updated: 2025-12-09
 
 ## What it is
 - The always-on process that owns the single Baileys/Telegram connection and the control/event plane.
-- Replaces the legacy `gateway` command. CLI entry point: `clawdbot gateway`.
+- Replaces the legacy `gateway` command. CLI entry point: `surprisebot gateway`.
 - Runs until stopped; exits non-zero on fatal errors so the supervisor restarts it.
 
 ## How to run (local)
 ```bash
-clawdbot gateway --port 18789
+surprisebot gateway --port 18789
 # for full debug/trace logs in stdio:
-clawdbot gateway --port 18789 --verbose
+surprisebot gateway --port 18789 --verbose
 # if the port is busy, terminate listeners then start:
-clawdbot gateway --force
+surprisebot gateway --force
 # dev loop (auto-reload on TS changes):
 pnpm gateway:watch
 ```
-- Config hot reload watches `~/.clawdbot/clawdbot.json` (or `CLAWDBOT_CONFIG_PATH`).
+- Config hot reload watches `~/.surprisebot/surprisebot.json` (or `SURPRISEBOT_CONFIG_PATH`).
   - Default mode: `gateway.reload.mode="hybrid"` (hot-apply safe changes, restart on critical).
   - Hot reload uses in-process restart via **SIGUSR1** when needed.
   - Disable with `gateway.reload.mode="off"`.
 - Binds WebSocket control plane to `127.0.0.1:<port>` (default 18789).
 - The same port also serves HTTP (control UI, hooks, A2UI). Single-port multiplex.
   - OpenAI Chat Completions (HTTP): [`/v1/chat/completions`](/gateway/openai-http-api).
-- Starts a Canvas file server by default on `canvasHost.port` (default `18793`), serving `http://<gateway-host>:18793/__clawdbot__/canvas/` from `~/clawd/canvas`. Disable with `canvasHost.enabled=false` or `CLAWDBOT_SKIP_CANVAS_HOST=1`.
+- Starts a Canvas file server by default on `canvasHost.port` (default `18793`), serving `http://<gateway-host>:18793/__surprisebot__/canvas/` from `~/surprisebot/canvas`. Disable with `canvasHost.enabled=false` or `SURPRISEBOT_SKIP_CANVAS_HOST=1`.
 - Logs to stdout; use launchd/systemd to keep it alive and rotate logs.
 - Pass `--verbose` to mirror debug logging (handshakes, req/res, events) from the log file into stdio when troubleshooting.
 - `--force` uses `lsof` to find listeners on the chosen port, sends SIGTERM, logs what it killed, then starts the gateway (fails fast if `lsof` is missing).
 - If you run under a supervisor (launchd/systemd/mac app child-process mode), a stop/restart typically sends **SIGTERM**; older builds may surface this as `pnpm` `ELIFECYCLE` exit code **143** (SIGTERM), which is a normal shutdown, not a crash.
 - **SIGUSR1** triggers an in-process restart (no external supervisor required). This is what the `gateway` agent tool uses.
-- Gateway auth: set `gateway.auth.mode=token` + `gateway.auth.token` (or pass `--token <value>` / `CLAWDBOT_GATEWAY_TOKEN`) to require clients to send `connect.params.auth.token`.
+- Gateway auth: set `gateway.auth.mode=token` + `gateway.auth.token` (or pass `--token <value>` / `SURPRISEBOT_GATEWAY_TOKEN`) to require clients to send `connect.params.auth.token`.
 - The wizard now generates a token by default, even on loopback.
-- Port precedence: `--port` > `CLAWDBOT_GATEWAY_PORT` > `gateway.port` > default `18789`.
+- Port precedence: `--port` > `SURPRISEBOT_GATEWAY_PORT` > `gateway.port` > default `18789`.
 
 ## Remote access
 - Tailscale/VPN preferred; otherwise SSH tunnel:
@@ -54,60 +54,60 @@ Usually unnecessary: one Gateway can serve multiple messaging channels and agent
 Supported if you isolate state + config and use unique ports. Full guide: [Multiple gateways](/gateway/multiple-gateways).
 
 Service names are profile-aware:
-- macOS: `com.clawdbot.<profile>`
-- Linux: `clawdbot-gateway-<profile>.service`
-- Windows: `Clawdbot Gateway (<profile>)`
+- macOS: `com.surprisebot.<profile>`
+- Linux: `surprisebot-gateway-<profile>.service`
+- Windows: `Surprisebot Gateway (<profile>)`
 
 Install metadata is embedded in the service config:
-- `CLAWDBOT_SERVICE_MARKER=clawdbot`
-- `CLAWDBOT_SERVICE_KIND=gateway`
-- `CLAWDBOT_SERVICE_VERSION=<version>`
+- `SURPRISEBOT_SERVICE_MARKER=surprisebot`
+- `SURPRISEBOT_SERVICE_KIND=gateway`
+- `SURPRISEBOT_SERVICE_VERSION=<version>`
 
 ### Dev profile (`--dev`)
 
 Fast path: run a fully-isolated dev instance (config/state/workspace) without touching your primary setup.
 
 ```bash
-clawdbot --dev setup
-clawdbot --dev gateway --allow-unconfigured
+surprisebot --dev setup
+surprisebot --dev gateway --allow-unconfigured
 # then target the dev instance:
-clawdbot --dev status
-clawdbot --dev health
+surprisebot --dev status
+surprisebot --dev health
 ```
 
 Defaults (can be overridden via env/flags/config):
-- `CLAWDBOT_STATE_DIR=~/.clawdbot-dev`
-- `CLAWDBOT_CONFIG_PATH=~/.clawdbot-dev/clawdbot.json`
-- `CLAWDBOT_GATEWAY_PORT=19001` (Gateway WS + HTTP)
+- `SURPRISEBOT_STATE_DIR=~/.surprisebot-dev`
+- `SURPRISEBOT_CONFIG_PATH=~/.surprisebot-dev/surprisebot.json`
+- `SURPRISEBOT_GATEWAY_PORT=19001` (Gateway WS + HTTP)
 - `bridge.port=19002` (derived: `gateway.port+1`)
 - `browser.controlUrl=http://127.0.0.1:19003` (derived: `gateway.port+2`)
 - `canvasHost.port=19005` (derived: `gateway.port+4`)
-- `agents.defaults.workspace` default becomes `~/clawd-dev` when you run `setup`/`onboard` under `--dev`.
+- `agents.defaults.workspace` default becomes `~/surprisebot-dev` when you run `setup`/`onboard` under `--dev`.
 
 Derived ports (rules of thumb):
-- Base port = `gateway.port` (or `CLAWDBOT_GATEWAY_PORT` / `--port`)
-- `bridge.port = base + 1` (or `CLAWDBOT_BRIDGE_PORT` / config override)
-- `browser.controlUrl port = base + 2` (or `CLAWDBOT_BROWSER_CONTROL_URL` / config override)
-- `canvasHost.port = base + 4` (or `CLAWDBOT_CANVAS_HOST_PORT` / config override)
+- Base port = `gateway.port` (or `SURPRISEBOT_GATEWAY_PORT` / `--port`)
+- `bridge.port = base + 1` (or `SURPRISEBOT_BRIDGE_PORT` / config override)
+- `browser.controlUrl port = base + 2` (or `SURPRISEBOT_BROWSER_CONTROL_URL` / config override)
+- `canvasHost.port = base + 4` (or `SURPRISEBOT_CANVAS_HOST_PORT` / config override)
 - Browser profile CDP ports auto-allocate from `browser.controlPort + 9 .. + 108` (persisted per profile).
 
 Checklist per instance:
 - unique `gateway.port`
-- unique `CLAWDBOT_CONFIG_PATH`
-- unique `CLAWDBOT_STATE_DIR`
+- unique `SURPRISEBOT_CONFIG_PATH`
+- unique `SURPRISEBOT_STATE_DIR`
 - unique `agents.defaults.workspace`
 - separate WhatsApp numbers (if using WA)
 
 Daemon install per profile:
 ```bash
-clawdbot --profile main daemon install
-clawdbot --profile rescue daemon install
+surprisebot --profile main daemon install
+surprisebot --profile rescue daemon install
 ```
 
 Example:
 ```bash
-CLAWDBOT_CONFIG_PATH=~/.clawdbot/a.json CLAWDBOT_STATE_DIR=~/.clawdbot-a clawdbot gateway --port 19001
-CLAWDBOT_CONFIG_PATH=~/.clawdbot/b.json CLAWDBOT_STATE_DIR=~/.clawdbot-b clawdbot gateway --port 19002
+SURPRISEBOT_CONFIG_PATH=~/.surprisebot/a.json SURPRISEBOT_STATE_DIR=~/.surprisebot-a surprisebot gateway --port 19001
+SURPRISEBOT_CONFIG_PATH=~/.surprisebot/b.json SURPRISEBOT_STATE_DIR=~/.surprisebot-b surprisebot gateway --port 19002
 ```
 
 ## Protocol (operator view)
@@ -121,7 +121,7 @@ CLAWDBOT_CONFIG_PATH=~/.clawdbot/b.json CLAWDBOT_STATE_DIR=~/.clawdbot-b clawdbo
 - `agent` responses are two-stage: first `res` ack `{runId,status:"accepted"}`, then a final `res` `{runId,status:"ok"|"error",summary}` after the run finishes; streamed output arrives as `event:"agent"`.
 
 ## Methods (initial set)
-- `health` — full health snapshot (same shape as `clawdbot health --json`).
+- `health` — full health snapshot (same shape as `surprisebot health --json`).
 - `status` — short summary.
 - `system-presence` — current presence list.
 - `system-event` — post a presence/system note (structured).
@@ -173,26 +173,26 @@ See also: [Presence](/concepts/presence) for how presence is produced/deduped an
 
 ## Supervision (macOS example)
 - Use launchd to keep the daemon alive:
-  - Program: path to `clawdbot`
+  - Program: path to `surprisebot`
   - Arguments: `gateway`
   - KeepAlive: true
   - StandardOut/Err: file paths or `syslog`
 - On failure, launchd restarts; fatal misconfig should keep exiting so the operator notices.
 - LaunchAgents are per-user and require a logged-in session; for headless setups use a custom LaunchDaemon (not shipped).
-  - `clawdbot daemon install` writes `~/Library/LaunchAgents/com.clawdbot.gateway.plist`
-    (or `com.clawdbot.<profile>.plist`).
-  - `clawdbot doctor` audits the LaunchAgent config and can update it to current defaults.
+  - `surprisebot daemon install` writes `~/Library/LaunchAgents/com.surprisebot.gateway.plist`
+    (or `com.surprisebot.<profile>.plist`).
+  - `surprisebot doctor` audits the LaunchAgent config and can update it to current defaults.
 
 ## Daemon management (CLI)
 
 Use the CLI daemon manager for install/start/stop/restart/status:
 
 ```bash
-clawdbot daemon status
-clawdbot daemon install
-clawdbot daemon stop
-clawdbot daemon restart
-clawdbot logs --follow
+surprisebot daemon status
+surprisebot daemon install
+surprisebot daemon stop
+surprisebot daemon restart
+surprisebot logs --follow
 ```
 
 Notes:
@@ -204,40 +204,40 @@ Notes:
 - `daemon status` prints config path + probe target to avoid “localhost vs LAN bind” confusion and profile mismatches.
 - `daemon status` includes the last gateway error line when the service looks running but the port is closed.
 - `logs` tails the Gateway file log via RPC (no manual `tail`/`grep` needed).
-- If other gateway-like services are detected, the CLI warns unless they are Clawdbot profile services.
+- If other gateway-like services are detected, the CLI warns unless they are Surprisebot profile services.
   We still recommend **one gateway per machine** unless you need redundant profiles.
-  - Cleanup: `clawdbot daemon uninstall` (current service) and `clawdbot doctor` (legacy migrations).
-- `daemon install` is a no-op when already installed; use `clawdbot daemon install --force` to reinstall (profile/env/path changes).
+  - Cleanup: `surprisebot daemon uninstall` (current service) and `surprisebot doctor` (legacy migrations).
+- `daemon install` is a no-op when already installed; use `surprisebot daemon install --force` to reinstall (profile/env/path changes).
 
 Bundled mac app:
-- Clawdbot.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
-  `com.clawdbot.gateway` (or `com.clawdbot.<profile>`).
-- To stop it cleanly, use `clawdbot daemon stop` (or `launchctl bootout gui/$UID/com.clawdbot.gateway`).
-- To restart, use `clawdbot daemon restart` (or `launchctl kickstart -k gui/$UID/com.clawdbot.gateway`).
-  - `launchctl` only works if the LaunchAgent is installed; otherwise use `clawdbot daemon install` first.
-  - Replace the label with `com.clawdbot.<profile>` when running a named profile.
+- Surprisebot.app can bundle a Node-based gateway relay and install a per-user LaunchAgent labeled
+  `com.surprisebot.gateway` (or `com.surprisebot.<profile>`).
+- To stop it cleanly, use `surprisebot daemon stop` (or `launchctl bootout gui/$UID/com.surprisebot.gateway`).
+- To restart, use `surprisebot daemon restart` (or `launchctl kickstart -k gui/$UID/com.surprisebot.gateway`).
+  - `launchctl` only works if the LaunchAgent is installed; otherwise use `surprisebot daemon install` first.
+  - Replace the label with `com.surprisebot.<profile>` when running a named profile.
 
 ## Supervision (systemd user unit)
-Clawdbot installs a **systemd user service** by default on Linux/WSL2. We
+Surprisebot installs a **systemd user service** by default on Linux/WSL2. We
 recommend user services for single-user machines (simpler env, per-user config).
 Use a **system service** for multi-user or always-on servers (no lingering
 required, shared supervision).
 
-`clawdbot daemon install` writes the user unit. `clawdbot doctor` audits the
+`surprisebot daemon install` writes the user unit. `surprisebot doctor` audits the
 unit and can update it to match the current recommended defaults.
 
-Create `~/.config/systemd/user/clawdbot-gateway[-<profile>].service`:
+Create `~/.config/systemd/user/surprisebot-gateway[-<profile>].service`:
 ```
 [Unit]
-Description=Clawdbot Gateway (profile: <profile>, v<version>)
+Description=Surprisebot Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/clawdbot gateway --port 18789
+ExecStart=/usr/local/bin/surprisebot gateway --port 18789
 Restart=always
 RestartSec=5
-Environment=CLAWDBOT_GATEWAY_TOKEN=
+Environment=SURPRISEBOT_GATEWAY_TOKEN=
 WorkingDirectory=/home/youruser
 
 [Install]
@@ -250,16 +250,16 @@ sudo loginctl enable-linger youruser
 Onboarding runs this on Linux/WSL2 (may prompt for sudo; writes `/var/lib/systemd/linger`).
 Then enable the service:
 ```
-systemctl --user enable --now clawdbot-gateway[-<profile>].service
+systemctl --user enable --now surprisebot-gateway[-<profile>].service
 ```
 
 **Alternative (system service)** - for always-on or multi-user servers, you can
 install a systemd **system** unit instead of a user unit (no lingering needed).
-Create `/etc/systemd/system/clawdbot-gateway[-<profile>].service` (copy the unit above,
+Create `/etc/systemd/system/surprisebot-gateway[-<profile>].service` (copy the unit above,
 switch `WantedBy=multi-user.target`, set `User=` + `WorkingDirectory=`), then:
 ```
 sudo systemctl daemon-reload
-sudo systemctl enable --now clawdbot-gateway[-<profile>].service
+sudo systemctl enable --now surprisebot-gateway[-<profile>].service
 ```
 
 ## Windows (WSL2)
@@ -278,13 +278,13 @@ Windows installs should use **WSL2** and follow the Linux systemd section above.
 - Graceful shutdown: emit `shutdown` event before closing; clients must handle close + reconnect.
 
 ## CLI helpers
-- `clawdbot gateway health|status` — request health/status over the Gateway WS.
-- `clawdbot message send --to <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).
-- `clawdbot agent --message "hi" --to <num>` — run an agent turn (waits for final by default).
-- `clawdbot gateway call <method> --params '{"k":"v"}'` — raw method invoker for debugging.
-- `clawdbot daemon stop|restart` — stop/restart the supervised gateway service (launchd/systemd).
+- `surprisebot gateway health|status` — request health/status over the Gateway WS.
+- `surprisebot message send --to <num> --message "hi" [--media ...]` — send via Gateway (idempotent for WhatsApp).
+- `surprisebot agent --message "hi" --to <num>` — run an agent turn (waits for final by default).
+- `surprisebot gateway call <method> --params '{"k":"v"}'` — raw method invoker for debugging.
+- `surprisebot daemon stop|restart` — stop/restart the supervised gateway service (launchd/systemd).
 - Gateway helper subcommands assume a running gateway on `--url`; they no longer auto-spawn one.
 
 ## Migration guidance
-- Retire uses of `clawdbot gateway` and the legacy TCP control port.
+- Retire uses of `surprisebot gateway` and the legacy TCP control port.
 - Update clients to speak the WS protocol with mandatory connect and structured presence.

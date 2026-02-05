@@ -13,8 +13,8 @@ Status: external CLI integration. Gateway talks to `signal-cli` over HTTP JSON-R
 1) Use a **separate Signal number** for the bot (recommended).
 2) Install `signal-cli` (Java required).
 3) Link the bot device and start the daemon:
-   - `signal-cli link -n "Clawdbot"`
-4) Configure Clawdbot and start the gateway.
+   - `signal-cli link -n "Surprisebot"`
+4) Configure Surprisebot and start the gateway.
 
 Minimal config:
 ```json5
@@ -54,7 +54,7 @@ Disable with:
 ## Setup (fast path)
 1) Install `signal-cli` (Java required).
 2) Link a bot account:
-   - `signal-cli link -n "Clawdbot"` then scan the QR in Signal.
+   - `signal-cli link -n "Surprisebot"` then scan the QR in Signal.
 3) Configure Signal and start the gateway.
 
 Example:
@@ -79,8 +79,8 @@ DMs:
 - Default: `channels.signal.dmPolicy = "pairing"`.
 - Unknown senders receive a pairing code; messages are ignored until approved (codes expire after 1 hour).
 - Approve via:
-  - `clawdbot pairing list signal`
-  - `clawdbot pairing approve signal <CODE>`
+  - `surprisebot pairing list signal`
+  - `surprisebot pairing approve signal <CODE>`
 - Pairing is the default token exchange for Signal DMs. Details: [Pairing](/start/pairing)
 - UUID-only senders (from `sourceUuid`) are stored as `uuid:<id>` in `channels.signal.allowFrom`.
 

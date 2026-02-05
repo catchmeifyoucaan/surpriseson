@@ -8,7 +8,7 @@ import {
 import type { CliDeps } from "../cli/deps.js";
 import type { loadConfig } from "../config/config.js";
 import { startGmailWatcher } from "../hooks/gmail-watcher.js";
-import type { loadClawdbotPlugins } from "../plugins/loader.js";
+import type { loadSurprisebotPlugins } from "../plugins/loader.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
 import {
@@ -18,7 +18,7 @@ import {
 
 export async function startGatewaySidecars(params: {
   cfg: ReturnType<typeof loadConfig>;
-  pluginRegistry: ReturnType<typeof loadClawdbotPlugins>;
+  pluginRegistry: ReturnType<typeof loadSurprisebotPlugins>;
   defaultWorkspaceDir: string;
   deps: CliDeps;
   startChannels: () => Promise<void>;
@@ -31,7 +31,7 @@ export async function startGatewaySidecars(params: {
   logChannels: { info: (msg: string) => void; error: (msg: string) => void };
   logBrowser: { error: (msg: string) => void };
 }) {
-  // Start clawd browser control server (unless disabled via config).
+  // Start surprisebot browser control server (unless disabled via config).
   let browserControl: Awaited<ReturnType<typeof startBrowserControlServerIfEnabled>> = null;
   try {
     browserControl = await startBrowserControlServerIfEnabled();
@@ -40,7 +40,7 @@ export async function startGatewaySidecars(params: {
   }
 
   // Start Gmail watcher if configured (hooks.gmail.account).
-  if (process.env.CLAWDBOT_SKIP_GMAIL_WATCHER !== "1") {
+  if (process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER !== "1") {
     try {
       const gmailResult = await startGmailWatcher(params.cfg);
       if (gmailResult.started) {
@@ -91,9 +91,9 @@ export async function startGatewaySidecars(params: {
   }
 
   // Launch configured channels so gateway replies via the surface the message came from.
-  // Tests can opt out via CLAWDBOT_SKIP_CHANNELS (or legacy CLAWDBOT_SKIP_PROVIDERS).
+  // Tests can opt out via SURPRISEBOT_SKIP_CHANNELS (or legacy SURPRISEBOT_SKIP_PROVIDERS).
   const skipChannels =
-    process.env.CLAWDBOT_SKIP_CHANNELS === "1" || process.env.CLAWDBOT_SKIP_PROVIDERS === "1";
+    process.env.SURPRISEBOT_SKIP_CHANNELS === "1" || process.env.SURPRISEBOT_SKIP_PROVIDERS === "1";
   if (!skipChannels) {
     try {
       await params.startChannels();
@@ -102,7 +102,7 @@ export async function startGatewaySidecars(params: {
     }
   } else {
     params.logChannels.info(
-      "skipping channel start (CLAWDBOT_SKIP_CHANNELS=1 or CLAWDBOT_SKIP_PROVIDERS=1)",
+      "skipping channel start (SURPRISEBOT_SKIP_CHANNELS=1 or SURPRISEBOT_SKIP_PROVIDERS=1)",
     );
   }
 

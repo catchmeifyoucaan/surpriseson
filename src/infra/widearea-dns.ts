@@ -4,8 +4,8 @@ import path from "node:path";
 
 import { CONFIG_DIR, ensureDir } from "../utils.js";
 
-export const WIDE_AREA_DISCOVERY_DOMAIN = "clawdbot.internal.";
-export const WIDE_AREA_ZONE_FILENAME = "clawdbot.internal.db";
+export const WIDE_AREA_DISCOVERY_DOMAIN = "surprisebot.internal.";
+export const WIDE_AREA_ZONE_FILENAME = "surprisebot.internal.db";
 
 export function getWideAreaZonePath(): string {
   return path.join(CONFIG_DIR, "dns", WIDE_AREA_ZONE_FILENAME);
@@ -51,7 +51,7 @@ function extractSerial(zoneText: string): number | null {
 }
 
 function extractContentHash(zoneText: string): string | null {
-  const match = zoneText.match(/^\s*;\s*clawdbot-content-hash:\s*(\S+)\s*$/m);
+  const match = zoneText.match(/^\s*;\s*surprisebot-content-hash:\s*(\S+)\s*$/m);
   return match?.[1] ?? null;
 }
 
@@ -79,9 +79,9 @@ export type WideAreaBridgeZoneOpts = {
 };
 
 function renderZone(opts: WideAreaBridgeZoneOpts & { serial: number }): string {
-  const hostname = os.hostname().split(".")[0] ?? "clawdbot";
-  const hostLabel = dnsLabel(opts.hostLabel ?? hostname, "clawdbot");
-  const instanceLabel = dnsLabel(opts.instanceLabel ?? `${hostname}-bridge`, "clawdbot-bridge");
+  const hostname = os.hostname().split(".")[0] ?? "surprisebot";
+  const hostLabel = dnsLabel(opts.hostLabel ?? hostname, "surprisebot");
+  const instanceLabel = dnsLabel(opts.instanceLabel ?? `${hostname}-bridge`, "sbot-bridge");
 
   const txt = [
     `displayName=${opts.displayName.trim() || hostname}`,
@@ -114,9 +114,9 @@ function renderZone(opts: WideAreaBridgeZoneOpts & { serial: number }): string {
     records.push(`${hostLabel} IN AAAA ${opts.tailnetIPv6}`);
   }
 
-  records.push(`_clawdbot-bridge._tcp IN PTR ${instanceLabel}._clawdbot-bridge._tcp`);
-  records.push(`${instanceLabel}._clawdbot-bridge._tcp IN SRV 0 0 ${opts.bridgePort} ${hostLabel}`);
-  records.push(`${instanceLabel}._clawdbot-bridge._tcp IN TXT ${txt.map(txtQuote).join(" ")}`);
+  records.push(`_sbot-bridge._tcp IN PTR ${instanceLabel}._sbot-bridge._tcp`);
+  records.push(`${instanceLabel}._sbot-bridge._tcp IN SRV 0 0 ${opts.bridgePort} ${hostLabel}`);
+  records.push(`${instanceLabel}._sbot-bridge._tcp IN TXT ${txt.map(txtQuote).join(" ")}`);
 
   const contentBody = `${records.join("\n")}\n`;
   const hashBody = `${records
@@ -126,7 +126,7 @@ function renderZone(opts: WideAreaBridgeZoneOpts & { serial: number }): string {
     .join("\n")}\n`;
   const contentHash = computeContentHash(hashBody);
 
-  return `; clawdbot-content-hash: ${contentHash}\n${contentBody}`;
+  return `; surprisebot-content-hash: ${contentHash}\n${contentBody}`;
 }
 
 export function renderWideAreaBridgeZoneText(

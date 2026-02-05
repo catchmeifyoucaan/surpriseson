@@ -199,6 +199,54 @@ export const CHAT_COMMANDS: ChatCommandDefinition[] = (() => {
       formatArgs: COMMAND_ARG_FORMATTERS.debug,
     }),
     defineChatCommand({
+      key: "remember",
+      nativeName: "remember",
+      description: "Store a durable memory note.",
+      textAlias: "/remember",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "forget",
+      nativeName: "forget",
+      description: "Forget a memory note.",
+      textAlias: "/forget",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "prefer",
+      nativeName: "prefer",
+      description: "Record a preference change.",
+      textAlias: "/prefer",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "deprecate",
+      nativeName: "deprecate",
+      description: "Deprecate a preference or decision.",
+      textAlias: "/deprecate",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "decide",
+      nativeName: "decide",
+      description: "Record a decision with an id.",
+      textAlias: "/decide",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "active",
+      nativeName: "active",
+      description: "Record an active goal or focus item.",
+      textAlias: "/active",
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
+      key: "shared-review",
+      description: "Merge approved shared memory entries.",
+      textAliases: ["/shared-review", "/shared_review", "/shared-merge", "/shared_merge"],
+      acceptsArgs: true,
+    }),
+    defineChatCommand({
       key: "cost",
       nativeName: "cost",
       description: "Toggle per-response usage line.",
@@ -222,7 +270,7 @@ export const CHAT_COMMANDS: ChatCommandDefinition[] = (() => {
     defineChatCommand({
       key: "restart",
       nativeName: "restart",
-      description: "Restart Clawdbot.",
+      description: "Restart Surprisebot.",
       textAlias: "/restart",
     }),
     defineChatCommand({

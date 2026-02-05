@@ -42,7 +42,7 @@ const runtime: RuntimeEnv = {
 };
 
 const baseSnapshot = {
-  path: "/tmp/clawdbot.json",
+  path: "/tmp/surprisebot.json",
   exists: true,
   raw: "{}",
   parsed: {},
@@ -352,7 +352,7 @@ describe("channels command", () => {
     });
     expect(lines.join("\n")).toMatch(/Warnings:/);
     expect(lines.join("\n")).toMatch(/Message Content Intent is disabled/i);
-    expect(lines.join("\n")).toMatch(/Run: clawdbot doctor/);
+    expect(lines.join("\n")).toMatch(/Run: surprisebot doctor/);
   });
 
   it("surfaces Discord permission audit issues in channels status output", () => {

@@ -26,7 +26,7 @@ async function waitFor(condition: () => boolean, timeoutMs = 1500) {
 
 describe("gateway server chat", () => {
   test("chat.history caps payload bytes", { timeout: 15_000 }, async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -76,7 +76,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.send does not overwrite last delivery route", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -116,7 +116,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.abort cancels an in-flight chat.send", { timeout: 15000 }, async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -208,7 +208,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.abort cancels while saving the session store", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -286,7 +286,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.send treats /stop as an out-of-band abort", { timeout: 15000 }, async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

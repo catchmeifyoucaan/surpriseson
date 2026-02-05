@@ -38,9 +38,9 @@ const browserConfigMocks = vi.hoisted(() => ({
     headless: true,
     noSandbox: false,
     attachOnly: false,
-    defaultProfile: "clawd",
+    defaultProfile: "surprisebot",
     profiles: {
-      clawd: {
+      surprisebot: {
         cdpPort: 18792,
         color: "#FF0000",
       },

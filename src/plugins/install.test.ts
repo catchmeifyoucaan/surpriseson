@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const tempDirs: string[] = [];
 
 function makeTempDir() {
-  const dir = path.join(os.tmpdir(), `clawdbot-plugin-install-${randomUUID()}`);
+  const dir = path.join(os.tmpdir(), `surprisebot-plugin-install-${randomUUID()}`);
   fs.mkdirSync(dir, { recursive: true });
   tempDirs.push(dir);
   return dir;
@@ -77,16 +77,16 @@ function packToArchive({
 }
 
 async function withStateDir<T>(stateDir: string, fn: () => Promise<T>) {
-  const prev = process.env.CLAWDBOT_STATE_DIR;
-  process.env.CLAWDBOT_STATE_DIR = stateDir;
+  const prev = process.env.SURPRISEBOT_STATE_DIR;
+  process.env.SURPRISEBOT_STATE_DIR = stateDir;
   vi.resetModules();
   try {
     return await fn();
   } finally {
     if (prev === undefined) {
-      delete process.env.CLAWDBOT_STATE_DIR;
+      delete process.env.SURPRISEBOT_STATE_DIR;
     } else {
-      process.env.CLAWDBOT_STATE_DIR = prev;
+      process.env.SURPRISEBOT_STATE_DIR = prev;
     }
     vi.resetModules();
   }
@@ -103,7 +103,7 @@ afterEach(() => {
 });
 
 describe("installPluginFromArchive", () => {
-  it("installs into ~/.clawdbot/extensions and uses unscoped id", async () => {
+  it("installs into ~/.surprisebot/extensions and uses unscoped id", async () => {
     const stateDir = makeTempDir();
     const workDir = makeTempDir();
     const pkgDir = path.join(workDir, "package");
@@ -111,9 +111,9 @@ describe("installPluginFromArchive", () => {
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
       JSON.stringify({
-        name: "@clawdbot/voice-call",
+        name: "@surprisebot/voice-call",
         version: "0.0.1",
-        clawdbot: { extensions: ["./dist/index.js"] },
+        surprisebot: { extensions: ["./dist/index.js"] },
       }),
       "utf-8",
     );
@@ -145,9 +145,9 @@ describe("installPluginFromArchive", () => {
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
       JSON.stringify({
-        name: "@clawdbot/voice-call",
+        name: "@surprisebot/voice-call",
         version: "0.0.1",
-        clawdbot: { extensions: ["./dist/index.js"] },
+        surprisebot: { extensions: ["./dist/index.js"] },
       }),
       "utf-8",
     );
@@ -172,14 +172,14 @@ describe("installPluginFromArchive", () => {
     expect(second.error).toContain("already exists");
   });
 
-  it("rejects packages without clawdbot.extensions", async () => {
+  it("rejects packages without surprisebot.extensions", async () => {
     const stateDir = makeTempDir();
     const workDir = makeTempDir();
     const pkgDir = path.join(workDir, "package");
     fs.mkdirSync(pkgDir, { recursive: true });
     fs.writeFileSync(
       path.join(pkgDir, "package.json"),
-      JSON.stringify({ name: "@clawdbot/nope", version: "0.0.1" }),
+      JSON.stringify({ name: "@surprisebot/nope", version: "0.0.1" }),
       "utf-8",
     );
 
@@ -195,6 +195,6 @@ describe("installPluginFromArchive", () => {
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.error).toContain("clawdbot.extensions");
+    expect(result.error).toContain("surprisebot.extensions");
   });
 });

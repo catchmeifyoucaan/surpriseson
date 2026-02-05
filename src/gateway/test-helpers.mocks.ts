@@ -69,7 +69,7 @@ const hoisted = vi.hoisted(() => ({
 }));
 
 const testConfigRoot = {
-  value: path.join(os.tmpdir(), `clawdbot-gateway-test-${process.pid}-${crypto.randomUUID()}`),
+  value: path.join(os.tmpdir(), `surprisebot-gateway-test-${process.pid}-${crypto.randomUUID()}`),
 };
 
 export const setTestConfigRoot = (root: string) => {
@@ -165,7 +165,7 @@ vi.mock("../config/sessions.js", async () => {
 
 vi.mock("../config/config.js", async () => {
   const actual = await vi.importActual<typeof import("../config/config.js")>("../config/config.js");
-  const resolveConfigPath = () => path.join(testConfigRoot.value, "clawdbot.json");
+  const resolveConfigPath = () => path.join(testConfigRoot.value, "surprisebot.json");
   const hashConfigRaw = (raw: string | null) =>
     crypto
       .createHash("sha256")
@@ -244,10 +244,10 @@ vi.mock("../config/config.js", async () => {
 
   return {
     ...actual,
-    get CONFIG_PATH_CLAWDBOT() {
+    get CONFIG_PATH_SURPRISEBOT() {
       return resolveConfigPath();
     },
-    get STATE_DIR_CLAWDBOT() {
+    get STATE_DIR_SURPRISEBOT() {
       return path.dirname(resolveConfigPath());
     },
     get isNixMode() {
@@ -261,7 +261,7 @@ vi.mock("../config/config.js", async () => {
       agents: (() => {
         const defaults = {
           model: "anthropic/claude-opus-4-5",
-          workspace: path.join(os.tmpdir(), "clawd-gateway-test"),
+          workspace: path.join(os.tmpdir(), "surprisebot-gateway-test"),
           ...testState.agentConfig,
         };
         if (testState.agentsConfig) {
@@ -348,4 +348,4 @@ vi.mock("../commands/agent.js", () => ({
   agentCommand,
 }));
 
-process.env.CLAWDBOT_SKIP_CHANNELS = "1";
+process.env.SURPRISEBOT_SKIP_CHANNELS = "1";

@@ -2,15 +2,15 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { isAbortTrigger, tryFastAbortFromMessage } from "./abort.js";
 import { initSessionState } from "./session.js";
 
 describe("abort detection", () => {
   it("triggerBodyNormalized extracts /stop from RawBody for abort detection", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath } } as ClawdbotConfig;
+    const cfg = { session: { store: storePath } } as SurprisebotConfig;
 
     const groupMessageCtx = {
       Body: `[Context]\nJake: /stop\n[from: Jake]`,
@@ -42,9 +42,9 @@ describe("abort detection", () => {
   });
 
   it("fast-aborts even when text commands are disabled", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-abort-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-abort-"));
     const storePath = path.join(root, "sessions.json");
-    const cfg = { session: { store: storePath }, commands: { text: false } } as ClawdbotConfig;
+    const cfg = { session: { store: storePath }, commands: { text: false } } as SurprisebotConfig;
 
     const result = await tryFastAbortFromMessage({
       ctx: {

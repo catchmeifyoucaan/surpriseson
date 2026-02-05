@@ -64,7 +64,7 @@ describe("gateway server agent", () => {
   });
 
   test("suppresses tool stream events when verbose is off", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

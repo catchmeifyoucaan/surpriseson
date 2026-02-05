@@ -202,7 +202,7 @@ export function renderDiscordCard(params: {
               props.onDiscordChange({
                 slashName: (e.target as HTMLInputElement).value,
               })}
-            placeholder="clawd"
+            placeholder="surprisebot"
           />
         </label>
         <label class="field">

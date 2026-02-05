@@ -17,8 +17,8 @@ describe("bonjour-discovery", () => {
         if (domain === "local.") {
           return {
             stdout: [
-              "Add 2 3 local. _clawdbot-bridge._tcp. Peter\\226\\128\\153s Mac Studio Bridge",
-              "Add 2 3 local. _clawdbot-bridge._tcp. Laptop Bridge",
+              "Add 2 3 local. _surprisebot-bridge._tcp. Peter\\226\\128\\153s Mac Studio Bridge",
+              "Add 2 3 local. _surprisebot-bridge._tcp. Laptop Bridge",
               "",
             ].join("\n"),
             stderr: "",
@@ -30,7 +30,7 @@ describe("bonjour-discovery", () => {
         if (domain === WIDE_AREA_DISCOVERY_DOMAIN) {
           return {
             stdout: [
-              `Add 2 3 ${WIDE_AREA_DISCOVERY_DOMAIN} _clawdbot-bridge._tcp. Tailnet Bridge`,
+              `Add 2 3 ${WIDE_AREA_DISCOVERY_DOMAIN} _surprisebot-bridge._tcp. Tailnet Bridge`,
               "",
             ].join("\n"),
             stderr: "",
@@ -66,7 +66,7 @@ describe("bonjour-discovery", () => {
 
         return {
           stdout: [
-            `${instance}._clawdbot-bridge._tcp. can be reached at ${host}:18790`,
+            `${instance}._surprisebot-bridge._tcp. can be reached at ${host}:18790`,
             txtParts.join(" "),
             "",
           ].join("\n"),
@@ -113,7 +113,7 @@ describe("bonjour-discovery", () => {
       const domain = argv[3] ?? "";
       if (argv[0] === "dns-sd" && argv[1] === "-B" && domain === "local.") {
         return {
-          stdout: ["Add 2 3 local. _clawdbot-bridge._tcp. Studio Bridge", ""].join("\n"),
+          stdout: ["Add 2 3 local. _surprisebot-bridge._tcp. Studio Bridge", ""].join("\n"),
           stderr: "",
           code: 0,
           signal: null,
@@ -124,7 +124,7 @@ describe("bonjour-discovery", () => {
       if (argv[0] === "dns-sd" && argv[1] === "-L") {
         return {
           stdout: [
-            "Studio Bridge._clawdbot-bridge._tcp. can be reached at studio.local:18790",
+            "Studio Bridge._surprisebot-bridge._tcp. can be reached at studio.local:18790",
             "txtvers=1 displayName=Peter\\226\\128\\153s\\032Mac\\032Studio lanHost=studio.local gatewayPort=18789 bridgePort=18790 sshPort=22",
             "",
           ].join("\n"),
@@ -204,10 +204,10 @@ describe("bonjour-discovery", () => {
         if (
           server === "100.123.224.76" &&
           qtype === "PTR" &&
-          qname === "_clawdbot-bridge._tcp.clawdbot.internal"
+          qname === "_surprisebot-bridge._tcp.surprisebot.internal"
         ) {
           return {
-            stdout: `studio-bridge._clawdbot-bridge._tcp.clawdbot.internal.\n`,
+            stdout: `studio-bridge._surprisebot-bridge._tcp.surprisebot.internal.\n`,
             stderr: "",
             code: 0,
             signal: null,
@@ -218,10 +218,10 @@ describe("bonjour-discovery", () => {
         if (
           server === "100.123.224.76" &&
           qtype === "SRV" &&
-          qname === "studio-bridge._clawdbot-bridge._tcp.clawdbot.internal"
+          qname === "studio-bridge._surprisebot-bridge._tcp.surprisebot.internal"
         ) {
           return {
-            stdout: `0 0 18790 studio.clawdbot.internal.\n`,
+            stdout: `0 0 18790 studio.surprisebot.internal.\n`,
             stderr: "",
             code: 0,
             signal: null,
@@ -232,7 +232,7 @@ describe("bonjour-discovery", () => {
         if (
           server === "100.123.224.76" &&
           qtype === "TXT" &&
-          qname === "studio-bridge._clawdbot-bridge._tcp.clawdbot.internal"
+          qname === "studio-bridge._surprisebot-bridge._tcp.surprisebot.internal"
         ) {
           return {
             stdout: [
@@ -242,7 +242,7 @@ describe("bonjour-discovery", () => {
               `"gatewayPort=18789"`,
               `"sshPort=22"`,
               `"tailnetDns=peters-mac-studio-1.sheep-coho.ts.net"`,
-              `"cliPath=/opt/homebrew/bin/clawdbot"`,
+              `"cliPath=/opt/homebrew/bin/surprisebot"`,
               "",
             ].join(" "),
             stderr: "",
@@ -268,12 +268,12 @@ describe("bonjour-discovery", () => {
         domain: WIDE_AREA_DISCOVERY_DOMAIN,
         instanceName: "studio-bridge",
         displayName: "Studio",
-        host: "studio.clawdbot.internal",
+        host: "studio.surprisebot.internal",
         port: 18790,
         tailnetDns: "peters-mac-studio-1.sheep-coho.ts.net",
         gatewayPort: 18789,
         sshPort: 22,
-        cliPath: "/opt/homebrew/bin/clawdbot",
+        cliPath: "/opt/homebrew/bin/surprisebot",
       }),
     ]);
 
@@ -297,12 +297,12 @@ describe("bonjour-discovery", () => {
     await discoverGatewayBeacons({
       platform: "darwin",
       timeoutMs: 1,
-      domains: ["local", "clawdbot.internal"],
+      domains: ["local", "surprisebot.internal"],
       run: run as unknown as typeof runCommandWithTimeout,
     });
 
     expect(calls.filter((c) => c[1] === "-B").map((c) => c[3])).toEqual(
-      expect.arrayContaining(["local.", "clawdbot.internal."]),
+      expect.arrayContaining(["local.", "surprisebot.internal."]),
     );
 
     calls.length = 0;

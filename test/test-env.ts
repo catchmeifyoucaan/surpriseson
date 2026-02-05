@@ -43,8 +43,8 @@ function loadProfileEnv(): void {
 export function installTestEnv(): { cleanup: () => void; tempHome: string } {
   const live =
     process.env.LIVE === "1" ||
-    process.env.CLAWDBOT_LIVE_TEST === "1" ||
-    process.env.CLAWDBOT_LIVE_GATEWAY === "1";
+    process.env.SURPRISEBOT_LIVE_TEST === "1" ||
+    process.env.SURPRISEBOT_LIVE_GATEWAY === "1";
 
   // Live tests must use the real user environment (keys, profiles, config).
   // The default test env isolates HOME to avoid touching real state.
@@ -60,25 +60,25 @@ export function installTestEnv(): { cleanup: () => void; tempHome: string } {
     { key: "XDG_DATA_HOME", value: process.env.XDG_DATA_HOME },
     { key: "XDG_STATE_HOME", value: process.env.XDG_STATE_HOME },
     { key: "XDG_CACHE_HOME", value: process.env.XDG_CACHE_HOME },
-    { key: "CLAWDBOT_STATE_DIR", value: process.env.CLAWDBOT_STATE_DIR },
-    { key: "CLAWDBOT_CONFIG_PATH", value: process.env.CLAWDBOT_CONFIG_PATH },
-    { key: "CLAWDBOT_TEST_HOME", value: process.env.CLAWDBOT_TEST_HOME },
+    { key: "SURPRISEBOT_STATE_DIR", value: process.env.SURPRISEBOT_STATE_DIR },
+    { key: "SURPRISEBOT_CONFIG_PATH", value: process.env.SURPRISEBOT_CONFIG_PATH },
+    { key: "SURPRISEBOT_TEST_HOME", value: process.env.SURPRISEBOT_TEST_HOME },
   ];
 
-  const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "clawdbot-test-home-"));
+  const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "surprisebot-test-home-"));
 
   process.env.HOME = tempHome;
   process.env.USERPROFILE = tempHome;
-  process.env.CLAWDBOT_TEST_HOME = tempHome;
+  process.env.SURPRISEBOT_TEST_HOME = tempHome;
 
   // Ensure test runs never touch the developer's real config/state, even if they have overrides set.
-  delete process.env.CLAWDBOT_CONFIG_PATH;
+  delete process.env.SURPRISEBOT_CONFIG_PATH;
   // Prefer deriving state dir from HOME so nested tests that change HOME also isolate correctly.
-  delete process.env.CLAWDBOT_STATE_DIR;
+  delete process.env.SURPRISEBOT_STATE_DIR;
 
   // Windows: prefer the legacy default state dir so auth/profile tests match real paths.
   if (process.platform === "win32") {
-    process.env.CLAWDBOT_STATE_DIR = path.join(tempHome, ".clawdbot");
+    process.env.SURPRISEBOT_STATE_DIR = path.join(tempHome, ".surprisebot");
   }
 
   process.env.XDG_CONFIG_HOME = path.join(tempHome, ".config");

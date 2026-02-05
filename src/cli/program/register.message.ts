@@ -28,12 +28,12 @@ export function registerMessageCommands(program: Command, ctx: ProgramContext) {
       () =>
         `
 Examples:
-  clawdbot message send --to +15555550123 --message "Hi"
-  clawdbot message send --to +15555550123 --message "Hi" --media photo.jpg
-  clawdbot message poll --channel discord --to channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi
-  clawdbot message react --channel discord --to 123 --message-id 456 --emoji "✅"
+  surprisebot message send --to +15555550123 --message "Hi"
+  surprisebot message send --to +15555550123 --message "Hi" --media photo.jpg
+  surprisebot message poll --channel discord --to channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi
+  surprisebot message react --channel discord --to 123 --message-id 456 --emoji "✅"
 
-${theme.muted("Docs:")} ${formatDocsLink("/cli/message", "docs.clawd.bot/cli/message")}`,
+${theme.muted("Docs:")} ${formatDocsLink("/cli/message", "docs.surprisebot.bot/cli/message")}`,
     )
     .action(() => {
       message.help({ error: true });

@@ -1,6 +1,6 @@
 import type { IncomingMessage } from "node:http";
 import { describe, expect, test } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import {
   extractHookToken,
   normalizeAgentPayload,
@@ -16,7 +16,7 @@ describe("gateway hooks helpers", () => {
         token: "secret",
         path: "hooks///",
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     const resolved = resolveHooksConfig(base);
     expect(resolved?.basePath).toBe("/hooks");
     expect(resolved?.token).toBe("secret");
@@ -25,7 +25,7 @@ describe("gateway hooks helpers", () => {
   test("resolveHooksConfig rejects root path", () => {
     const cfg = {
       hooks: { enabled: true, token: "x", path: "/" },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     expect(() => resolveHooksConfig(cfg)).toThrow("hooks.path may not be '/'");
   });
 
@@ -33,14 +33,14 @@ describe("gateway hooks helpers", () => {
     const req = {
       headers: {
         authorization: "Bearer top",
-        "x-clawdbot-token": "header",
+        "x-surprisebot-token": "header",
       },
     } as unknown as IncomingMessage;
     const url = new URL("http://localhost/hooks/wake?token=query");
     expect(extractHookToken(req, url)).toBe("top");
 
     const req2 = {
-      headers: { "x-clawdbot-token": "header" },
+      headers: { "x-surprisebot-token": "header" },
     } as unknown as IncomingMessage;
     expect(extractHookToken(req2, url)).toBe("header");
 

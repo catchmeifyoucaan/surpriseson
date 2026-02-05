@@ -65,7 +65,7 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
       defaultRuntime.error(`${warnText("Service config issue:")} ${issue.message}${detail}`);
     }
     defaultRuntime.error(
-      warnText('Recommendation: run "clawdbot doctor" (or "clawdbot doctor --repair").'),
+      warnText('Recommendation: run "surprisebot doctor" (or "surprisebot doctor --repair").'),
     );
   }
 
@@ -98,7 +98,7 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
       );
       defaultRuntime.error(
         errorText(
-          "Fix: rerun `clawdbot daemon install --force` from the same --profile / CLAWDBOT_STATE_DIR you expect.",
+          "Fix: rerun `surprisebot daemon install --force` from the same --profile / SURPRISEBOT_STATE_DIR you expect.",
         ),
       );
     }
@@ -184,13 +184,13 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
 
   if (service.runtime?.cachedLabel) {
     const env = (service.command?.environment ?? process.env) as NodeJS.ProcessEnv;
-    const labelValue = resolveGatewayLaunchAgentLabel(env.CLAWDBOT_PROFILE);
+    const labelValue = resolveGatewayLaunchAgentLabel(env.SURPRISEBOT_PROFILE);
     defaultRuntime.error(
       errorText(
         `LaunchAgent label cached but plist missing. Clear with: launchctl bootout gui/$UID/${labelValue}`,
       ),
     );
-    defaultRuntime.error(errorText("Then reinstall: clawdbot daemon install"));
+    defaultRuntime.error(errorText("Then reinstall: surprisebot daemon install"));
     spacer();
   }
 
@@ -225,7 +225,7 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
     }
     if (process.platform === "linux") {
       const env = (service.command?.environment ?? process.env) as NodeJS.ProcessEnv;
-      const unit = resolveGatewaySystemdServiceName(env.CLAWDBOT_PROFILE);
+      const unit = resolveGatewaySystemdServiceName(env.SURPRISEBOT_PROFILE);
       defaultRuntime.error(
         errorText(`Logs: journalctl --user -u ${unit}.service -n 200 --no-pager`),
       );
@@ -244,7 +244,7 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
     for (const svc of legacyServices) {
       defaultRuntime.error(`- ${errorText(svc.label)} (${svc.detail})`);
     }
-    defaultRuntime.error(errorText("Cleanup: clawdbot doctor"));
+    defaultRuntime.error(errorText("Cleanup: surprisebot doctor"));
     spacer();
   }
 
@@ -273,6 +273,6 @@ export function printDaemonStatus(status: DaemonStatus, opts: { json: boolean })
     spacer();
   }
 
-  defaultRuntime.log(`${label("Troubles:")} run clawdbot status`);
-  defaultRuntime.log(`${label("Troubleshooting:")} https://docs.clawd.bot/troubleshooting`);
+  defaultRuntime.log(`${label("Troubles:")} run surprisebot status`);
+  defaultRuntime.log(`${label("Troubleshooting:")} https://docs.surprisebot.bot/troubleshooting`);
 }

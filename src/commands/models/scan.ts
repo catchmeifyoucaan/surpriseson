@@ -2,7 +2,7 @@ import { cancel, multiselect as clackMultiselect, isCancel } from "@clack/prompt
 import { resolveApiKeyForProvider } from "../../agents/model-auth.js";
 import { type ModelScanResult, scanOpenRouterModels } from "../../agents/model-scan.js";
 import { withProgressTotals } from "../../cli/progress.js";
-import { CONFIG_PATH_CLAWDBOT, loadConfig } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, loadConfig } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import {
   stylePromptHint,
@@ -343,7 +343,7 @@ export async function modelsScanCommand(
     return;
   }
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Fallbacks: ${selected.join(", ")}`);
   if (selectedImages.length > 0) {
     runtime.log(`Image fallbacks: ${selectedImages.join(", ")}`);

@@ -95,12 +95,12 @@ export function registerDnsCli(program: Command) {
     .description("DNS helpers for wide-area discovery (Tailscale + CoreDNS)")
     .addHelpText(
       "after",
-      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/dns", "docs.clawd.bot/cli/dns")}\n`,
+      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/dns", "docs.surprisebot.bot/cli/dns")}\n`,
     );
 
   dns
     .command("setup")
-    .description("Set up CoreDNS to serve clawdbot.internal for unicast DNS-SD (Wide-Area Bonjour)")
+    .description("Set up CoreDNS to serve surprisebot.internal for unicast DNS-SD (Wide-Area Bonjour)")
     .option(
       "--apply",
       "Install/update CoreDNS config and (re)start the service (requires sudo)",
@@ -118,7 +118,7 @@ export function registerDnsCli(program: Command) {
         `Detected tailnet IP: ${tailnetIPv4 ?? "—"}${tailnetIPv6 ? ` (v6 ${tailnetIPv6})` : ""}`,
       );
       console.log("");
-      console.log("Recommended ~/.clawdbot/clawdbot.json:");
+      console.log("Recommended ~/.surprisebot/surprisebot.json:");
       console.log(
         JSON.stringify(
           {
@@ -132,7 +132,7 @@ export function registerDnsCli(program: Command) {
       console.log("");
       console.log("Tailscale admin (DNS → Nameservers):");
       console.log(`- Add nameserver: ${tailnetIPv4 ?? "<this machine's tailnet IPv4>"}`);
-      console.log(`- Restrict to domain (Split DNS): clawdbot.internal`);
+      console.log(`- Restrict to domain (Split DNS): surprisebot.internal`);
 
       if (!opts.apply) {
         console.log("");
@@ -152,7 +152,7 @@ export function registerDnsCli(program: Command) {
       const corefilePath = path.join(etcDir, "Corefile");
       const confDir = path.join(etcDir, "conf.d");
       const importGlob = path.join(confDir, "*.server");
-      const serverPath = path.join(confDir, "clawdbot.internal.server");
+      const serverPath = path.join(confDir, "surprisebot.internal.server");
 
       run("brew", ["list", "coredns"], { allowFailure: true });
       run("brew", ["install", "coredns"], {
@@ -192,7 +192,7 @@ export function registerDnsCli(program: Command) {
         const serial = `${y}${m}${d}01`;
 
         const zoneLines = [
-          `; created by clawdbot dns setup (will be overwritten by the gateway when wide-area discovery is enabled)`,
+          `; created by surprisebot dns setup (will be overwritten by the gateway when wide-area discovery is enabled)`,
           `$ORIGIN ${WIDE_AREA_DISCOVERY_DOMAIN}`,
           `$TTL 60`,
           `@ IN SOA ns1 hostmaster ${serial} 7200 3600 1209600 60`,
@@ -214,7 +214,7 @@ export function registerDnsCli(program: Command) {
       if (cfg.discovery?.wideArea?.enabled !== true) {
         console.log("");
         console.log(
-          "Note: enable discovery.wideArea.enabled in ~/.clawdbot/clawdbot.json on the gateway and restart the gateway so it writes the DNS-SD zone.",
+          "Note: enable discovery.wideArea.enabled in ~/.surprisebot/surprisebot.json on the gateway and restart the gateway so it writes the DNS-SD zone.",
         );
       }
     });

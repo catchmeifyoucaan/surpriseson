@@ -57,12 +57,12 @@ describe("legacy config detection", () => {
     vi.resetModules();
     const { migrateLegacyConfig } = await import("./config.js");
     const res = migrateLegacyConfig({
-      routing: { groupChat: { mentionPatterns: ["@clawd"] } },
+      routing: { groupChat: { mentionPatterns: ["@surprisebot"] } },
     });
     expect(res.changes).toContain(
       "Moved routing.groupChat.mentionPatterns → messages.groupChat.mentionPatterns.",
     );
-    expect(res.config?.messages?.groupChat?.mentionPatterns).toEqual(["@clawd"]);
+    expect(res.config?.messages?.groupChat?.mentionPatterns).toEqual(["@surprisebot"]);
     expect(res.config?.routing?.groupChat?.mentionPatterns).toBeUndefined();
   });
   it("migrates routing agentToAgent/queue/transcribeAudio to tools/messages/audio", async () => {
@@ -147,7 +147,7 @@ describe("legacy config detection", () => {
         list: [
           {
             id: "work",
-            workspace: "~/clawd-work",
+            workspace: "~/surprisebot-work",
             tools: {
               elevated: {
                 enabled: false,

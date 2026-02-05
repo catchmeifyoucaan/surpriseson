@@ -4,7 +4,7 @@ import {
   SYNTHETIC_DEFAULT_MODEL_REF,
   SYNTHETIC_MODEL_CATALOG,
 } from "../agents/synthetic-models.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { OPENROUTER_DEFAULT_MODEL_REF, ZAI_DEFAULT_MODEL_REF } from "./onboard-auth.credentials.js";
 import {
   buildMoonshotModelDefinition,
@@ -13,7 +13,7 @@ import {
   MOONSHOT_DEFAULT_MODEL_REF,
 } from "./onboard-auth.models.js";
 
-export function applyZaiConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applyZaiConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const models = { ...cfg.agents?.defaults?.models };
   models[ZAI_DEFAULT_MODEL_REF] = {
     ...models[ZAI_DEFAULT_MODEL_REF],
@@ -41,7 +41,7 @@ export function applyZaiConfig(cfg: ClawdbotConfig): ClawdbotConfig {
   };
 }
 
-export function applyOpenrouterProviderConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applyOpenrouterProviderConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const models = { ...cfg.agents?.defaults?.models };
   models[OPENROUTER_DEFAULT_MODEL_REF] = {
     ...models[OPENROUTER_DEFAULT_MODEL_REF],
@@ -60,7 +60,7 @@ export function applyOpenrouterProviderConfig(cfg: ClawdbotConfig): ClawdbotConf
   };
 }
 
-export function applyOpenrouterConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applyOpenrouterConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const next = applyOpenrouterProviderConfig(cfg);
   const existingModel = next.agents?.defaults?.model;
   return {
@@ -82,7 +82,7 @@ export function applyOpenrouterConfig(cfg: ClawdbotConfig): ClawdbotConfig {
   };
 }
 
-export function applyMoonshotProviderConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applyMoonshotProviderConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const models = { ...cfg.agents?.defaults?.models };
   models[MOONSHOT_DEFAULT_MODEL_REF] = {
     ...models[MOONSHOT_DEFAULT_MODEL_REF],
@@ -125,7 +125,7 @@ export function applyMoonshotProviderConfig(cfg: ClawdbotConfig): ClawdbotConfig
   };
 }
 
-export function applyMoonshotConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applyMoonshotConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const next = applyMoonshotProviderConfig(cfg);
   const existingModel = next.agents?.defaults?.model;
   return {
@@ -147,7 +147,7 @@ export function applyMoonshotConfig(cfg: ClawdbotConfig): ClawdbotConfig {
   };
 }
 
-export function applySyntheticProviderConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applySyntheticProviderConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const models = { ...cfg.agents?.defaults?.models };
   models[SYNTHETIC_DEFAULT_MODEL_REF] = {
     ...models[SYNTHETIC_DEFAULT_MODEL_REF],
@@ -194,7 +194,7 @@ export function applySyntheticProviderConfig(cfg: ClawdbotConfig): ClawdbotConfi
   };
 }
 
-export function applySyntheticConfig(cfg: ClawdbotConfig): ClawdbotConfig {
+export function applySyntheticConfig(cfg: SurprisebotConfig): SurprisebotConfig {
   const next = applySyntheticProviderConfig(cfg);
   const existingModel = next.agents?.defaults?.model;
   return {
@@ -217,7 +217,7 @@ export function applySyntheticConfig(cfg: ClawdbotConfig): ClawdbotConfig {
 }
 
 export function applyAuthProfileConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   params: {
     profileId: string;
     provider: string;
@@ -225,7 +225,7 @@ export function applyAuthProfileConfig(
     email?: string;
     preferProfileFirst?: boolean;
   },
-): ClawdbotConfig {
+): SurprisebotConfig {
   const profiles = {
     ...cfg.auth?.profiles,
     [params.profileId]: {

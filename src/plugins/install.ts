@@ -13,7 +13,7 @@ type PluginInstallLogger = {
 type PackageManifest = {
   name?: string;
   dependencies?: Record<string, string>;
-  clawdbot?: { extensions?: string[] };
+  surprisebot?: { extensions?: string[] };
 };
 
 export type InstallPluginResult =
@@ -70,14 +70,14 @@ async function resolvePackedPackageDir(extractDir: string): Promise<string> {
   return path.join(extractDir, onlyDir);
 }
 
-async function ensureClawdbotExtensions(manifest: PackageManifest) {
-  const extensions = manifest.clawdbot?.extensions;
+async function ensureSurprisebotExtensions(manifest: PackageManifest) {
+  const extensions = manifest.surprisebot?.extensions;
   if (!Array.isArray(extensions)) {
-    throw new Error("package.json missing clawdbot.extensions");
+    throw new Error("package.json missing surprisebot.extensions");
   }
   const list = extensions.map((e) => (typeof e === "string" ? e.trim() : "")).filter(Boolean);
   if (list.length === 0) {
-    throw new Error("package.json clawdbot.extensions is empty");
+    throw new Error("package.json surprisebot.extensions is empty");
   }
   return list;
 }
@@ -118,7 +118,7 @@ export async function installPluginFromArchive(params: {
     : path.join(CONFIG_DIR, "extensions");
   await fs.mkdir(extensionsDir, { recursive: true });
 
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-plugin-"));
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-plugin-"));
   const extractDir = path.join(tmpDir, "extract");
   await fs.mkdir(extractDir, { recursive: true });
 
@@ -150,7 +150,7 @@ export async function installPluginFromArchive(params: {
 
   let extensions: string[];
   try {
-    extensions = await ensureClawdbotExtensions(manifest);
+    extensions = await ensureSurprisebotExtensions(manifest);
   } catch (err) {
     return { ok: false, error: String(err) };
   }
@@ -212,7 +212,7 @@ export async function installPluginFromNpmSpec(params: {
   const spec = params.spec.trim();
   if (!spec) return { ok: false, error: "missing npm spec" };
 
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-npm-pack-"));
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-npm-pack-"));
   logger.info?.(`Downloading ${spec}…`);
   const res = await runCommandWithTimeout(["npm", "pack", spec], {
     timeoutMs: Math.max(timeoutMs, 300_000),

@@ -5,7 +5,7 @@ enum VoiceWakePreferences {
     static let triggerWordsKey = "voiceWake.triggerWords"
 
     // Keep defaults aligned with the mac app.
-    static let defaultTriggerWords: [String] = ["clawd", "claude"]
+    static let defaultTriggerWords: [String] = ["surprisebot", "claude"]
 
     static func decodeGatewayTriggers(from payloadJSON: String) -> [String]? {
         guard let data = payloadJSON.data(using: .utf8) else { return nil }

@@ -168,7 +168,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates legacy config in snapshot (no legacyIssues)", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -202,7 +202,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates claude-cli auth profile mode to oauth", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -242,7 +242,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates legacy provider sections on load and writes back", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -274,7 +274,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates routing.allowFrom on load and writes back", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -303,7 +303,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates bindings[].match.provider on load and writes back", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -340,7 +340,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates session.sendPolicy.rules[].match.provider on load and writes back", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,
@@ -387,7 +387,7 @@ describe("legacy config detection", () => {
   });
   it("auto-migrates messages.queue.byProvider on load and writes back", async () => {
     await withTempHome(async (home) => {
-      const configPath = path.join(home, ".clawdbot", "clawdbot.json");
+      const configPath = path.join(home, ".surprisebot", "surprisebot.json");
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.writeFile(
         configPath,

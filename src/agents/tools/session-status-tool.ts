@@ -19,7 +19,7 @@ import {
 import { normalizeGroupActivation } from "../../auto-reply/group-activation.js";
 import { getFollowupQueueDepth, resolveQueueSettings } from "../../auto-reply/reply/queue.js";
 import { buildStatusMessage } from "../../auto-reply/status.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { loadConfig } from "../../config/config.js";
 import {
   loadSessionStore,
@@ -57,7 +57,7 @@ function formatApiKeySnippet(apiKey: string): string {
 
 function resolveModelAuthLabel(params: {
   provider?: string;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sessionEntry?: SessionEntry;
   agentDir?: string;
 }): string | undefined {
@@ -149,7 +149,7 @@ function resolveSessionEntry(params: {
 }
 
 async function resolveModelOverride(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   raw: string;
   sessionEntry?: SessionEntry;
 }): Promise<
@@ -209,7 +209,7 @@ async function resolveModelOverride(params: {
 
 export function createSessionStatusTool(opts?: {
   agentSessionKey?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
 }): AnyAgentTool {
   return {
     label: "Session Status",

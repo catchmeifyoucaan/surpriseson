@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 
 // We need to test the internal defaultSandboxConfig function, but it's not exported.
 // Instead, we test the behavior through resolveSandboxContext which uses it.
@@ -54,19 +54,19 @@ describe("Agent-specific sandbox config", () => {
   it("should use agent-specific workspaceRoot", async () => {
     const { resolveSandboxContext } = await import("./sandbox.js");
 
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
         defaults: {
           sandbox: {
             mode: "all",
             scope: "agent",
-            workspaceRoot: "~/.clawdbot/sandboxes", // Global default
+            workspaceRoot: "~/.surprisebot/sandboxes", // Global default
           },
         },
         list: [
           {
             id: "isolated",
-            workspace: "~/clawd-isolated",
+            workspace: "~/surprisebot-isolated",
             sandbox: {
               mode: "all",
               scope: "agent",
@@ -89,7 +89,7 @@ describe("Agent-specific sandbox config", () => {
   it("should prefer agent config over global for multiple agents", async () => {
     const { resolveSandboxContext } = await import("./sandbox.js");
 
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
         defaults: {
           sandbox: {
@@ -100,14 +100,14 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "main",
-            workspace: "~/clawd",
+            workspace: "~/surprisebot",
             sandbox: {
               mode: "off", // main: no sandbox
             },
           },
           {
             id: "family",
-            workspace: "~/clawd-family",
+            workspace: "~/surprisebot-family",
             sandbox: {
               mode: "all", // family: always sandbox
               scope: "agent",
@@ -137,7 +137,7 @@ describe("Agent-specific sandbox config", () => {
   it("should prefer agent-specific sandbox tool policy", async () => {
     const { resolveSandboxContext } = await import("./sandbox.js");
 
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
         defaults: {
           sandbox: {
@@ -148,7 +148,7 @@ describe("Agent-specific sandbox config", () => {
         list: [
           {
             id: "restricted",
-            workspace: "~/clawd-restricted",
+            workspace: "~/surprisebot-restricted",
             sandbox: {
               mode: "all",
               scope: "agent",

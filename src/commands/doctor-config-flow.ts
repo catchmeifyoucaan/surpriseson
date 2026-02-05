@@ -1,6 +1,6 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   migrateLegacyConfig,
   readConfigFileSnapshot,
 } from "../config/config.js";
@@ -12,7 +12,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-function noteOpencodeProviderOverrides(cfg: ClawdbotConfig) {
+function noteOpencodeProviderOverrides(cfg: SurprisebotConfig) {
   const providers = cfg.models?.providers;
   if (!providers) return;
 
@@ -46,7 +46,7 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
   confirm: (p: { message: string; initialValue: boolean }) => Promise<boolean>;
 }) {
   const snapshot = await readConfigFileSnapshot();
-  let cfg: ClawdbotConfig = snapshot.valid ? snapshot.config : {};
+  let cfg: SurprisebotConfig = snapshot.valid ? snapshot.config : {};
   if (snapshot.exists && !snapshot.valid && snapshot.legacyIssues.length === 0) {
     note("Config invalid; doctor will run with defaults.", "Config");
   }
@@ -79,5 +79,5 @@ export async function loadAndMaybeMigrateDoctorConfig(params: {
 
   noteOpencodeProviderOverrides(cfg);
 
-  return { cfg, path: snapshot.path ?? CONFIG_PATH_CLAWDBOT };
+  return { cfg, path: snapshot.path ?? CONFIG_PATH_SURPRISEBOT };
 }

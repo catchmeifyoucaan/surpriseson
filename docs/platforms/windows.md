@@ -1,12 +1,12 @@
 ---
 summary: "Windows (WSL2) support + companion app status"
 read_when:
-  - Installing Clawdbot on Windows
+  - Installing Surprisebot on Windows
   - Looking for Windows companion app status
 ---
 # Windows (WSL2)
 
-Clawdbot on Windows is recommended **via WSL2** (Ubuntu recommended). The
+Surprisebot on Windows is recommended **via WSL2** (Ubuntu recommended). The
 CLI + Gateway run inside Linux, which keeps the runtime consistent. Native
 Windows installs are untested and more problematic.
 
@@ -26,19 +26,19 @@ Native Windows companion apps are planned.
 Inside WSL2:
 
 ```
-clawdbot onboard --install-daemon
+surprisebot onboard --install-daemon
 ```
 
 Or:
 
 ```
-clawdbot daemon install
+surprisebot daemon install
 ```
 
 Or:
 
 ```
-clawdbot configure
+surprisebot configure
 ```
 
 Select **Gateway daemon** when prompted.
@@ -46,7 +46,7 @@ Select **Gateway daemon** when prompted.
 Repair/migrate:
 
 ```
-clawdbot doctor
+surprisebot doctor
 ```
 
 ## Step-by-step WSL2 install
@@ -87,17 +87,17 @@ Re-open Ubuntu, then verify:
 systemctl --user status
 ```
 
-### 3) Install Clawdbot (inside WSL)
+### 3) Install Surprisebot (inside WSL)
 
 Follow the Linux Getting Started flow inside WSL:
 
 ```bash
-git clone https://github.com/clawdbot/clawdbot.git
-cd clawdbot
+git clone https://github.com/surprisebot/surprisebot.git
+cd surprisebot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
-pnpm clawdbot onboard
+pnpm surprisebot onboard
 ```
 
 Full guide: [Getting Started](/start/getting-started)

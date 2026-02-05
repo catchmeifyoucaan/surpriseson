@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import process from "node:process";
 
-declare const __CLAWDBOT_VERSION__: string | undefined;
+declare const __SURPRISEBOT_VERSION__: string | undefined;
 
 const BUNDLED_VERSION =
-  (typeof __CLAWDBOT_VERSION__ === "string" && __CLAWDBOT_VERSION__) ||
-  process.env.CLAWDBOT_BUNDLED_VERSION ||
+  (typeof __SURPRISEBOT_VERSION__ === "string" && __SURPRISEBOT_VERSION__) ||
+  process.env.SURPRISEBOT_BUNDLED_VERSION ||
   "0.0.0";
 
 function hasFlag(args: string[], flag: string): boolean {
@@ -47,8 +47,8 @@ async function main() {
   const { loadDotEnv } = await import("../infra/dotenv.js");
   loadDotEnv({ quiet: true });
 
-  const { ensureClawdbotCliOnPath } = await import("../infra/path-env.js");
-  ensureClawdbotCliOnPath();
+  const { ensureSurprisebotCliOnPath } = await import("../infra/path-env.js");
+  ensureSurprisebotCliOnPath();
 
   const { enableConsoleCapture } = await import("../logging.js");
   enableConsoleCapture();
@@ -63,7 +63,7 @@ async function main() {
   installUnhandledRejectionHandler();
 
   process.on("uncaughtException", (error) => {
-    console.error("[clawdbot] Uncaught exception:", error.stack ?? error.message);
+    console.error("[surprisebot] Uncaught exception:", error.stack ?? error.message);
     process.exit(1);
   });
 

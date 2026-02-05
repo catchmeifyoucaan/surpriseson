@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot plugins` (list, install, enable/disable, doctor)"
+summary: "CLI reference for `surprisebot plugins` (list, install, enable/disable, doctor)"
 read_when:
   - You want to install or manage in-process Gateway plugins
   - You want to debug plugin load failures
 ---
 
-# `clawdbot plugins`
+# `surprisebot plugins`
 
 Manage Gateway plugins/extensions (loaded in-process).
 
@@ -16,17 +16,17 @@ Related:
 ## Commands
 
 ```bash
-clawdbot plugins list
-clawdbot plugins info <id>
-clawdbot plugins enable <id>
-clawdbot plugins disable <id>
-clawdbot plugins doctor
+surprisebot plugins list
+surprisebot plugins info <id>
+surprisebot plugins enable <id>
+surprisebot plugins disable <id>
+surprisebot plugins doctor
 ```
 
 ### Install
 
 ```bash
-clawdbot plugins install <npm-spec>
+surprisebot plugins install <npm-spec>
 ```
 
 Security note: treat plugin installs like running code. Prefer pinned versions.

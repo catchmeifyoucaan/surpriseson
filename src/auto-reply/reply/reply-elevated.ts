@@ -2,7 +2,7 @@ import { resolveAgentConfig } from "../../agents/agent-scope.js";
 import { getChannelDock } from "../../channels/dock.js";
 import { normalizeChannelId } from "../../channels/plugins/index.js";
 import { CHAT_CHANNEL_ORDER } from "../../channels/registry.js";
-import type { AgentElevatedAllowFromConfig, ClawdbotConfig } from "../../config/config.js";
+import type { AgentElevatedAllowFromConfig, SurprisebotConfig } from "../../config/config.js";
 import { INTERNAL_MESSAGE_CHANNEL } from "../../utils/message-channel.js";
 import type { MsgContext } from "../templating.js";
 
@@ -99,7 +99,7 @@ function isApprovedElevatedSender(params: {
 }
 
 export function resolveElevatedPermissions(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   ctx: MsgContext;
   provider: string;
@@ -187,7 +187,7 @@ export function formatElevatedUnavailableMessage(params: {
   lines.push("- agents.list[].tools.elevated.enabled");
   lines.push("- agents.list[].tools.elevated.allowFrom.<provider>");
   if (params.sessionKey) {
-    lines.push(`See: clawdbot sandbox explain --session ${params.sessionKey}`);
+    lines.push(`See: surprisebot sandbox explain --session ${params.sessionKey}`);
   }
   return lines.join("\n");
 }

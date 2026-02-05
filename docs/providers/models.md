@@ -1,17 +1,17 @@
 ---
-summary: "Model providers (LLMs) supported by Clawdbot"
+summary: "Model providers (LLMs) supported by Surprisebot"
 read_when:
   - You want to choose a model provider
   - You want quick setup examples for LLM auth + model selection
 ---
 # Model Providers
 
-Clawdbot can use many LLM providers. Pick one, authenticate, then set the default
+Surprisebot can use many LLM providers. Pick one, authenticate, then set the default
 model as `provider/model`.
 
 ## Quick start (two steps)
 
-1) Authenticate with the provider (usually via `clawdbot onboard`).
+1) Authenticate with the provider (usually via `surprisebot onboard`).
 2) Set the default model:
 
 ```json5

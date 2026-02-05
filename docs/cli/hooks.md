@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot hooks` (Gmail Pub/Sub + webhook helpers)"
+summary: "CLI reference for `surprisebot hooks` (Gmail Pub/Sub + webhook helpers)"
 read_when:
-  - You want to wire Gmail Pub/Sub events into Clawdbot hooks
+  - You want to wire Gmail Pub/Sub events into Surprisebot hooks
   - You want to run the gog watch service and renew loop
 ---
 
-# `clawdbot hooks`
+# `surprisebot hooks`
 
 Webhook helpers and hook-based integrations.
 
@@ -16,7 +16,7 @@ Related:
 ## Gmail
 
 ```bash
-clawdbot hooks gmail setup --account you@example.com
-clawdbot hooks gmail run
+surprisebot hooks gmail setup --account you@example.com
+surprisebot hooks gmail run
 ```
 

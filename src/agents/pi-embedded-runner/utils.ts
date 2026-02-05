@@ -1,15 +1,15 @@
 import type { ThinkingLevel } from "@mariozechner/pi-agent-core";
 import type { ReasoningLevel, ThinkLevel } from "../../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { ExecToolDefaults } from "../bash-tools.js";
 
 export function mapThinkingLevel(level?: ThinkLevel): ThinkingLevel {
-  // pi-agent-core supports "xhigh"; Clawdbot enables it for specific models.
+  // pi-agent-core supports "xhigh"; Surprisebot enables it for specific models.
   if (!level) return "off";
   return level;
 }
 
-export function resolveExecToolDefaults(config?: ClawdbotConfig): ExecToolDefaults | undefined {
+export function resolveExecToolDefaults(config?: SurprisebotConfig): ExecToolDefaults | undefined {
   const tools = config?.tools;
   if (!tools) return undefined;
   if (!tools.exec) return tools.bash;

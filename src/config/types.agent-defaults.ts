@@ -2,6 +2,7 @@ import type {
   BlockStreamingChunkConfig,
   BlockStreamingCoalesceConfig,
   HumanDelayConfig,
+  IdentityConfig,
   TypingMode,
 } from "./types.base.js";
 import type {
@@ -9,7 +10,7 @@ import type {
   SandboxDockerSettings,
   SandboxPruneSettings,
 } from "./types.sandbox.js";
-import type { MemorySearchConfig } from "./types.tools.js";
+import type { MemoryGraphConfig, MemorySearchConfig } from "./types.tools.js";
 
 export type AgentModelEntryConfig = {
   alias?: string;
@@ -20,6 +21,32 @@ export type AgentModelEntryConfig = {
 export type AgentModelListConfig = {
   primary?: string;
   fallbacks?: string[];
+};
+
+export type OrchestratorRoutingRule = {
+  /** Optional rule identifier for audit logs. */
+  id?: string;
+  /** Restrict to incident sources. */
+  sources?: string[];
+  /** Restrict to incident severities. */
+  severities?: Array<"low" | "medium" | "high">;
+  /** Match substring(s) in incident summary (case-insensitive). */
+  summaryContains?: string[];
+  /** Optional job type label for budget enforcement. */
+  jobType?: string;
+  /** Target agent id for routed tasks. */
+  agentId: string;
+  /** Task template with placeholders: {{summary}}, {{source}}, {{severity}}, {{evidence}}, {{meta}}, {{id}}, {{ts}}. */
+  taskTemplate: string;
+};
+
+export type OrchestratorConfig = {
+  /** Enable orchestrator queue + dispatcher. */
+  enabled?: boolean;
+  /** Routing rules applied in order. First match wins. */
+  routing?: OrchestratorRoutingRule[];
+  /** Default agent id when no rule matches. */
+  defaultAgentId?: string;
 };
 
 export type AgentContextPruningConfig = {
@@ -103,9 +130,11 @@ export type AgentDefaultsConfig = {
   bootstrapMaxChars?: number;
   /** Optional IANA timezone for the user (used in system prompt; defaults to host timezone). */
   userTimezone?: string;
+  /** Default identity applied when no per-agent identity is set. */
+  identity?: IdentityConfig;
   /** Optional display-only context window override (used for % in status UIs). */
   contextTokens?: number;
-  /** Optional CLI backends for text-only fallback (claude-cli, etc.). */
+  /** Optional CLI backends for local tool-capable runs (claude-cli, etc.). */
   cliBackends?: Record<string, CliBackendConfig>;
   /** Opt-in: prune old tool results from the LLM context to reduce token usage. */
   contextPruning?: AgentContextPruningConfig;
@@ -113,6 +142,17 @@ export type AgentDefaultsConfig = {
   compaction?: AgentCompactionConfig;
   /** Vector memory search configuration (per-agent overrides supported). */
   memorySearch?: MemorySearchConfig;
+  /** Memory graph configuration (per-agent overrides supported). */
+  memoryGraph?: MemoryGraphConfig;
+  /** Periodic memory capture configuration (per-agent overrides supported). */
+  memoryCapture?: AgentMemoryCaptureConfig;
+  /** Shared memory file across agents (read-mostly). */
+  sharedMemory?: {
+    enabled?: boolean;
+    path?: string;
+    pendingPath?: string;
+    allowWriteAgents?: string[];
+  };
   /** Default thinking level when no /think directive is present. */
   thinkingDefault?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
   /** Default verbose level when no /verbose directive is present. */
@@ -142,6 +182,29 @@ export type AgentDefaultsConfig = {
   typingIntervalSeconds?: number;
   /** Typing indicator start mode (never|instant|thinking|message). */
   typingMode?: TypingMode;
+  /** Recon status refresher (writes status.json + emits finished incident). */
+  reconStatus?: {
+    /** Interval minutes for status refresh (default: 5). */
+    intervalMinutes?: number;
+  };
+  /** Memory CLI watchdog (kills stale `surprisebot memory` processes). */
+  memoryCliWatchdog?: {
+    /** Enable the watchdog (default: true). */
+    enabled?: boolean;
+    /** Sweep interval in minutes (default: 5). */
+    intervalMinutes?: number;
+    /** Max age for `memory status` before kill (seconds; 0 disables). */
+    maxStatusAgeSeconds?: number;
+    /** Max age for `memory search` before kill (seconds; 0 disables). */
+    maxSearchAgeSeconds?: number;
+    /** Max age for `memory index` before kill (seconds; 0 disables). */
+    maxIndexAgeSeconds?: number;
+    /** Max age for other memory subcommands before kill (seconds; 0 disables). */
+    maxOtherAgeSeconds?: number;
+  };
+  /** Orchestrator queue + dispatcher configuration. */
+  orchestrator?: OrchestratorConfig;
+
   /** Periodic background heartbeat runs. */
   heartbeat?: {
     /** Heartbeat interval (duration string, default unit: minutes; default: 30m). */
@@ -235,5 +298,18 @@ export type AgentCompactionMemoryFlushConfig = {
   /** User prompt used for the memory flush turn (NO_REPLY is enforced if missing). */
   prompt?: string;
   /** System prompt appended for the memory flush turn. */
+  systemPrompt?: string;
+};
+
+export type AgentMemoryCaptureConfig = {
+  /** Enable periodic memory capture (default: false). */
+  enabled?: boolean;
+  /** Minimum minutes between capture runs. */
+  minIntervalMinutes?: number;
+  /** Minimum new tokens since last capture. */
+  minNewTokens?: number;
+  /** User prompt used for the capture turn (NO_REPLY is enforced if missing). */
+  prompt?: string;
+  /** System prompt appended for the capture turn. */
   systemPrompt?: string;
 };

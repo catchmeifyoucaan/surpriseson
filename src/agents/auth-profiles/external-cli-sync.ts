@@ -54,7 +54,7 @@ function isExternalProfileFresh(cred: AuthProfileCredential | undefined, now: nu
 
 /**
  * Sync OAuth credentials from external CLI tools (Claude Code CLI, Codex CLI) into the store.
- * This allows clawdbot to use the same credentials as these tools without requiring
+ * This allows surprisebot to use the same credentials as these tools without requiring
  * separate authentication, and keeps credentials in sync when CLI tools refresh tokens.
  *
  * Returns true if any credentials were updated.

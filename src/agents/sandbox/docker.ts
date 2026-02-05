@@ -102,9 +102,9 @@ export function buildSandboxCreateArgs(params: {
 }) {
   const createdAtMs = params.createdAtMs ?? Date.now();
   const args = ["create", "--name", params.name];
-  args.push("--label", "clawdbot.sandbox=1");
-  args.push("--label", `clawdbot.sessionKey=${params.scopeKey}`);
-  args.push("--label", `clawdbot.createdAtMs=${createdAtMs}`);
+  args.push("--label", "surprisebot.sandbox=1");
+  args.push("--label", `surprisebot.sessionKey=${params.scopeKey}`);
+  args.push("--label", `surprisebot.createdAtMs=${createdAtMs}`);
   for (const [key, value] of Object.entries(params.labels ?? {})) {
     if (key && value) args.push("--label", `${key}=${value}`);
   }

@@ -1,5 +1,7 @@
+import fs from "node:fs";
 import { resolveDefaultAgentWorkspaceDir } from "../agents/workspace.js";
 import { resolveConfigPath, resolveStateDir } from "../config/paths.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
 import { runCommandWithTimeout } from "../process/exec.js";
@@ -8,12 +10,26 @@ import { createClackPrompter } from "../wizard/clack-prompter.js";
 import type { OnboardOptions } from "./onboard.js";
 import { onboardCommand } from "./onboard.js";
 import { setupCommand } from "./setup.js";
+import { loadProfileTemplateConfig } from "./profile-templates.js";
 import { checkSystemHealth, formatSystemHealthSummary } from "./system-health.js";
+
+export type InitSummary = {
+  ok: boolean;
+  workspace: string;
+  stateDir: string;
+  configPath: string;
+  lowResources: boolean;
+  skippedOnboard: boolean;
+  installs: { bun: boolean; qmd: boolean; docker: boolean };
+  profileTemplate?: string;
+  health?: unknown;
+};
 
 export type InitOptions = {
   home?: string;
   stateDir?: string;
   workspace?: string;
+  profileTemplate?: string;
   skipHealth?: boolean;
   allowLowResources?: boolean;
   minRamGb?: number;
@@ -111,22 +127,26 @@ export async function initCommand(opts: InitOptions, runtime: RuntimeEnv = defau
 
   const applyMinimal = Boolean(opts.minimal);
   const applyFull = Boolean(opts.full);
-  const installDaemon = opts.installDaemon ?? (applyFull ? true : undefined);
-  const installBun = opts.installBun ?? (applyFull ? true : undefined);
-  const installQmd = opts.installQmd ?? (applyFull ? true : undefined);
-  const installDocker = opts.installDocker ?? (applyFull ? true : undefined);
+  let installDaemon = opts.installDaemon ?? (applyFull ? true : undefined);
+  let installBun = opts.installBun ?? (applyFull ? true : undefined);
+  let installQmd = opts.installQmd ?? (applyFull ? true : undefined);
+  let installDocker = opts.installDocker ?? (applyFull ? true : undefined);
   const skipSkills = opts.skipSkills ?? (applyMinimal ? true : undefined);
   const skipUi = opts.skipUi ?? (applyMinimal ? true : undefined);
+  let lowResources = false;
+  let healthDetails: unknown = undefined;
   if (!opts.skipHealth) {
     const check = await checkSystemHealth({
       minRamGb: opts.minRamGb,
       minDiskGb: opts.minDiskGb,
       paths: [stateDir, workspace],
     });
+    healthDetails = check;
     for (const line of formatSystemHealthSummary(check)) runtime.log(line);
     if (check.warnings.length > 0) {
       runtime.log(`Warnings: ${check.warnings.join(" ")}`);
     }
+    lowResources = !check.ok || check.warnings.length > 0;
     if (!check.ok && !opts.allowLowResources) {
       runtime.error(`Health guard failed: ${check.errors.join(" ")}`);
       runtime.error("Re-run with --allow-low-resources or --skip-health to override.");
@@ -135,7 +155,38 @@ export async function initCommand(opts: InitOptions, runtime: RuntimeEnv = defau
     }
   }
 
-  await setupCommand({ workspace }, runtime);
+  if (lowResources && !opts.allowLowResources) {
+    runtime.log("Low-resource mode: heavy components disabled by default.");
+    if (installDocker === undefined) installDocker = false;
+    if (installQmd === undefined) installQmd = false;
+    if (installBun === undefined && installQmd === false) installBun = false;
+  }
+
+  const configPathBefore = resolveConfigPath();
+  const configExists = fs.existsSync(configPathBefore);
+  const lowResourceOverrides = lowResources && !configExists ? {
+    artemis: {
+      enabled: false,
+      stanford: { enabled: false },
+      cert: { enabled: false },
+    },
+  } : undefined;
+
+  let profileTemplateName: string | undefined = opts.profileTemplate?.trim() || undefined;
+  let profileTemplateConfig: SurprisebotConfig | undefined = undefined;
+  if (profileTemplateName) {
+    const loaded = await loadProfileTemplateConfig(profileTemplateName);
+    if (!loaded) {
+      runtime.error(`Unknown profile template: ${profileTemplateName}`);
+      runtime.error("Expected profiles/<name>/agents.json5 in the Surprisebot package.");
+      runtime.exit(1);
+      return;
+    }
+    profileTemplateConfig = loaded.config;
+  }
+
+  await setupCommand({ workspace, overrides: lowResourceOverrides, profileTemplate: profileTemplateConfig }, runtime);
+
 
   if (!opts.skipOnboard) {
     await onboardCommand(
@@ -229,9 +280,26 @@ export async function initCommand(opts: InitOptions, runtime: RuntimeEnv = defau
   runtime.log(`Init complete. Workspace: ${workspace}`);
   runtime.log(`State dir: ${stateDir}`);
   runtime.log(`Config path: ${configPath}`);
+  const finalConfigPath = resolveConfigPath();
+  const finalBun = await hasCommand("bun");
+  const finalQmd = await hasCommand("qmd");
+  const finalDocker = await hasCommand("docker");
+  const summary: InitSummary = {
+    ok: true,
+    workspace,
+    stateDir,
+    configPath: finalConfigPath,
+    lowResources,
+    skippedOnboard: Boolean(opts.skipOnboard),
+    installs: { bun: finalBun, qmd: finalQmd, docker: finalDocker },
+    profileTemplate: profileTemplateName,
+    health: healthDetails,
+  };
+
   if (opts.home || opts.stateDir) {
     runtime.log(
       "Tip: export SURPRISEBOT_HOME or SURPRISEBOT_STATE_DIR for future runs to keep using this location.",
     );
   }
+  return summary;
 }

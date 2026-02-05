@@ -1,16 +1,16 @@
 ---
-summary: "CLI reference for `clawdbot sessions` (list stored sessions + usage)"
+summary: "CLI reference for `surprisebot sessions` (list stored sessions + usage)"
 read_when:
   - You want to list stored sessions and see recent activity
 ---
 
-# `clawdbot sessions`
+# `surprisebot sessions`
 
 List stored conversation sessions.
 
 ```bash
-clawdbot sessions
-clawdbot sessions --active 120
-clawdbot sessions --json
+surprisebot sessions
+surprisebot sessions --active 120
+surprisebot sessions --json
 ```
 

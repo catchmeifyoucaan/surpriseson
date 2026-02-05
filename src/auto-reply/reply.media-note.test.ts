@@ -33,9 +33,9 @@ async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
     },
     {
       env: {
-        CLAWDBOT_BUNDLED_SKILLS_DIR: (home) => path.join(home, "bundled-skills"),
+        SURPRISEBOT_BUNDLED_SKILLS_DIR: (home) => path.join(home, "bundled-skills"),
       },
-      prefix: "clawdbot-media-note-",
+      prefix: "surprisebot-media-note-",
     },
   );
 }
@@ -45,7 +45,7 @@ function makeCfg(home: string) {
     agents: {
       defaults: {
         model: "anthropic/claude-opus-4-5",
-        workspace: path.join(home, "clawd"),
+        workspace: path.join(home, "surprisebot"),
       },
     },
     channels: { whatsapp: { allowFrom: ["*"] } },

@@ -23,7 +23,7 @@ WORKDIR /home/app
 ENV NPM_CONFIG_FUND=false
 ENV NPM_CONFIG_AUDIT=false
 
-COPY run.sh /usr/local/bin/clawdbot-install-nonroot
-RUN sudo chmod +x /usr/local/bin/clawdbot-install-nonroot
+COPY run.sh /usr/local/bin/surprisebot-install-nonroot
+RUN sudo chmod +x /usr/local/bin/surprisebot-install-nonroot
 
-ENTRYPOINT ["/usr/local/bin/clawdbot-install-nonroot"]
+ENTRYPOINT ["/usr/local/bin/surprisebot-install-nonroot"]

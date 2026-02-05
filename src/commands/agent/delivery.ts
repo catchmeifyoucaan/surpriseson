@@ -3,7 +3,7 @@ import type { ChannelOutboundTargetMode } from "../../channels/plugins/types.js"
 import { DEFAULT_CHAT_CHANNEL } from "../../channels/registry.js";
 import type { CliDeps } from "../../cli/deps.js";
 import { createOutboundSendDeps } from "../../cli/deps.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import { deliverOutboundPayloads } from "../../infra/outbound/deliver.js";
 import { buildOutboundResultEnvelope } from "../../infra/outbound/envelope.js";
@@ -26,7 +26,7 @@ type RunResult = Awaited<
 >;
 
 export async function deliverAgentCommandResult(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   deps: CliDeps;
   runtime: RuntimeEnv;
   opts: AgentCommandOpts;

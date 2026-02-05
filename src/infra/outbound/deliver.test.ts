@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { markdownToSignalTextChunks } from "../../signal/format.js";
 import { deliverOutboundPayloads, normalizeOutboundPayloads } from "./deliver.js";
 
 describe("deliverOutboundPayloads", () => {
   it("chunks telegram markdown and passes through accountId", async () => {
     const sendTelegram = vi.fn().mockResolvedValue({ messageId: "m1", chatId: "c1" });
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { telegram: { botToken: "tok-1", textChunkLimit: 2 } },
     };
     const prevTelegramToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -40,7 +40,7 @@ describe("deliverOutboundPayloads", () => {
 
   it("passes explicit accountId to sendTelegram", async () => {
     const sendTelegram = vi.fn().mockResolvedValue({ messageId: "m1", chatId: "c1" });
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { telegram: { botToken: "tok-1", textChunkLimit: 2 } },
     };
 
@@ -62,7 +62,7 @@ describe("deliverOutboundPayloads", () => {
 
   it("uses signal media maxBytes from config", async () => {
     const sendSignal = vi.fn().mockResolvedValue({ messageId: "s1", timestamp: 123 });
-    const cfg: ClawdbotConfig = { channels: { signal: { mediaMaxMb: 2 } } };
+    const cfg: SurprisebotConfig = { channels: { signal: { mediaMaxMb: 2 } } };
 
     const results = await deliverOutboundPayloads({
       cfg,
@@ -87,7 +87,7 @@ describe("deliverOutboundPayloads", () => {
 
   it("chunks Signal markdown using the format-first chunker", async () => {
     const sendSignal = vi.fn().mockResolvedValue({ messageId: "s1", timestamp: 123 });
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { signal: { textChunkLimit: 20 } },
     };
     const text = `Intro\\n\\n\`\`\`\`md\\n${"y".repeat(60)}\\n\`\`\`\\n\\nOutro`;
@@ -121,7 +121,7 @@ describe("deliverOutboundPayloads", () => {
       .fn()
       .mockResolvedValueOnce({ messageId: "w1", toJid: "jid" })
       .mockResolvedValueOnce({ messageId: "w2", toJid: "jid" });
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { whatsapp: { textChunkLimit: 2 } },
     };
 
@@ -139,7 +139,7 @@ describe("deliverOutboundPayloads", () => {
 
   it("uses iMessage media maxBytes from agent fallback", async () => {
     const sendIMessage = vi.fn().mockResolvedValue({ messageId: "i1" });
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: { defaults: { mediaMaxMb: 3 } },
     };
 
@@ -177,7 +177,7 @@ describe("deliverOutboundPayloads", () => {
       .mockRejectedValueOnce(new Error("fail"))
       .mockResolvedValueOnce({ messageId: "w2", toJid: "jid" });
     const onError = vi.fn();
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
 
     const results = await deliverOutboundPayloads({
       cfg,

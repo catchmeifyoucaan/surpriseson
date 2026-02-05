@@ -224,12 +224,12 @@ export async function monitorMatrixProvider(opts: MonitorMatrixOpts = {}): Promi
                   await sendMessageMatrix(
                     `room:${roomId}`,
                     [
-                      "Clawdbot: access not configured.",
+                      "Surprisebot: access not configured.",
                       "",
                       `Pairing code: ${code}`,
                       "",
                       "Ask the bot owner to approve with:",
-                      "clawdbot pairing approve matrix <code>",
+                      "surprisebot pairing approve matrix <code>",
                     ].join("\n"),
                     { client },
                   );

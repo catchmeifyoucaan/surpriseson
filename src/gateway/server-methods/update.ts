@@ -1,4 +1,4 @@
-import { resolveClawdbotPackageRoot } from "../../infra/clawdbot-root.js";
+import { resolveSurprisebotPackageRoot } from "../../infra/surprisebot-root.js";
 import { scheduleGatewaySigusr1Restart } from "../../infra/restart.js";
 import {
   DOCTOR_NONINTERACTIVE_HINT,
@@ -49,7 +49,7 @@ export const updateHandlers: GatewayRequestHandlers = {
     let result: Awaited<ReturnType<typeof runGatewayUpdate>>;
     try {
       const root =
-        (await resolveClawdbotPackageRoot({
+        (await resolveSurprisebotPackageRoot({
           moduleUrl: import.meta.url,
           argv1: process.argv[1],
           cwd: process.cwd(),

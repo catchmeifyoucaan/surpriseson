@@ -3,6 +3,7 @@ import { loadCronJobs, loadCronStatus } from "./controllers/cron";
 import { loadChannels } from "./controllers/connections";
 import { loadDebug } from "./controllers/debug";
 import { loadLogs } from "./controllers/logs";
+import { loadMissionControl } from "./controllers/mission-control";
 import { loadNodes } from "./controllers/nodes";
 import { loadPresence } from "./controllers/presence";
 import { loadSessions } from "./controllers/sessions";
@@ -14,7 +15,7 @@ import { startThemeTransition, type ThemeTransitionContext } from "./theme-trans
 import { scheduleChatScroll, scheduleLogsScroll } from "./app-scroll";
 import { startLogsPolling, stopLogsPolling } from "./app-polling";
 import { refreshChat } from "./app-chat";
-import type { ClawdbotApp } from "./app";
+import type { SurprisebotApp } from "./app";
 
 type SettingsHost = {
   settings: UiSettings;
@@ -126,11 +127,12 @@ export function setTheme(
 export async function refreshActiveTab(host: SettingsHost) {
   if (host.tab === "overview") await loadOverview(host);
   if (host.tab === "connections") await loadConnections(host);
-  if (host.tab === "instances") await loadPresence(host as unknown as ClawdbotApp);
-  if (host.tab === "sessions") await loadSessions(host as unknown as ClawdbotApp);
+  if (host.tab === "instances") await loadPresence(host as unknown as SurprisebotApp);
+  if (host.tab === "sessions") await loadSessions(host as unknown as SurprisebotApp);
   if (host.tab === "cron") await loadCron(host);
-  if (host.tab === "skills") await loadSkills(host as unknown as ClawdbotApp);
-  if (host.tab === "nodes") await loadNodes(host as unknown as ClawdbotApp);
+  if (host.tab === "skills") await loadSkills(host as unknown as SurprisebotApp);
+  if (host.tab === "nodes") await loadNodes(host as unknown as SurprisebotApp);
+  if (host.tab === "mission-control") await loadMissionControl(host as unknown as SurprisebotApp);
   if (host.tab === "chat") {
     await refreshChat(host as unknown as Parameters<typeof refreshChat>[0]);
     scheduleChatScroll(
@@ -139,16 +141,16 @@ export async function refreshActiveTab(host: SettingsHost) {
     );
   }
   if (host.tab === "config") {
-    await loadConfigSchema(host as unknown as ClawdbotApp);
-    await loadConfig(host as unknown as ClawdbotApp);
+    await loadConfigSchema(host as unknown as SurprisebotApp);
+    await loadConfig(host as unknown as SurprisebotApp);
   }
   if (host.tab === "debug") {
-    await loadDebug(host as unknown as ClawdbotApp);
+    await loadDebug(host as unknown as SurprisebotApp);
     host.eventLog = host.eventLogBuffer;
   }
   if (host.tab === "logs") {
     host.logsAtBottom = true;
-    await loadLogs(host as unknown as ClawdbotApp, { reset: true });
+    await loadLogs(host as unknown as SurprisebotApp, { reset: true });
     scheduleLogsScroll(
       host as unknown as Parameters<typeof scheduleLogsScroll>[0],
       true,
@@ -158,7 +160,7 @@ export async function refreshActiveTab(host: SettingsHost) {
 
 export function inferBasePath() {
   if (typeof window === "undefined") return "";
-  const configured = window.__CLAWDBOT_CONTROL_UI_BASE_PATH__;
+  const configured = window.__SURPRISEBOT_CONTROL_UI_BASE_PATH__;
   if (typeof configured === "string" && configured.trim()) {
     return normalizeBasePath(configured);
   }
@@ -248,24 +250,24 @@ export function syncUrlWithTab(host: SettingsHost, tab: Tab, replace: boolean) {
 
 export async function loadOverview(host: SettingsHost) {
   await Promise.all([
-    loadChannels(host as unknown as ClawdbotApp, false),
-    loadPresence(host as unknown as ClawdbotApp),
-    loadSessions(host as unknown as ClawdbotApp),
-    loadCronStatus(host as unknown as ClawdbotApp),
-    loadDebug(host as unknown as ClawdbotApp),
+    loadChannels(host as unknown as SurprisebotApp, false),
+    loadPresence(host as unknown as SurprisebotApp),
+    loadSessions(host as unknown as SurprisebotApp),
+    loadCronStatus(host as unknown as SurprisebotApp),
+    loadDebug(host as unknown as SurprisebotApp),
   ]);
 }
 
 export async function loadConnections(host: SettingsHost) {
   await Promise.all([
-    loadChannels(host as unknown as ClawdbotApp, true),
-    loadConfig(host as unknown as ClawdbotApp),
+    loadChannels(host as unknown as SurprisebotApp, true),
+    loadConfig(host as unknown as SurprisebotApp),
   ]);
 }
 
 export async function loadCron(host: SettingsHost) {
   await Promise.all([
-    loadCronStatus(host as unknown as ClawdbotApp),
-    loadCronJobs(host as unknown as ClawdbotApp),
+    loadCronStatus(host as unknown as SurprisebotApp),
+    loadCronJobs(host as unknown as SurprisebotApp),
   ]);
 }

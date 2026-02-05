@@ -3,9 +3,9 @@ import path from "node:path";
 
 import { resolveStateDir } from "../config/paths.js";
 
-const RAW_STREAM_ENABLED = process.env.CLAWDBOT_RAW_STREAM === "1";
+const RAW_STREAM_ENABLED = process.env.SURPRISEBOT_RAW_STREAM === "1";
 const RAW_STREAM_PATH =
-  process.env.CLAWDBOT_RAW_STREAM_PATH?.trim() ||
+  process.env.SURPRISEBOT_RAW_STREAM_PATH?.trim() ||
   path.join(resolveStateDir(), "logs", "raw-stream.jsonl");
 
 let rawStreamReady = false;

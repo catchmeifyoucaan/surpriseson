@@ -1,10 +1,10 @@
 ---
-summary: "CLI reference for `clawdbot agents` (list/add/delete isolated agents)"
+summary: "CLI reference for `surprisebot agents` (list/add/delete isolated agents)"
 read_when:
   - You want multiple isolated agents (workspaces + routing + auth)
 ---
 
-# `clawdbot agents`
+# `surprisebot agents`
 
 Manage isolated agents (workspaces + auth + routing).
 
@@ -15,8 +15,8 @@ Related:
 ## Examples
 
 ```bash
-clawdbot agents list
-clawdbot agents add work --workspace ~/clawd-work
-clawdbot agents delete work
+surprisebot agents list
+surprisebot agents add work --workspace ~/surprisebot-work
+surprisebot agents delete work
 ```
 

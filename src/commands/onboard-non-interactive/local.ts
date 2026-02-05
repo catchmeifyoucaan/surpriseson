@@ -1,5 +1,5 @@
-import type { ClawdbotConfig } from "../../config/config.js";
-import { CONFIG_PATH_CLAWDBOT, resolveGatewayPort, writeConfigFile } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, resolveGatewayPort, writeConfigFile } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { DEFAULT_GATEWAY_DAEMON_RUNTIME } from "../daemon-runtime.js";
 import { healthCommand } from "../health.js";
@@ -22,7 +22,7 @@ import { resolveNonInteractiveWorkspaceDir } from "./local/workspace.js";
 export async function runNonInteractiveOnboardingLocal(params: {
   opts: OnboardOptions;
   runtime: RuntimeEnv;
-  baseConfig: ClawdbotConfig;
+  baseConfig: SurprisebotConfig;
 }) {
   const { opts, runtime, baseConfig } = params;
   const mode = "local" as const;
@@ -33,7 +33,7 @@ export async function runNonInteractiveOnboardingLocal(params: {
     defaultWorkspaceDir: DEFAULT_WORKSPACE,
   });
 
-  let nextConfig: ClawdbotConfig = {
+  let nextConfig: SurprisebotConfig = {
     ...baseConfig,
     agents: {
       ...baseConfig.agents,
@@ -73,7 +73,7 @@ export async function runNonInteractiveOnboardingLocal(params: {
 
   nextConfig = applyWizardMetadata(nextConfig, { command: "onboard", mode });
   await writeConfigFile(nextConfig);
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
 
   await ensureWorkspaceAndSessions(workspaceDir, runtime, {
     skipBootstrap: Boolean(nextConfig.agents?.defaults?.skipBootstrap),
@@ -123,7 +123,7 @@ export async function runNonInteractiveOnboardingLocal(params: {
 
   if (!opts.json) {
     runtime.log(
-      "Tip: run `clawdbot configure --section web` to store your Brave API key for web_search. Docs: https://docs.clawd.bot/tools/web",
+      "Tip: run `surprisebot configure --section web` to store your Brave API key for web_search. Docs: https://docs.surprisebot.bot/tools/web",
     );
   }
 }

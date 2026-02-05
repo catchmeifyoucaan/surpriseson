@@ -32,7 +32,7 @@ case "$AUTH_STATUS" in
         "$SCRIPT_DIR/claude-auth-status.sh" full
         exit 0
         ;;
-    CLAUDE_EXPIRING|CLAWDBOT_EXPIRING)
+    CLAUDE_EXPIRING|SURPRISEBOT_EXPIRING)
         echo -e "${YELLOW}Auth is expiring soon.${NC}"
         echo ""
         ;;
@@ -69,11 +69,11 @@ if claude setup-token; then
     echo ""
     "$SCRIPT_DIR/claude-auth-status.sh" full
 
-    # Restart clawdbot service if running
-    if systemctl --user is-active clawdbot >/dev/null 2>&1; then
+    # Restart surprisebot service if running
+    if systemctl --user is-active surprisebot >/dev/null 2>&1; then
         echo ""
-        echo "Restarting clawdbot service..."
-        systemctl --user restart clawdbot
+        echo "Restarting surprisebot service..."
+        systemctl --user restart surprisebot
         echo -e "${GREEN}Service restarted.${NC}"
     fi
 else

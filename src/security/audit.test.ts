@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { runSecurityAudit } from "./audit.js";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -10,7 +10,7 @@ const isWindows = process.platform === "win32";
 
 describe("security audit", () => {
   it("includes an attack surface summary (info)", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: { whatsapp: { groupPolicy: "open" }, telegram: { groupPolicy: "allowlist" } },
       tools: { elevated: { enabled: true, allowFrom: { whatsapp: ["+1"] } } },
       hooks: { enabled: true },
@@ -31,7 +31,7 @@ describe("security audit", () => {
   });
 
   it("flags non-loopback bind without auth as critical", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       gateway: {
         bind: "lan",
         auth: {},
@@ -50,7 +50,7 @@ describe("security audit", () => {
   });
 
   it("flags logging.redactSensitive=off", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       logging: { redactSensitive: "off" },
     };
 
@@ -68,7 +68,7 @@ describe("security audit", () => {
   });
 
   it("flags tools.elevated allowFrom wildcard as critical", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         elevated: {
           allowFrom: { whatsapp: ["*"] },
@@ -93,10 +93,10 @@ describe("security audit", () => {
   });
 
   it("flags remote browser control without token as critical", async () => {
-    const prev = process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
-    delete process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
+    const prev = process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
+    delete process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
     try {
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         browser: {
           controlUrl: "http://example.com:18791",
         },
@@ -117,14 +117,14 @@ describe("security audit", () => {
         ]),
       );
     } finally {
-      if (prev === undefined) delete process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
-      else process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN = prev;
+      if (prev === undefined) delete process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
+      else process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN = prev;
     }
   });
 
   it("warns when browser control token matches gateway auth token", async () => {
     const token = "0123456789abcdef0123456789abcdef";
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       gateway: { auth: { token } },
       browser: { controlUrl: "https://browser.example.com", controlToken: token },
     };
@@ -146,10 +146,10 @@ describe("security audit", () => {
   });
 
   it("warns when remote browser control uses HTTP", async () => {
-    const prev = process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
-    delete process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
+    const prev = process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
+    delete process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
     try {
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         browser: {
           controlUrl: "http://example.com:18791",
           controlToken: "0123456789abcdef01234567",
@@ -168,13 +168,13 @@ describe("security audit", () => {
         ]),
       );
     } finally {
-      if (prev === undefined) delete process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN;
-      else process.env.CLAWDBOT_BROWSER_CONTROL_TOKEN = prev;
+      if (prev === undefined) delete process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN;
+      else process.env.SURPRISEBOT_BROWSER_CONTROL_TOKEN = prev;
     }
   });
 
   it("adds a warning when deep probe fails", async () => {
-    const cfg: ClawdbotConfig = { gateway: { mode: "local" } };
+    const cfg: SurprisebotConfig = { gateway: { mode: "local" } };
 
     const res = await runSecurityAudit({
       config: cfg,
@@ -203,7 +203,7 @@ describe("security audit", () => {
   });
 
   it("warns on legacy model configuration", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: { defaults: { model: { primary: "openai/gpt-3.5-turbo" } } },
     };
 
@@ -221,7 +221,7 @@ describe("security audit", () => {
   });
 
   it("warns when hooks token looks short", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       hooks: { enabled: true, token: "short" },
     };
 
@@ -239,14 +239,14 @@ describe("security audit", () => {
   });
 
   it("warns when state/config look like a synced folder", async () => {
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
 
     const res = await runSecurityAudit({
       config: cfg,
       includeFilesystem: false,
       includeChannelSecurity: false,
-      stateDir: "/Users/test/Dropbox/.clawdbot",
-      configPath: "/Users/test/Dropbox/.clawdbot/clawdbot.json",
+      stateDir: "/Users/test/Dropbox/.surprisebot",
+      configPath: "/Users/test/Dropbox/.surprisebot/surprisebot.json",
     });
 
     expect(res.findings).toEqual(
@@ -257,7 +257,7 @@ describe("security audit", () => {
   });
 
   it("flags group/world-readable config include files", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-security-audit-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-security-audit-"));
     const stateDir = path.join(tmp, "state");
     await fs.mkdir(stateDir, { recursive: true, mode: 0o700 });
 
@@ -265,11 +265,11 @@ describe("security audit", () => {
     await fs.writeFile(includePath, "{ logging: { redactSensitive: 'off' } }\n", "utf-8");
     await fs.chmod(includePath, 0o644);
 
-    const configPath = path.join(stateDir, "clawdbot.json");
+    const configPath = path.join(stateDir, "surprisebot.json");
     await fs.writeFile(configPath, `{ "$include": "./extra.json5" }\n`, "utf-8");
     await fs.chmod(configPath, 0o600);
 
-    const cfg: ClawdbotConfig = { logging: { redactSensitive: "off" } };
+    const cfg: SurprisebotConfig = { logging: { redactSensitive: "off" } };
     const res = await runSecurityAudit({
       config: cfg,
       includeFilesystem: true,
@@ -290,20 +290,20 @@ describe("security audit", () => {
   });
 
   it("flags extensions without plugins.allow", async () => {
-    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-security-audit-"));
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-security-audit-"));
     const stateDir = path.join(tmp, "state");
     await fs.mkdir(path.join(stateDir, "extensions", "some-plugin"), {
       recursive: true,
       mode: 0o700,
     });
 
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
     const res = await runSecurityAudit({
       config: cfg,
       includeFilesystem: true,
       includeChannelSecurity: false,
       stateDir,
-      configPath: path.join(stateDir, "clawdbot.json"),
+      configPath: path.join(stateDir, "surprisebot.json"),
     });
 
     expect(res.findings).toEqual(
@@ -314,7 +314,7 @@ describe("security audit", () => {
   });
 
   it("flags open groupPolicy when tools.elevated is enabled", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: { elevated: { enabled: true, allowFrom: { whatsapp: ["+1"] } } },
       channels: { whatsapp: { groupPolicy: "open" } },
     };

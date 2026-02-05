@@ -99,10 +99,10 @@ const spawnGatewayInstance = async (name: string): Promise<GatewayInstance> => {
   const bridgePort = await getFreePort();
   const hookToken = `token-${name}-${randomUUID()}`;
   const gatewayToken = `gateway-${name}-${randomUUID()}`;
-  const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), `clawdbot-e2e-${name}-`));
-  const configDir = path.join(homeDir, ".clawdbot");
+  const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), `surprisebot-e2e-${name}-`));
+  const configDir = path.join(homeDir, ".surprisebot");
   await fs.mkdir(configDir, { recursive: true });
-  const configPath = path.join(configDir, "clawdbot.json");
+  const configPath = path.join(configDir, "surprisebot.json");
   const stateDir = path.join(configDir, "state");
   const config = {
     gateway: { port, auth: { mode: "token", token: gatewayToken } },
@@ -132,16 +132,16 @@ const spawnGatewayInstance = async (name: string): Promise<GatewayInstance> => {
         env: {
           ...process.env,
           HOME: homeDir,
-          CLAWDBOT_CONFIG_PATH: configPath,
-          CLAWDBOT_STATE_DIR: stateDir,
-          CLAWDBOT_GATEWAY_TOKEN: "",
-          CLAWDBOT_GATEWAY_PASSWORD: "",
-          CLAWDBOT_SKIP_CHANNELS: "1",
-          CLAWDBOT_SKIP_BROWSER_CONTROL_SERVER: "1",
-          CLAWDBOT_SKIP_CANVAS_HOST: "1",
-          CLAWDBOT_ENABLE_BRIDGE_IN_TESTS: "1",
-          CLAWDBOT_BRIDGE_HOST: "127.0.0.1",
-          CLAWDBOT_BRIDGE_PORT: String(bridgePort),
+          SURPRISEBOT_CONFIG_PATH: configPath,
+          SURPRISEBOT_STATE_DIR: stateDir,
+          SURPRISEBOT_GATEWAY_TOKEN: "",
+          SURPRISEBOT_GATEWAY_PASSWORD: "",
+          SURPRISEBOT_SKIP_CHANNELS: "1",
+          SURPRISEBOT_SKIP_BROWSER_CONTROL_SERVER: "1",
+          SURPRISEBOT_SKIP_CANVAS_HOST: "1",
+          SURPRISEBOT_ENABLE_BRIDGE_IN_TESTS: "1",
+          SURPRISEBOT_BRIDGE_HOST: "127.0.0.1",
+          SURPRISEBOT_BRIDGE_PORT: String(bridgePort),
         },
         stdio: ["ignore", "pipe", "pipe"],
       },
@@ -393,14 +393,14 @@ describe("gateway multi-instance e2e", () => {
 
       const [healthA, healthB] = (await Promise.all([
         runCliJson(["health", "--json", "--timeout", "10000"], {
-          CLAWDBOT_GATEWAY_PORT: String(gwA.port),
-          CLAWDBOT_GATEWAY_TOKEN: gwA.gatewayToken,
-          CLAWDBOT_GATEWAY_PASSWORD: "",
+          SURPRISEBOT_GATEWAY_PORT: String(gwA.port),
+          SURPRISEBOT_GATEWAY_TOKEN: gwA.gatewayToken,
+          SURPRISEBOT_GATEWAY_PASSWORD: "",
         }),
         runCliJson(["health", "--json", "--timeout", "10000"], {
-          CLAWDBOT_GATEWAY_PORT: String(gwB.port),
-          CLAWDBOT_GATEWAY_TOKEN: gwB.gatewayToken,
-          CLAWDBOT_GATEWAY_PASSWORD: "",
+          SURPRISEBOT_GATEWAY_PORT: String(gwB.port),
+          SURPRISEBOT_GATEWAY_TOKEN: gwB.gatewayToken,
+          SURPRISEBOT_GATEWAY_PASSWORD: "",
         }),
       ])) as [HealthPayload, HealthPayload];
       expect(healthA.ok).toBe(true);
@@ -426,12 +426,12 @@ describe("gateway multi-instance e2e", () => {
 
       const [nodeListA, nodeListB] = (await Promise.all([
         runCliJson(["nodes", "status", "--json", "--url", `ws://127.0.0.1:${gwA.port}`], {
-          CLAWDBOT_GATEWAY_TOKEN: gwA.gatewayToken,
-          CLAWDBOT_GATEWAY_PASSWORD: "",
+          SURPRISEBOT_GATEWAY_TOKEN: gwA.gatewayToken,
+          SURPRISEBOT_GATEWAY_PASSWORD: "",
         }),
         runCliJson(["nodes", "status", "--json", "--url", `ws://127.0.0.1:${gwB.port}`], {
-          CLAWDBOT_GATEWAY_TOKEN: gwB.gatewayToken,
-          CLAWDBOT_GATEWAY_PASSWORD: "",
+          SURPRISEBOT_GATEWAY_TOKEN: gwB.gatewayToken,
+          SURPRISEBOT_GATEWAY_PASSWORD: "",
         }),
       ])) as [NodeListPayload, NodeListPayload];
       expect(

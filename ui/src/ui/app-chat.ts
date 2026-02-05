@@ -4,7 +4,7 @@ import { generateUUID } from "./uuid";
 import { resetToolStream } from "./app-tool-stream";
 import { scheduleChatScroll } from "./app-scroll";
 import { setLastActiveSessionKey } from "./app-settings";
-import type { ClawdbotApp } from "./app";
+import type { SurprisebotApp } from "./app";
 
 type ChatHost = {
   connected: boolean;
@@ -36,7 +36,7 @@ export function isChatStopCommand(text: string) {
 export async function handleAbortChat(host: ChatHost) {
   if (!host.connected) return;
   host.chatMessage = "";
-  await abortChatRun(host as unknown as ClawdbotApp);
+  await abortChatRun(host as unknown as SurprisebotApp);
 }
 
 function enqueueChatMessage(host: ChatHost, text: string) {
@@ -58,7 +58,7 @@ async function sendChatMessageNow(
   opts?: { previousDraft?: string; restoreDraft?: boolean },
 ) {
   resetToolStream(host as unknown as Parameters<typeof resetToolStream>[0]);
-  const ok = await sendChatMessage(host as unknown as ClawdbotApp, message);
+  const ok = await sendChatMessage(host as unknown as SurprisebotApp, message);
   if (!ok && opts?.previousDraft != null) {
     host.chatMessage = opts.previousDraft;
   }
@@ -122,8 +122,8 @@ export async function handleSendChat(
 
 export async function refreshChat(host: ChatHost) {
   await Promise.all([
-    loadChatHistory(host as unknown as ClawdbotApp),
-    loadSessions(host as unknown as ClawdbotApp),
+    loadChatHistory(host as unknown as SurprisebotApp),
+    loadSessions(host as unknown as SurprisebotApp),
   ]);
   scheduleChatScroll(host as unknown as Parameters<typeof scheduleChatScroll>[0], true);
 }

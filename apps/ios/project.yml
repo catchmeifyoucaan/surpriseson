@@ -1,6 +1,6 @@
-name: Clawdbot
+name: Surprisebot
 options:
-  bundleIdPrefix: com.clawdbot
+  bundleIdPrefix: com.surprisebot
   deploymentTarget:
     iOS: "17.0"
   xcodeVersion: "16.0"
@@ -10,31 +10,31 @@ settings:
     SWIFT_VERSION: "6.0"
 
 packages:
-  ClawdbotKit:
-    path: ../shared/ClawdbotKit
+  SurprisebotKit:
+    path: ../shared/SurprisebotKit
   Swabble:
     path: ../../Swabble
 
 schemes:
-  Clawdbot:
+  Surprisebot:
     shared: true
     build:
       targets:
-        Clawdbot: all
+        Surprisebot: all
     test:
       targets:
-        - ClawdbotTests
+        - SurprisebotTests
 
 targets:
-  Clawdbot:
+  Surprisebot:
     type: application
     platform: iOS
     sources:
       - path: Sources
     dependencies:
-      - package: ClawdbotKit
-      - package: ClawdbotKit
-        product: ClawdbotChatUI
+      - package: SurprisebotKit
+      - package: SurprisebotKit
+        product: SurprisebotChatUI
       - package: Swabble
         product: SwabbleKit
       - sdk: AppIntents.framework
@@ -69,15 +69,15 @@ targets:
         CODE_SIGN_IDENTITY: "Apple Development"
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: Y5PE65HELJ
-        PRODUCT_BUNDLE_IDENTIFIER: com.clawdbot.ios
-        PROVISIONING_PROFILE_SPECIFIER: "com.clawdbot.ios Development"
+        PRODUCT_BUNDLE_IDENTIFIER: com.surprisebot.ios
+        PROVISIONING_PROFILE_SPECIFIER: "com.surprisebot.ios Development"
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
         ENABLE_APPINTENTS_METADATA: NO
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: Clawdbot
+        CFBundleDisplayName: Surprisebot
         CFBundleIconName: AppIcon
         CFBundleShortVersionString: "2026.1.9"
         CFBundleVersion: "20260109"
@@ -86,16 +86,16 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UIBackgroundModes:
           - audio
-        NSLocalNetworkUsageDescription: Clawdbot discovers and connects to your Clawdbot bridge on the local network.
+        NSLocalNetworkUsageDescription: Surprisebot discovers and connects to your Surprisebot bridge on the local network.
         NSAppTransportSecurity:
           NSAllowsArbitraryLoadsInWebContent: true
         NSBonjourServices:
-          - _clawdbot-bridge._tcp
-        NSCameraUsageDescription: Clawdbot can capture photos or short video clips when requested via the bridge.
-        NSLocationWhenInUseUsageDescription: Clawdbot uses your location when you allow location sharing.
-        NSLocationAlwaysAndWhenInUseUsageDescription: Clawdbot can share your location in the background when you enable Always.
-        NSMicrophoneUsageDescription: Clawdbot needs microphone access for voice wake.
-        NSSpeechRecognitionUsageDescription: Clawdbot uses on-device speech recognition for voice wake.
+          - _surprisebot-bridge._tcp
+        NSCameraUsageDescription: Surprisebot can capture photos or short video clips when requested via the bridge.
+        NSLocationWhenInUseUsageDescription: Surprisebot uses your location when you allow location sharing.
+        NSLocationAlwaysAndWhenInUseUsageDescription: Surprisebot can share your location in the background when you enable Always.
+        NSMicrophoneUsageDescription: Surprisebot needs microphone access for voice wake.
+        NSSpeechRecognitionUsageDescription: Surprisebot uses on-device speech recognition for voice wake.
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
@@ -107,26 +107,26 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
 
-  ClawdbotTests:
+  SurprisebotTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
     dependencies:
-      - target: Clawdbot
+      - target: Surprisebot
       - package: Swabble
         product: SwabbleKit
       - sdk: AppIntents.framework
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.clawdbot.ios.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.surprisebot.ios.tests
         SWIFT_VERSION: "6.0"
         SWIFT_STRICT_CONCURRENCY: complete
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Clawdbot.app/Clawdbot"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Surprisebot.app/Surprisebot"
         BUNDLE_LOADER: "$(TEST_HOST)"
     info:
       path: Tests/Info.plist
       properties:
-        CFBundleDisplayName: ClawdbotTests
+        CFBundleDisplayName: SurprisebotTests
         CFBundleShortVersionString: "2026.1.9"
         CFBundleVersion: "20260109"

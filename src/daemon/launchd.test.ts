@@ -27,9 +27,9 @@ describe("launchd runtime parsing", () => {
 describe("launchd install", () => {
   it("enables service before bootstrap (clears persisted disabled state)", async () => {
     const originalPath = process.env.PATH;
-    const originalLogPath = process.env.CLAWDBOT_TEST_LAUNCHCTL_LOG;
+    const originalLogPath = process.env.SURPRISEBOT_TEST_LAUNCHCTL_LOG;
 
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-launchctl-test-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-launchctl-test-"));
     try {
       const binDir = path.join(tmpDir, "bin");
       const homeDir = path.join(tmpDir, "home");
@@ -42,7 +42,7 @@ describe("launchd install", () => {
         stubJsPath,
         [
           'import fs from "node:fs";',
-          "const logPath = process.env.CLAWDBOT_TEST_LAUNCHCTL_LOG;",
+          "const logPath = process.env.SURPRISEBOT_TEST_LAUNCHCTL_LOG;",
           "if (logPath) {",
           '  fs.appendFileSync(logPath, JSON.stringify(process.argv.slice(2)) + "\\n", "utf8");',
           "}",
@@ -64,12 +64,12 @@ describe("launchd install", () => {
         await fs.chmod(shPath, 0o755);
       }
 
-      process.env.CLAWDBOT_TEST_LAUNCHCTL_LOG = logPath;
+      process.env.SURPRISEBOT_TEST_LAUNCHCTL_LOG = logPath;
       process.env.PATH = `${binDir}${path.delimiter}${originalPath ?? ""}`;
 
       const env: Record<string, string | undefined> = {
         HOME: homeDir,
-        CLAWDBOT_PROFILE: "default",
+        SURPRISEBOT_PROFILE: "default",
       };
       await installLaunchAgent({
         env,
@@ -83,7 +83,7 @@ describe("launchd install", () => {
         .map((line) => JSON.parse(line) as string[]);
 
       const domain = typeof process.getuid === "function" ? `gui/${process.getuid()}` : "gui/501";
-      const label = "com.clawdbot.gateway";
+      const label = "com.surprisebot.gateway";
       const plistPath = path.join(homeDir, "Library", "LaunchAgents", `${label}.plist`);
       const serviceId = `${domain}/${label}`;
 
@@ -100,9 +100,9 @@ describe("launchd install", () => {
     } finally {
       process.env.PATH = originalPath;
       if (originalLogPath === undefined) {
-        delete process.env.CLAWDBOT_TEST_LAUNCHCTL_LOG;
+        delete process.env.SURPRISEBOT_TEST_LAUNCHCTL_LOG;
       } else {
-        process.env.CLAWDBOT_TEST_LAUNCHCTL_LOG = originalLogPath;
+        process.env.SURPRISEBOT_TEST_LAUNCHCTL_LOG = originalLogPath;
       }
       await fs.rm(tmpDir, { recursive: true, force: true });
     }

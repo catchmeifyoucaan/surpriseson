@@ -1,5 +1,5 @@
 import { logWebSelfId, sendMessageWhatsApp } from "../channels/web/index.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { sendMessageDiscord } from "../discord/send.js";
 import { sendMessageIMessage } from "../imessage/send.js";
 import type { OutboundSendDeps } from "../infra/outbound/deliver.js";
@@ -31,7 +31,7 @@ export function createDefaultDeps(): CliDeps {
 }
 
 // Provider docking: extend this mapping when adding new outbound send deps.
-export function createOutboundSendDeps(deps: CliDeps, cfg: ClawdbotConfig): OutboundSendDeps {
+export function createOutboundSendDeps(deps: CliDeps, cfg: SurprisebotConfig): OutboundSendDeps {
   return {
     sendWhatsApp: deps.sendMessageWhatsApp,
     sendTelegram: deps.sendMessageTelegram,

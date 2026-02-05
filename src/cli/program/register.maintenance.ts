@@ -1,5 +1,7 @@
 import type { Command } from "commander";
 import { dashboardCommand } from "../../commands/dashboard.js";
+import { pruneMissionControlDuplicates } from "../../infra/mission-control/maintenance.js";
+import { loadConfig } from "../../config/config.js";
 import { doctorCommand } from "../../commands/doctor.js";
 import { resetCommand } from "../../commands/reset.js";
 import { uninstallCommand } from "../../commands/uninstall.js";
@@ -14,7 +16,7 @@ export function registerMaintenanceCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/doctor", "docs.clawd.bot/cli/doctor")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/doctor", "docs.surprisebot.bot/cli/doctor")}\n`,
     )
     .option("--no-workspace-suggestions", "Disable workspace memory system suggestions", false)
     .option("--yes", "Accept defaults without prompting", false)
@@ -40,13 +42,28 @@ export function registerMaintenanceCommands(program: Command) {
       }
     });
 
+  
+  program
+    .command("maintenance")
+    .description("Run Mission Control maintenance now (dedupe/prune)")
+    .action(async () => {
+      try {
+        const cfg = loadConfig();
+        const res = await pruneMissionControlDuplicates(cfg);
+        defaultRuntime.log(JSON.stringify(res, null, 2));
+      } catch (err) {
+        defaultRuntime.error(String(err));
+        defaultRuntime.exit(1);
+      }
+    });
+
   program
     .command("dashboard")
     .description("Open the Control UI with your current token")
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/dashboard", "docs.clawd.bot/cli/dashboard")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/dashboard", "docs.surprisebot.bot/cli/dashboard")}\n`,
     )
     .option("--no-open", "Print URL but do not launch a browser", false)
     .action(async (opts) => {
@@ -66,7 +83,7 @@ export function registerMaintenanceCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/reset", "docs.clawd.bot/cli/reset")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/reset", "docs.surprisebot.bot/cli/reset")}\n`,
     )
     .option("--scope <scope>", "config|config+creds+sessions|full (default: interactive prompt)")
     .option("--yes", "Skip confirmation prompts", false)
@@ -92,7 +109,7 @@ export function registerMaintenanceCommands(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/uninstall", "docs.clawd.bot/cli/uninstall")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/uninstall", "docs.surprisebot.bot/cli/uninstall")}\n`,
     )
     .option("--service", "Remove the gateway service", false)
     .option("--state", "Remove state + config", false)

@@ -43,12 +43,12 @@ export function registerAgentCommands(program: Command, args: { agentChannelOpti
       () =>
         `
 Examples:
-  clawdbot agent --to +15555550123 --message "status update"
-  clawdbot agent --session-id 1234 --message "Summarize inbox" --thinking medium
-  clawdbot agent --to +15555550123 --message "Trace logs" --verbose on --json
-  clawdbot agent --to +15555550123 --message "Summon reply" --deliver
+  surprisebot agent --to +15555550123 --message "status update"
+  surprisebot agent --session-id 1234 --message "Summarize inbox" --thinking medium
+  surprisebot agent --to +15555550123 --message "Trace logs" --verbose on --json
+  surprisebot agent --to +15555550123 --message "Summon reply" --deliver
 
-${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.clawd.bot/cli/agent")}`,
+${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.surprisebot.bot/cli/agent")}`,
     )
     .action(async (opts) => {
       const verboseLevel = typeof opts.verbose === "string" ? opts.verbose.toLowerCase() : "";
@@ -69,7 +69,7 @@ ${theme.muted("Docs:")} ${formatDocsLink("/cli/agent", "docs.clawd.bot/cli/agent
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/agents", "docs.clawd.bot/cli/agents")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/agents", "docs.surprisebot.bot/cli/agents")}\n`,
     );
 
   agents

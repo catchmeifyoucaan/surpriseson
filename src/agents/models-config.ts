@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { type ClawdbotConfig, loadConfig } from "../config/config.js";
-import { resolveClawdbotAgentDir } from "./agent-paths.js";
+import { type SurprisebotConfig, loadConfig } from "../config/config.js";
+import { resolveSurprisebotAgentDir } from "./agent-paths.js";
 import {
   normalizeProviders,
   type ProviderConfig,
@@ -10,7 +10,7 @@ import {
   resolveImplicitProviders,
 } from "./models-config.providers.js";
 
-type ModelsConfig = NonNullable<ClawdbotConfig["models"]>;
+type ModelsConfig = NonNullable<SurprisebotConfig["models"]>;
 
 const DEFAULT_MODE: NonNullable<ModelsConfig["mode"]> = "merge";
 
@@ -71,12 +71,12 @@ async function readJson(pathname: string): Promise<unknown> {
   }
 }
 
-export async function ensureClawdbotModelsJson(
-  config?: ClawdbotConfig,
+export async function ensureSurprisebotModelsJson(
+  config?: SurprisebotConfig,
   agentDirOverride?: string,
 ): Promise<{ agentDir: string; wrote: boolean }> {
   const cfg = config ?? loadConfig();
-  const agentDir = agentDirOverride?.trim() ? agentDirOverride.trim() : resolveClawdbotAgentDir();
+  const agentDir = agentDirOverride?.trim() ? agentDirOverride.trim() : resolveSurprisebotAgentDir();
 
   const explicitProviders = (cfg.models?.providers ?? {}) as Record<string, ProviderConfig>;
   const implicitProviders = resolveImplicitProviders({ agentDir });

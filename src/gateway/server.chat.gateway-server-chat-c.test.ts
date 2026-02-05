@@ -94,7 +94,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.abort returns aborted=false for unknown runId", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(testState.sessionStorePath, JSON.stringify({}, null, 2), "utf-8");
 
@@ -114,7 +114,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.abort rejects mismatched sessionKey", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -187,7 +187,7 @@ describe("gateway server chat", () => {
   }, 15_000);
 
   test("chat.abort is a no-op after chat.send completes", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -257,7 +257,7 @@ describe("gateway server chat", () => {
   });
 
   test("chat.send preserves run ordering for queued runs", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

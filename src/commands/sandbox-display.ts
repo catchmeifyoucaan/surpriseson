@@ -88,7 +88,7 @@ export function displaySummary(
 
   if (mismatchCount > 0) {
     runtime.log(`\n⚠️  ${mismatchCount} container(s) with image mismatch detected.`);
-    runtime.log(`   Run 'clawdbot sandbox recreate --all' to update all containers.`);
+    runtime.log(`   Run 'surprisebot sandbox recreate --all' to update all containers.`);
   }
 }
 

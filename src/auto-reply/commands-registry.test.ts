@@ -95,21 +95,21 @@ describe("commands registry", () => {
   });
 
   it("normalizes telegram-style command mentions for the current bot", () => {
-    expect(normalizeCommandBody("/help@clawdbot", { botUsername: "clawdbot" })).toBe("/help");
+    expect(normalizeCommandBody("/help@surprisebot", { botUsername: "surprisebot" })).toBe("/help");
     expect(
-      normalizeCommandBody("/help@clawdbot args", {
-        botUsername: "clawdbot",
+      normalizeCommandBody("/help@surprisebot args", {
+        botUsername: "surprisebot",
       }),
     ).toBe("/help args");
     expect(
-      normalizeCommandBody("/help@clawdbot: args", {
-        botUsername: "clawdbot",
+      normalizeCommandBody("/help@surprisebot: args", {
+        botUsername: "surprisebot",
       }),
     ).toBe("/help args");
   });
 
   it("keeps telegram-style command mentions for other bots", () => {
-    expect(normalizeCommandBody("/help@otherbot", { botUsername: "clawdbot" })).toBe(
+    expect(normalizeCommandBody("/help@otherbot", { botUsername: "surprisebot" })).toBe(
       "/help@otherbot",
     );
   });

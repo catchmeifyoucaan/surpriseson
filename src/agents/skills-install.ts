@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveBrewExecutable } from "../infra/brew.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { resolveUserPath } from "../utils.js";
@@ -19,7 +19,7 @@ export type SkillInstallRequest = {
   skillName: string;
   installId: string;
   timeoutMs?: number;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
 };
 
 export type SkillInstallResult = {
@@ -66,7 +66,7 @@ function resolveInstallId(spec: SkillInstallSpec, index: number): string {
 }
 
 function findInstallSpec(entry: SkillEntry, installId: string): SkillInstallSpec | undefined {
-  const specs = entry.clawdbot?.install ?? [];
+  const specs = entry.surprisebot?.install ?? [];
   for (const [index, spec] of specs.entries()) {
     if (resolveInstallId(spec, index) === installId) return spec;
   }

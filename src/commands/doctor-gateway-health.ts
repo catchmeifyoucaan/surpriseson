@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { collectChannelStatusIssues } from "../infra/channels-status-issues.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -6,7 +6,7 @@ import { note } from "../terminal/note.js";
 import { healthCommand } from "./health.js";
 import { formatHealthCheckFailure } from "./health-format.js";
 
-export async function checkGatewayHealth(params: { runtime: RuntimeEnv; cfg: ClawdbotConfig }) {
+export async function checkGatewayHealth(params: { runtime: RuntimeEnv; cfg: SurprisebotConfig }) {
   const gatewayDetails = buildGatewayConnectionDetails({ config: params.cfg });
   let healthOk = false;
   try {

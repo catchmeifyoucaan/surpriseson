@@ -450,3 +450,132 @@ export type LogEntry = {
   message?: string | null;
   meta?: Record<string, unknown> | null;
 };
+
+
+export type MissionControlTaskRecord = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  title: string;
+  description?: string | null;
+  status: string;
+  priority: string;
+  source?: string | null;
+  severity?: string | null;
+  trustTier?: string | null;
+  assignees?: string[];
+  labels?: string[];
+  parentTaskId?: string | null;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlMessageRecord = {
+  id: string;
+  taskId: string;
+  createdAt: string;
+  authorId?: string | null;
+  content: string;
+  evidence?: string[];
+  attachments?: string[];
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlActivityRecord = {
+  id: string;
+  taskId?: string | null;
+  createdAt: string;
+  type: string;
+  message: string;
+  actorId?: string | null;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlDocumentRecord = {
+  id: string;
+  taskId?: string | null;
+  title: string;
+  docType: string;
+  path: string;
+  hash?: string | null;
+  createdAt: string;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlSubscriptionRecord = {
+  id: string;
+  taskId: string;
+  agentId: string;
+  reason?: string | null;
+  createdAt: string;
+};
+
+export type MissionControlNotificationRecord = {
+  id: string;
+  targetKind: string;
+  targetId: string;
+  content: string;
+  delivered: number;
+  createdAt: string;
+  deliveredAt?: string | null;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlIncidentRecord = {
+  id: string;
+  ts: string;
+  source: string;
+  severity: string;
+  summary: string;
+  evidence?: string[];
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlRunLedgerRecord = {
+  id: string;
+  ts: string;
+  status?: string;
+  taskId?: string | null;
+  agentId?: string | null;
+  command?: string | null;
+  pid?: number | null;
+  logPath?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  exitCode?: number | null;
+  jobType?: string | null;
+  estimatedTokens?: number | null;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlBudgetLedgerRecord = {
+  id: string;
+  ts: string;
+  scope: string;
+  scopeId?: string | null;
+  decision: string;
+  reason: string;
+  budgetSnapshot: Record<string, unknown>;
+  meta?: Record<string, unknown>;
+};
+
+export type MissionControlSnapshot = {
+  generatedAt: string;
+  tasks: MissionControlTaskRecord[];
+  activities: MissionControlActivityRecord[];
+  messages: MissionControlMessageRecord[];
+  documents: MissionControlDocumentRecord[];
+  subscriptions: MissionControlSubscriptionRecord[];
+  notifications: MissionControlNotificationRecord[];
+  incidents: MissionControlIncidentRecord[];
+  runLedger: MissionControlRunLedgerRecord[];
+  budgetLedger: MissionControlBudgetLedgerRecord[];
+  rollupState?: Record<string, unknown> | null;
+  pageInfo?: {
+    tasks?: { limit: number; offset: number; total: number };
+    activities?: { limit: number; offset: number; total: number };
+  };
+  config?: {
+    missionControl?: Record<string, unknown> | null;
+    budgets?: Record<string, unknown> | null;
+  };
+};

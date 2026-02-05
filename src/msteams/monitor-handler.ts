@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import { danger } from "../globals.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { MSTeamsConversationStore } from "./conversation-store.js";
@@ -22,7 +22,7 @@ export type MSTeamsActivityHandler = {
 };
 
 export type MSTeamsMessageHandlerDeps = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   runtime: RuntimeEnv;
   appId: string;
   adapter: MSTeamsAdapter;

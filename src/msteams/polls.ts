@@ -97,13 +97,13 @@ export function extractMSTeamsPollVote(
   const value = activity?.value;
   if (!value || !isRecord(value)) return null;
   const pollId =
-    readNestedString(value, ["clawdbotPollId"]) ??
+    readNestedString(value, ["surprisebotPollId"]) ??
     readNestedString(value, ["pollId"]) ??
-    readNestedString(value, ["clawdbot", "pollId"]) ??
-    readNestedString(value, ["clawdbot", "poll", "id"]) ??
-    readNestedString(value, ["data", "clawdbotPollId"]) ??
+    readNestedString(value, ["surprisebot", "pollId"]) ??
+    readNestedString(value, ["surprisebot", "poll", "id"]) ??
+    readNestedString(value, ["data", "surprisebotPollId"]) ??
     readNestedString(value, ["data", "pollId"]) ??
-    readNestedString(value, ["data", "clawdbot", "pollId"]);
+    readNestedString(value, ["data", "surprisebot", "pollId"]);
   if (!pollId) return null;
 
   const directSelections = extractSelections(value.choices);
@@ -176,13 +176,13 @@ export function buildMSTeamsPollCard(params: {
         type: "Action.Submit",
         title: "Vote",
         data: {
-          clawdbotPollId: pollId,
+          surprisebotPollId: pollId,
         },
         msteams: {
           type: "messageBack",
-          text: "clawdbot poll vote",
+          text: "surprisebot poll vote",
           displayText: "Vote recorded",
-          value: { clawdbotPollId: pollId },
+          value: { surprisebotPollId: pollId },
         },
       },
     ],

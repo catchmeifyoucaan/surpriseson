@@ -265,7 +265,7 @@ export async function fetchNpmLatestVersion(params?: {
 }): Promise<RegistryStatus> {
   const timeoutMs = params?.timeoutMs ?? 3500;
   try {
-    const res = await fetchWithTimeout("https://registry.npmjs.org/clawdbot/latest", timeoutMs);
+    const res = await fetchWithTimeout("https://registry.npmjs.org/surprisebot/latest", timeoutMs);
     if (!res.ok) {
       return { latestVersion: null, error: `HTTP ${res.status}` };
     }

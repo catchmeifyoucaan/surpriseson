@@ -15,18 +15,18 @@ type CommandOptions = Record<string, unknown>;
 const EXAMPLES = {
   main: `
 Examples:
-  clawdbot sandbox list                     # List all sandbox containers
-  clawdbot sandbox list --browser           # List only browser containers
-  clawdbot sandbox recreate --all           # Recreate all containers
-  clawdbot sandbox recreate --session main  # Recreate specific session
-  clawdbot sandbox recreate --agent mybot   # Recreate agent containers
-  clawdbot sandbox explain                  # Explain effective sandbox config`,
+  surprisebot sandbox list                     # List all sandbox containers
+  surprisebot sandbox list --browser           # List only browser containers
+  surprisebot sandbox recreate --all           # Recreate all containers
+  surprisebot sandbox recreate --session main  # Recreate specific session
+  surprisebot sandbox recreate --agent mybot   # Recreate agent containers
+  surprisebot sandbox explain                  # Explain effective sandbox config`,
 
   list: `
 Examples:
-  clawdbot sandbox list              # List all sandbox containers
-  clawdbot sandbox list --browser    # List only browser containers
-  clawdbot sandbox list --json       # JSON output
+  surprisebot sandbox list              # List all sandbox containers
+  surprisebot sandbox list --browser    # List only browser containers
+  surprisebot sandbox list --json       # JSON output
 
 Output includes:
   • Container name and status (running/stopped)
@@ -37,11 +37,11 @@ Output includes:
 
   recreate: `
 Examples:
-  clawdbot sandbox recreate --all              # Recreate all containers
-  clawdbot sandbox recreate --session main     # Specific session
-  clawdbot sandbox recreate --agent mybot      # Specific agent (includes sub-agents)
-  clawdbot sandbox recreate --browser --all    # All browser containers only
-  clawdbot sandbox recreate --all --force      # Skip confirmation
+  surprisebot sandbox recreate --all              # Recreate all containers
+  surprisebot sandbox recreate --session main     # Specific session
+  surprisebot sandbox recreate --agent mybot      # Specific agent (includes sub-agents)
+  surprisebot sandbox recreate --browser --all    # All browser containers only
+  surprisebot sandbox recreate --all --force      # Skip confirmation
 
 Why use this?
   After updating Docker images or sandbox configuration, existing containers
@@ -59,10 +59,10 @@ Modifiers:
 
   explain: `
 Examples:
-  clawdbot sandbox explain
-  clawdbot sandbox explain --session agent:main:main
-  clawdbot sandbox explain --agent work
-  clawdbot sandbox explain --json`,
+  surprisebot sandbox explain
+  surprisebot sandbox explain --session agent:main:main
+  surprisebot sandbox explain --agent work
+  surprisebot sandbox explain --json`,
 };
 
 function createRunner(
@@ -88,7 +88,7 @@ export function registerSandboxCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sandbox", "docs.clawd.bot/cli/sandbox")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/sandbox", "docs.surprisebot.bot/cli/sandbox")}\n`,
     )
     .action(() => {
       sandbox.help({ error: true });

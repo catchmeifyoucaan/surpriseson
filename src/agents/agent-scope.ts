@@ -1,7 +1,7 @@
 import os from "node:os";
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import {
   DEFAULT_AGENT_ID,
@@ -13,7 +13,7 @@ import { DEFAULT_AGENT_WORKSPACE_DIR } from "./workspace.js";
 
 export { resolveAgentIdFromSessionKey } from "../routing/session-key.js";
 
-type AgentEntry = NonNullable<NonNullable<ClawdbotConfig["agents"]>["list"]>[number];
+type AgentEntry = NonNullable<NonNullable<SurprisebotConfig["agents"]>["list"]>[number];
 
 type ResolvedAgentConfig = {
   name?: string;
@@ -21,6 +21,9 @@ type ResolvedAgentConfig = {
   agentDir?: string;
   model?: AgentEntry["model"];
   memorySearch?: AgentEntry["memorySearch"];
+  memoryGraph?: AgentEntry["memoryGraph"];
+  memoryCapture?: AgentEntry["memoryCapture"];
+  sharedMemory?: AgentEntry["sharedMemory"];
   humanDelay?: AgentEntry["humanDelay"];
   identity?: AgentEntry["identity"];
   groupChat?: AgentEntry["groupChat"];
@@ -31,13 +34,13 @@ type ResolvedAgentConfig = {
 
 let defaultAgentWarned = false;
 
-function listAgents(cfg: ClawdbotConfig): AgentEntry[] {
+function listAgents(cfg: SurprisebotConfig): AgentEntry[] {
   const list = cfg.agents?.list;
   if (!Array.isArray(list)) return [];
   return list.filter((entry): entry is AgentEntry => Boolean(entry && typeof entry === "object"));
 }
 
-export function resolveDefaultAgentId(cfg: ClawdbotConfig): string {
+export function resolveDefaultAgentId(cfg: SurprisebotConfig): string {
   const agents = listAgents(cfg);
   if (agents.length === 0) return DEFAULT_AGENT_ID;
   const defaults = agents.filter((agent) => agent?.default);
@@ -49,7 +52,7 @@ export function resolveDefaultAgentId(cfg: ClawdbotConfig): string {
   return normalizeAgentId(chosen || DEFAULT_AGENT_ID);
 }
 
-export function resolveSessionAgentIds(params: { sessionKey?: string; config?: ClawdbotConfig }): {
+export function resolveSessionAgentIds(params: { sessionKey?: string; config?: SurprisebotConfig }): {
   defaultAgentId: string;
   sessionAgentId: string;
 } {
@@ -62,18 +65,18 @@ export function resolveSessionAgentIds(params: { sessionKey?: string; config?: C
 
 export function resolveSessionAgentId(params: {
   sessionKey?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
 }): string {
   return resolveSessionAgentIds(params).sessionAgentId;
 }
 
-function resolveAgentEntry(cfg: ClawdbotConfig, agentId: string): AgentEntry | undefined {
+function resolveAgentEntry(cfg: SurprisebotConfig, agentId: string): AgentEntry | undefined {
   const id = normalizeAgentId(agentId);
   return listAgents(cfg).find((entry) => normalizeAgentId(entry.id) === id);
 }
 
 export function resolveAgentConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   agentId: string,
 ): ResolvedAgentConfig | undefined {
   const id = normalizeAgentId(agentId);
@@ -88,6 +91,9 @@ export function resolveAgentConfig(
         ? entry.model
         : undefined,
     memorySearch: entry.memorySearch,
+    memoryGraph: entry.memoryGraph,
+    memoryCapture: entry.memoryCapture,
+    sharedMemory: entry.sharedMemory,
     humanDelay: entry.humanDelay,
     identity: entry.identity,
     groupChat: entry.groupChat,
@@ -97,7 +103,7 @@ export function resolveAgentConfig(
   };
 }
 
-export function resolveAgentModelPrimary(cfg: ClawdbotConfig, agentId: string): string | undefined {
+export function resolveAgentModelPrimary(cfg: SurprisebotConfig, agentId: string): string | undefined {
   const raw = resolveAgentConfig(cfg, agentId)?.model;
   if (!raw) return undefined;
   if (typeof raw === "string") return raw.trim() || undefined;
@@ -106,7 +112,7 @@ export function resolveAgentModelPrimary(cfg: ClawdbotConfig, agentId: string): 
 }
 
 export function resolveAgentModelFallbacksOverride(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   agentId: string,
 ): string[] | undefined {
   const raw = resolveAgentConfig(cfg, agentId)?.model;
@@ -116,7 +122,7 @@ export function resolveAgentModelFallbacksOverride(
   return Array.isArray(raw.fallbacks) ? raw.fallbacks : undefined;
 }
 
-export function resolveAgentWorkspaceDir(cfg: ClawdbotConfig, agentId: string) {
+export function resolveAgentWorkspaceDir(cfg: SurprisebotConfig, agentId: string) {
   const id = normalizeAgentId(agentId);
   const configured = resolveAgentConfig(cfg, id)?.workspace?.trim();
   if (configured) return resolveUserPath(configured);
@@ -126,10 +132,10 @@ export function resolveAgentWorkspaceDir(cfg: ClawdbotConfig, agentId: string) {
     if (fallback) return resolveUserPath(fallback);
     return DEFAULT_AGENT_WORKSPACE_DIR;
   }
-  return path.join(os.homedir(), `clawd-${id}`);
+  return path.join(os.homedir(), `surprisebot-${id}`);
 }
 
-export function resolveAgentDir(cfg: ClawdbotConfig, agentId: string) {
+export function resolveAgentDir(cfg: SurprisebotConfig, agentId: string) {
   const id = normalizeAgentId(agentId);
   const configured = resolveAgentConfig(cfg, id)?.agentDir?.trim();
   if (configured) return resolveUserPath(configured);

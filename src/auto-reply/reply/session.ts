@@ -3,10 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { CURRENT_SESSION_VERSION, SessionManager } from "@mariozechner/pi-coding-agent";
-import { resolveSessionAgentId } from "../../agents/agent-scope.js";
+import { resolveDefaultAgentId, resolveSessionAgentId } from "../../agents/agent-scope.js";
 import { getChannelDock } from "../../channels/dock.js";
 import { normalizeChannelId } from "../../channels/plugins/index.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   buildGroupDisplayName,
   DEFAULT_IDLE_MINUTES,
@@ -22,7 +22,7 @@ import {
   type SessionScope,
   saveSessionStore,
 } from "../../config/sessions.js";
-import { normalizeMainKey } from "../../routing/session-key.js";
+import { buildAgentMainSessionKey, normalizeMainKey } from "../../routing/session-key.js";
 import { resolveCommandAuthorization } from "../command-auth.js";
 import type { MsgContext, TemplateContext } from "../templating.js";
 import { stripMentions, stripStructuralPrefixes } from "./mentions.js";
@@ -43,6 +43,36 @@ export type SessionInitResult = {
   bodyStripped?: string;
   triggerBodyNormalized: string;
 };
+
+function resolveBridgeSessionKey(params: {
+  cfg: SurprisebotConfig;
+  ctx: MsgContext;
+  commandAuthorized: boolean;
+  sessionScope: SessionScope;
+  mainKey?: string;
+}): string | null {
+  const bridge = params.cfg.session?.bridge;
+  if (!bridge || bridge.mode === "off") return null;
+  if (bridge.mode !== "owner") return null;
+  if (params.sessionScope === "global") return null;
+  if (params.ctx.SessionKey?.trim()) return null;
+
+  const groupResolution = resolveGroupSessionKey(params.ctx);
+  if (groupResolution && !bridge.includeGroups) return null;
+
+  const auth = resolveCommandAuthorization({
+    ctx: params.ctx,
+    cfg: params.cfg,
+    commandAuthorized: params.commandAuthorized,
+  });
+  if (!auth.isAuthorizedSender) return null;
+
+  const agentId = resolveDefaultAgentId(params.cfg);
+  const rawKey = (bridge.key ?? "owner").trim().toLowerCase() || "owner";
+  const slug = rawKey.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+  const mainKey = `bridge:${slug || "owner"}`;
+  return buildAgentMainSessionKey({ agentId, mainKey });
+}
 
 function forkSessionFromParent(params: {
   parentEntry: SessionEntry;
@@ -81,7 +111,7 @@ function forkSessionFromParent(params: {
 
 export async function initSessionState(params: {
   ctx: MsgContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   commandAuthorized: boolean;
 }): Promise<SessionInitResult> {
   const { ctx, cfg, commandAuthorized } = params;
@@ -159,7 +189,14 @@ export async function initSessionState(params: {
     }
   }
 
-  sessionKey = resolveSessionKey(sessionScope, sessionCtxForState, mainKey);
+  const bridgedKey = resolveBridgeSessionKey({
+    cfg,
+    ctx: sessionCtxForState,
+    commandAuthorized,
+    sessionScope,
+    mainKey,
+  });
+  sessionKey = bridgedKey ?? resolveSessionKey(sessionScope, sessionCtxForState, mainKey);
   if (groupResolution?.legacyKey && groupResolution.legacyKey !== sessionKey) {
     const legacyEntry = sessionStore[groupResolution.legacyKey];
     if (legacyEntry && !sessionStore[sessionKey]) {

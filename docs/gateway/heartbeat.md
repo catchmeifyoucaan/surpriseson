@@ -55,7 +55,7 @@ custom body (sent verbatim).
 ## Response contract
 
 - If nothing needs attention, reply with **`HEARTBEAT_OK`**.
-- During heartbeat runs, Clawdbot treats `HEARTBEAT_OK` as an ack when it appears
+- During heartbeat runs, Surprisebot treats `HEARTBEAT_OK` as an ack when it appears
   at the **start or end** of the reply. The token is stripped and the reply is
   dropped if the remaining content is **≤ `ackMaxChars`** (default: 300).
 - If `HEARTBEAT_OK` appears in the **middle** of a reply, it is not treated
@@ -146,7 +146,7 @@ Safety note: don’t put secrets (API keys, phone numbers, private tokens) into
 You can enqueue a system event and trigger an immediate heartbeat with:
 
 ```bash
-clawdbot wake --text "Check for urgent follow-ups" --mode now
+surprisebot wake --text "Check for urgent follow-ups" --mode now
 ```
 
 Use `--mode next-heartbeat` to wait for the next scheduled tick.

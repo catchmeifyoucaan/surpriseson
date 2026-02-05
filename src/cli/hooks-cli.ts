@@ -28,21 +28,21 @@ export function registerHooksCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/hooks", "docs.clawd.bot/cli/hooks")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/hooks", "docs.surprisebot.bot/cli/hooks")}\n`,
     );
 
   const gmail = hooks.command("gmail").description("Gmail Pub/Sub hooks (via gogcli)");
 
   gmail
     .command("setup")
-    .description("Configure Gmail watch + Pub/Sub + Clawdbot hooks")
+    .description("Configure Gmail watch + Pub/Sub + Surprisebot hooks")
     .requiredOption("--account <email>", "Gmail account to watch")
     .option("--project <id>", "GCP project id (OAuth client owner)")
     .option("--topic <name>", "Pub/Sub topic name", DEFAULT_GMAIL_TOPIC)
     .option("--subscription <name>", "Pub/Sub subscription name", DEFAULT_GMAIL_SUBSCRIPTION)
     .option("--label <label>", "Gmail label to watch", DEFAULT_GMAIL_LABEL)
-    .option("--hook-url <url>", "Clawdbot hook URL")
-    .option("--hook-token <token>", "Clawdbot hook token")
+    .option("--hook-url <url>", "Surprisebot hook URL")
+    .option("--hook-token <token>", "Surprisebot hook token")
     .option("--push-token <token>", "Push token for gog watch serve")
     .option("--bind <host>", "gog watch serve bind host", DEFAULT_GMAIL_SERVE_BIND)
     .option("--port <port>", "gog watch serve port", String(DEFAULT_GMAIL_SERVE_PORT))
@@ -79,8 +79,8 @@ export function registerHooksCli(program: Command) {
     .option("--topic <topic>", "Pub/Sub topic path (projects/.../topics/..)")
     .option("--subscription <name>", "Pub/Sub subscription name")
     .option("--label <label>", "Gmail label to watch")
-    .option("--hook-url <url>", "Clawdbot hook URL")
-    .option("--hook-token <token>", "Clawdbot hook token")
+    .option("--hook-url <url>", "Surprisebot hook URL")
+    .option("--hook-token <token>", "Surprisebot hook token")
     .option("--push-token <token>", "Push token for gog watch serve")
     .option("--bind <host>", "gog watch serve bind host")
     .option("--port <port>", "gog watch serve port")

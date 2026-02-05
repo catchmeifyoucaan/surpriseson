@@ -14,13 +14,13 @@ export function registerConfigureCommand(program: Command) {
       .command(name)
       .description(
         name === "config"
-          ? "Alias for `clawdbot configure`"
+          ? "Alias for `surprisebot configure`"
           : "Interactive prompt to set up credentials, devices, and agent defaults",
       )
       .addHelpText(
         "after",
         () =>
-          `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/configure", "docs.clawd.bot/cli/configure")}\n`,
+          `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/configure", "docs.surprisebot.bot/cli/configure")}\n`,
       )
       .option(
         "--section <section>",

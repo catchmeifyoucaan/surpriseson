@@ -11,7 +11,7 @@ import {
 import { discoverAuthStorage, discoverModels } from "@mariozechner/pi-coding-agent";
 import { Type } from "@sinclair/typebox";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { resolveUserPath } from "../../utils.js";
 import { loadWebMedia } from "../../web/media.js";
 import { ensureAuthProfileStore, listProfilesForProvider } from "../auth-profiles.js";
@@ -20,7 +20,7 @@ import { minimaxUnderstandImage } from "../minimax-vlm.js";
 import { getApiKeyForModel, resolveEnvApiKey } from "../model-auth.js";
 import { runWithImageModelFallback } from "../model-fallback.js";
 import { parseModelRef } from "../model-selection.js";
-import { ensureClawdbotModelsJson } from "../models-config.js";
+import { ensureSurprisebotModelsJson } from "../models-config.js";
 import { assertSandboxPath } from "../sandbox-paths.js";
 import type { AnyAgentTool } from "./common.js";
 import {
@@ -38,7 +38,7 @@ export const __testing = {
   coerceImageAssistantText,
 } as const;
 
-function resolveDefaultModelRef(cfg?: ClawdbotConfig): {
+function resolveDefaultModelRef(cfg?: SurprisebotConfig): {
   provider: string;
   model: string;
 } {
@@ -67,7 +67,7 @@ function hasAuthForProvider(params: { provider: string; agentDir: string }): boo
  *   - fall back to OpenAI/Anthropic when available
  */
 export function resolveImageModelConfigForTool(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   agentDir: string;
 }): ImageModelConfig | null {
   const explicit = coerceImageModelConfig(params.cfg);
@@ -141,7 +141,7 @@ export function resolveImageModelConfigForTool(params: {
   return null;
 }
 
-function pickMaxBytes(cfg?: ClawdbotConfig, maxBytesMb?: number): number | undefined {
+function pickMaxBytes(cfg?: SurprisebotConfig, maxBytesMb?: number): number | undefined {
   if (typeof maxBytesMb === "number" && Number.isFinite(maxBytesMb) && maxBytesMb > 0) {
     return Math.floor(maxBytesMb * 1024 * 1024);
   }
@@ -199,7 +199,7 @@ async function resolveSandboxedImagePath(params: {
 }
 
 async function runImagePrompt(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   agentDir: string;
   imageModelConfig: ImageModelConfig;
   modelOverride?: string;
@@ -212,7 +212,7 @@ async function runImagePrompt(params: {
   model: string;
   attempts: Array<{ provider: string; model: string; error: string }>;
 }> {
-  const effectiveCfg: ClawdbotConfig | undefined = params.cfg
+  const effectiveCfg: SurprisebotConfig | undefined = params.cfg
     ? {
         ...params.cfg,
         agents: {
@@ -225,7 +225,7 @@ async function runImagePrompt(params: {
       }
     : undefined;
 
-  await ensureClawdbotModelsJson(effectiveCfg, params.agentDir);
+  await ensureSurprisebotModelsJson(effectiveCfg, params.agentDir);
   const authStorage = discoverAuthStorage(params.agentDir);
   const modelRegistry = discoverModels(authStorage, params.agentDir);
 
@@ -285,7 +285,7 @@ async function runImagePrompt(params: {
 }
 
 export function createImageTool(options?: {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   agentDir?: string;
   sandboxRoot?: string;
 }): AnyAgentTool | null {

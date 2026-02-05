@@ -17,7 +17,7 @@ export function registerWakeCommand(program: Command) {
   )
     .addHelpText(
       "after",
-      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/wake", "docs.clawd.bot/cli/wake")}\n`,
+      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/wake", "docs.surprisebot.bot/cli/wake")}\n`,
     )
     .action(async (opts: GatewayRpcOpts & { text?: string; mode?: string }) => {
       try {

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
-import { ensureClawdbotModelsJson } from "./models-config.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { ensureSurprisebotModelsJson } from "./models-config.js";
 import { createSystemPromptOverride } from "./pi-embedded-runner.js";
 
 vi.mock("@mariozechner/pi-ai", async () => {
@@ -67,10 +67,10 @@ const _makeOpenAiConfig = (modelIds: string[]) =>
         },
       },
     },
-  }) satisfies ClawdbotConfig;
+  }) satisfies SurprisebotConfig;
 
-const _ensureModels = (cfg: ClawdbotConfig, agentDir: string) =>
-  ensureClawdbotModelsJson(cfg, agentDir);
+const _ensureModels = (cfg: SurprisebotConfig, agentDir: string) =>
+  ensureSurprisebotModelsJson(cfg, agentDir);
 
 const _textFromContent = (content: unknown) => {
   if (typeof content === "string") return content;

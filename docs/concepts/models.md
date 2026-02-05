@@ -13,7 +13,7 @@ Quick provider overview + examples: [/concepts/model-providers](/concepts/model-
 
 ## How model selection works
 
-Clawdbot selects models in this order:
+Surprisebot selects models in this order:
 
 1) **Primary** model (`agents.defaults.model.primary` or `agents.defaults.model`).
 2) **Fallbacks** in `agents.defaults.model.fallbacks` (in order).
@@ -21,7 +21,7 @@ Clawdbot selects models in this order:
    next model.
 
 Related:
-- `agents.defaults.models` is the allowlist/catalog of models Clawdbot can use (plus aliases).
+- `agents.defaults.models` is the allowlist/catalog of models Surprisebot can use (plus aliases).
 - `agents.defaults.imageModel` is used **only when** the primary model can’t accept images.
 - Per-agent defaults can override `agents.defaults.model` via `agents.list[].model` plus bindings (see [/concepts/multi-agent](/concepts/multi-agent)).
 
@@ -35,7 +35,7 @@ Related:
 If you don’t want to hand-edit config, run the onboarding wizard:
 
 ```bash
-clawdbot onboard
+surprisebot onboard
 ```
 
 It can set up model + auth for common providers, including **OpenAI Code (Codex)
@@ -59,7 +59,7 @@ Provider configuration examples (including OpenCode Zen) live in
 
 If `agents.defaults.models` is set, it becomes the **allowlist** for `/model` and for
 session overrides. When a user selects a model that isn’t in that allowlist,
-Clawdbot returns:
+Surprisebot returns:
 
 ```
 Model "provider/model" is not allowed. Use /model to list available models.
@@ -108,27 +108,27 @@ Full command behavior/config: [Slash commands](/tools/slash-commands).
 ## CLI commands
 
 ```bash
-clawdbot models list
-clawdbot models status
-clawdbot models set <provider/model>
-clawdbot models set-image <provider/model>
+surprisebot models list
+surprisebot models status
+surprisebot models set <provider/model>
+surprisebot models set-image <provider/model>
 
-clawdbot models aliases list
-clawdbot models aliases add <alias> <provider/model>
-clawdbot models aliases remove <alias>
+surprisebot models aliases list
+surprisebot models aliases add <alias> <provider/model>
+surprisebot models aliases remove <alias>
 
-clawdbot models fallbacks list
-clawdbot models fallbacks add <provider/model>
-clawdbot models fallbacks remove <provider/model>
-clawdbot models fallbacks clear
+surprisebot models fallbacks list
+surprisebot models fallbacks add <provider/model>
+surprisebot models fallbacks remove <provider/model>
+surprisebot models fallbacks clear
 
-clawdbot models image-fallbacks list
-clawdbot models image-fallbacks add <provider/model>
-clawdbot models image-fallbacks remove <provider/model>
-clawdbot models image-fallbacks clear
+surprisebot models image-fallbacks list
+surprisebot models image-fallbacks add <provider/model>
+surprisebot models image-fallbacks remove <provider/model>
+surprisebot models image-fallbacks clear
 ```
 
-`clawdbot models` (no subcommand) is a shortcut for `models status`.
+`surprisebot models` (no subcommand) is a shortcut for `models status`.
 
 ### `models list`
 
@@ -156,12 +156,12 @@ Preferred Anthropic auth is the Claude Code CLI setup-token (run on the gateway 
 
 ```bash
 claude setup-token
-clawdbot models status
+surprisebot models status
 ```
 
 ## Scanning (OpenRouter free models)
 
-`clawdbot models scan` inspects OpenRouter’s **free model catalog** and can
+`surprisebot models scan` inspects OpenRouter’s **free model catalog** and can
 optionally probe models for tool and image support.
 
 Key flags:
@@ -195,5 +195,5 @@ mode, pass `--yes` to accept defaults.
 ## Models registry (`models.json`)
 
 Custom providers in `models.providers` are written into `models.json` under the
-agent directory (default `~/.clawdbot/agents/<agentId>/models.json`). This file
+agent directory (default `~/.surprisebot/agents/<agentId>/models.json`). This file
 is merged by default unless `models.mode` is set to `replace`.

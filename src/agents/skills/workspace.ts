@@ -7,11 +7,11 @@ import {
   type Skill,
 } from "@mariozechner/pi-coding-agent";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { CONFIG_DIR, resolveUserPath } from "../../utils.js";
 import { resolveBundledSkillsDir } from "./bundled-dir.js";
 import { shouldIncludeSkill } from "./config.js";
-import { parseFrontmatter, resolveClawdbotMetadata } from "./frontmatter.js";
+import { parseFrontmatter, resolveSurprisebotMetadata } from "./frontmatter.js";
 import { serializeByKey } from "./serialize.js";
 import type { ParsedSkillFrontmatter, SkillEntry, SkillSnapshot } from "./types.js";
 
@@ -19,7 +19,7 @@ const fsp = fs.promises;
 
 function filterSkillEntries(
   entries: SkillEntry[],
-  config?: ClawdbotConfig,
+  config?: SurprisebotConfig,
   skillFilter?: string[],
 ): SkillEntry[] {
   let filtered = entries.filter((entry) => shouldIncludeSkill({ entry, config }));
@@ -40,7 +40,7 @@ function filterSkillEntries(
 function loadSkillEntries(
   workspaceDir: string,
   opts?: {
-    config?: ClawdbotConfig;
+    config?: SurprisebotConfig;
     managedSkillsDir?: string;
     bundledSkillsDir?: string;
   },
@@ -70,23 +70,23 @@ function loadSkillEntries(
   const bundledSkills = bundledSkillsDir
     ? loadSkills({
         dir: bundledSkillsDir,
-        source: "clawdbot-bundled",
+        source: "surprisebot-bundled",
       })
     : [];
   const extraSkills = extraDirs.flatMap((dir) => {
     const resolved = resolveUserPath(dir);
     return loadSkills({
       dir: resolved,
-      source: "clawdbot-extra",
+      source: "surprisebot-extra",
     });
   });
   const managedSkills = loadSkills({
     dir: managedSkillsDir,
-    source: "clawdbot-managed",
+    source: "surprisebot-managed",
   });
   const workspaceSkills = loadSkills({
     dir: workspaceSkillsDir,
-    source: "clawdbot-workspace",
+    source: "surprisebot-workspace",
   });
 
   const merged = new Map<string, Skill>();
@@ -107,7 +107,7 @@ function loadSkillEntries(
     return {
       skill,
       frontmatter,
-      clawdbot: resolveClawdbotMetadata(frontmatter),
+      surprisebot: resolveSurprisebotMetadata(frontmatter),
     };
   });
   return skillEntries;
@@ -116,7 +116,7 @@ function loadSkillEntries(
 export function buildWorkspaceSkillSnapshot(
   workspaceDir: string,
   opts?: {
-    config?: ClawdbotConfig;
+    config?: SurprisebotConfig;
     managedSkillsDir?: string;
     bundledSkillsDir?: string;
     entries?: SkillEntry[];
@@ -131,7 +131,7 @@ export function buildWorkspaceSkillSnapshot(
     prompt: formatSkillsForPrompt(resolvedSkills),
     skills: eligible.map((entry) => ({
       name: entry.skill.name,
-      primaryEnv: entry.clawdbot?.primaryEnv,
+      primaryEnv: entry.surprisebot?.primaryEnv,
     })),
     resolvedSkills,
   };
@@ -140,7 +140,7 @@ export function buildWorkspaceSkillSnapshot(
 export function buildWorkspaceSkillsPrompt(
   workspaceDir: string,
   opts?: {
-    config?: ClawdbotConfig;
+    config?: SurprisebotConfig;
     managedSkillsDir?: string;
     bundledSkillsDir?: string;
     entries?: SkillEntry[];
@@ -156,7 +156,7 @@ export function buildWorkspaceSkillsPrompt(
 export function resolveSkillsPromptForRun(params: {
   skillsSnapshot?: SkillSnapshot;
   entries?: SkillEntry[];
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   workspaceDir: string;
 }): string {
   const snapshotPrompt = params.skillsSnapshot?.prompt?.trim();
@@ -174,7 +174,7 @@ export function resolveSkillsPromptForRun(params: {
 export function loadWorkspaceSkillEntries(
   workspaceDir: string,
   opts?: {
-    config?: ClawdbotConfig;
+    config?: SurprisebotConfig;
     managedSkillsDir?: string;
     bundledSkillsDir?: string;
   },
@@ -185,7 +185,7 @@ export function loadWorkspaceSkillEntries(
 export async function syncSkillsToWorkspace(params: {
   sourceWorkspaceDir: string;
   targetWorkspaceDir: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   managedSkillsDir?: string;
   bundledSkillsDir?: string;
 }) {
@@ -222,7 +222,7 @@ export async function syncSkillsToWorkspace(params: {
 
 export function filterWorkspaceSkillEntries(
   entries: SkillEntry[],
-  config?: ClawdbotConfig,
+  config?: SurprisebotConfig,
 ): SkillEntry[] {
   return filterSkillEntries(entries, config);
 }

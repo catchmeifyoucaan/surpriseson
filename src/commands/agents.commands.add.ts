@@ -8,7 +8,7 @@ import {
 } from "../agents/agent-scope.js";
 import { ensureAuthProfileStore } from "../agents/auth-profiles.js";
 import { resolveAuthStorePath } from "../agents/auth-profiles/paths.js";
-import { CONFIG_PATH_CLAWDBOT, writeConfigFile } from "../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, writeConfigFile } from "../config/config.js";
 import { DEFAULT_AGENT_ID, normalizeAgentId } from "../routing/session-key.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -126,7 +126,7 @@ export async function agentsAddCommand(
         : { config: nextConfig, added: [], skipped: [], conflicts: [] };
 
     await writeConfigFile(bindingResult.config);
-    if (!opts.json) runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+    if (!opts.json) runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
     const quietRuntime = opts.json ? createQuietRuntime(runtime) : runtime;
     await ensureWorkspaceAndSessions(workspaceDir, quietRuntime, {
       skipBootstrap: Boolean(bindingResult.config.agents?.defaults?.skipBootstrap),
@@ -171,7 +171,7 @@ export async function agentsAddCommand(
 
   const prompter = createClackPrompter();
   try {
-    await prompter.intro("Add Clawdbot agent");
+    await prompter.intro("Add Surprisebot agent");
     const name =
       nameInput ??
       (await prompter.text({
@@ -326,7 +326,7 @@ export async function agentsAddCommand(
         await prompter.note(
           [
             "Routing unchanged. Add bindings when you're ready.",
-            "Docs: https://docs.clawd.bot/concepts/multi-agent",
+            "Docs: https://docs.surprisebot.bot/concepts/multi-agent",
           ].join("\n"),
           "Routing",
         );
@@ -334,7 +334,7 @@ export async function agentsAddCommand(
     }
 
     await writeConfigFile(nextConfig);
-    runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+    runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
     await ensureWorkspaceAndSessions(workspaceDir, runtime, {
       skipBootstrap: Boolean(nextConfig.agents?.defaults?.skipBootstrap),
       agentId,

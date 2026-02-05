@@ -40,7 +40,7 @@ installGatewayTestHooks();
 
 describe("gateway server node/bridge", () => {
   test("bridge voice transcript defaults to main session", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -90,7 +90,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge voice transcript triggers chat events for webchat clients", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -181,7 +181,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge chat.abort cancels while saving the session store", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

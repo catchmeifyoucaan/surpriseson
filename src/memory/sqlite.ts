@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import type { DatabaseSync } from "node:sqlite";
 
 const require = createRequire(import.meta.url);
 
@@ -19,4 +20,10 @@ export function requireNodeSqlite(): typeof import("node:sqlite") {
   } finally {
     process.off("warning", onWarning);
   }
+}
+
+export function applySqlitePragmas(db: DatabaseSync) {
+  db.exec("PRAGMA journal_mode=WAL;");
+  db.exec("PRAGMA synchronous=NORMAL;");
+  db.exec("PRAGMA busy_timeout=5000;");
 }

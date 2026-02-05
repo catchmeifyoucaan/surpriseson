@@ -11,6 +11,12 @@ This path keeps Surprisebot lightweight: CLI + Gateway only.
 
 ## 1) Install
 
+
+If you prefer the installer:
+
+```bash
+curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --minimal
+```
 ```bash
 npm install -g surprisebot@latest
 # or
@@ -34,6 +40,17 @@ surprisebot init --quickstart
 ```bash
 surprisebot gateway --port 18789
 ```
+
+## Not included
+
+Minimal mode keeps Surprisebot light. These features are **off by default**:
+- Mission Control (task ledger + reports)
+- Budgets + incident/task pipeline
+- Research automation + output ingestion
+- ARTEMIS integration
+- QMD indexing
+- Neo4j memory graph
+
 
 ## 4) Optional services (later)
 

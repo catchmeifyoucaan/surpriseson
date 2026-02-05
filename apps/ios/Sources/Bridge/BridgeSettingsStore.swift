@@ -1,8 +1,8 @@
 import Foundation
 
 enum BridgeSettingsStore {
-    private static let bridgeService = "com.clawdbot.bridge"
-    private static let nodeService = "com.clawdbot.node"
+    private static let bridgeService = "com.surprisebot.bridge"
+    private static let nodeService = "com.surprisebot.node"
 
     private static let instanceIdDefaultsKey = "node.instanceId"
     private static let preferredBridgeStableIDDefaultsKey = "bridge.preferredStableID"

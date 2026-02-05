@@ -9,7 +9,7 @@ read_when:
 The workspace is the agent's home. It is the only working directory used for
 file tools and for workspace context. Keep it private and treat it as memory.
 
-This is separate from `~/.clawdbot/`, which stores config, credentials, and
+This is separate from `~/.surprisebot/`, which stores config, credentials, and
 sessions.
 
 **Important:** the workspace is the **default cwd**, not a hard sandbox. Tools
@@ -17,25 +17,32 @@ resolve relative paths against the workspace, but absolute paths can still reach
 elsewhere on the host unless sandboxing is enabled. If you need isolation, use
 [`agents.defaults.sandbox`](/gateway/sandboxing) (and/or per‑agent sandbox config).
 When sandboxing is enabled and `workspaceAccess` is not `"rw"`, tools operate
-inside a sandbox workspace under `~/.clawdbot/sandboxes`, not your host workspace.
+inside a sandbox workspace under `~/.surprisebot/sandboxes`, not your host workspace.
 
 ## Default location
 
-- Default: `~/clawd`
-- If `CLAWDBOT_PROFILE` is set and not `"default"`, the default becomes
-  `~/clawd-<profile>`.
-- Override in `~/.clawdbot/clawdbot.json`:
+- Default: `~/surprisebot`
+- If `SURPRISEBOT_PROFILE` is set and not `"default"`, the default becomes
+  `~/surprisebot-<profile>`.
+- Override in `~/.surprisebot/surprisebot.json`:
 
 ```json5
 {
   agent: {
-    workspace: "~/clawd"
+    workspace: "~/surprisebot"
   }
 }
 ```
 
-`clawdbot onboard`, `clawdbot configure`, or `clawdbot setup` will create the
+`surprisebot onboard`, `surprisebot configure`, or `surprisebot setup` will create the
 workspace and seed the bootstrap files if they are missing.
+
+
+### Workspace template
+
+If a `workspace.template/` directory exists in the Surprisebot repo, `surprisebot setup`/`init`
+will copy it into a **new, empty** workspace before generating defaults. This is the
+preferred way to ship opinionated bootstrap files without hard‑coding paths.
 
 If you already manage the workspace files yourself, you can disable bootstrap
 file creation:
@@ -46,20 +53,20 @@ file creation:
 
 ## Extra workspace folders
 
-Older installs may have created `~/clawdbot`. Keeping multiple workspace
+Older installs may have created `~/surprisebot`. Keeping multiple workspace
 directories around can cause confusing auth or state drift, because only one
 workspace is active at a time.
 
 **Recommendation:** keep a single active workspace. If you no longer use the
-extra folders, archive or move them to Trash (for example `trash ~/clawdbot`).
+extra folders, archive or move them to Trash (for example `trash ~/surprisebot`).
 If you intentionally keep multiple workspaces, make sure
 `agents.defaults.workspace` points to the active one.
 
-`clawdbot doctor` warns when it detects extra workspace directories.
+`surprisebot doctor` warns when it detects extra workspace directories.
 
 ## Workspace file map (what each file means)
 
-These are the standard files Clawdbot expects inside the workspace:
+These are the standard files Surprisebot expects inside the workspace:
 
 - `AGENTS.md`
   - Operating instructions for the agent and how it should use memory.
@@ -108,20 +115,20 @@ See [Memory](/concepts/memory) for the workflow and automatic memory flush.
 - `canvas/` (optional)
   - Canvas UI files for node displays (for example `canvas/index.html`).
 
-If any bootstrap file is missing, Clawdbot injects a "missing file" marker into
+If any bootstrap file is missing, Surprisebot injects a "missing file" marker into
 the session and continues. Large bootstrap files are truncated when injected;
 adjust the limit with `agents.defaults.bootstrapMaxChars` (default: 20000).
-`clawdbot setup` can recreate missing defaults without overwriting existing
+`surprisebot setup` can recreate missing defaults without overwriting existing
 files.
 
 ## What is NOT in the workspace
 
-These live under `~/.clawdbot/` and should NOT be committed to the workspace repo:
+These live under `~/.surprisebot/` and should NOT be committed to the workspace repo:
 
-- `~/.clawdbot/clawdbot.json` (config)
-- `~/.clawdbot/credentials/` (OAuth tokens, API keys)
-- `~/.clawdbot/agents/<agentId>/sessions/` (session transcripts + metadata)
-- `~/.clawdbot/skills/` (managed skills)
+- `~/.surprisebot/surprisebot.json` (config)
+- `~/.surprisebot/credentials/` (OAuth tokens, API keys)
+- `~/.surprisebot/agents/<agentId>/sessions/` (session transcripts + metadata)
+- `~/.surprisebot/skills/` (managed skills)
 
 If you need to migrate sessions or config, copy them separately and keep them
 out of version control.
@@ -137,7 +144,7 @@ workspace lives).
 ### 1) Initialize the repo
 
 ```bash
-cd ~/clawd
+cd ~/surprisebot
 git init
 git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
 git commit -m "Add agent workspace"
@@ -162,7 +169,7 @@ Option B: GitHub CLI (`gh`)
 
 ```bash
 gh auth login
-gh repo create clawd-workspace --private --source . --remote origin --push
+gh repo create surprisebot-workspace --private --source . --remote origin --push
 ```
 
 Option C: GitLab web UI
@@ -192,11 +199,11 @@ git push
 Even in a private repo, avoid storing secrets in the workspace:
 
 - API keys, OAuth tokens, passwords, or private credentials.
-- Anything under `~/.clawdbot/`.
+- Anything under `~/.surprisebot/`.
 - Raw dumps of chats or sensitive attachments.
 
 If you must store sensitive references, use placeholders and keep the real
-secret elsewhere (password manager, environment variables, or `~/.clawdbot/`).
+secret elsewhere (password manager, environment variables, or `~/.surprisebot/`).
 
 Suggested `.gitignore` starter:
 
@@ -210,10 +217,10 @@ Suggested `.gitignore` starter:
 
 ## Moving the workspace to a new machine
 
-1. Clone the repo to the desired path (default `~/clawd`).
-2. Set `agents.defaults.workspace` to that path in `~/.clawdbot/clawdbot.json`.
-3. Run `clawdbot setup --workspace <path>` to seed any missing files.
-4. If you need sessions, copy `~/.clawdbot/agents/<agentId>/sessions/` from the
+1. Clone the repo to the desired path (default `~/surprisebot`).
+2. Set `agents.defaults.workspace` to that path in `~/.surprisebot/surprisebot.json`.
+3. Run `surprisebot setup --workspace <path>` to seed any missing files.
+4. If you need sessions, copy `~/.surprisebot/agents/<agentId>/sessions/` from the
    old machine separately.
 
 ## Advanced notes

@@ -156,7 +156,7 @@ export async function browserCreateProfile(
     name: string;
     color?: string;
     cdpUrl?: string;
-    driver?: "clawd" | "extension";
+    driver?: "surprisebot" | "extension";
   },
 ): Promise<BrowserCreateProfileResult> {
   return await fetchBrowserJson<BrowserCreateProfileResult>(`${baseUrl}/profiles/create`, {

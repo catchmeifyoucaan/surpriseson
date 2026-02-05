@@ -8,11 +8,11 @@ import { theme } from "../terminal/theme.js";
 export function registerDocsCli(program: Command) {
   program
     .command("docs")
-    .description("Search the live Clawdbot docs")
+    .description("Search the live Surprisebot docs")
     .argument("[query...]", "Search query")
     .addHelpText(
       "after",
-      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/docs", "docs.clawd.bot/cli/docs")}\n`,
+      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/docs", "docs.surprisebot.bot/cli/docs")}\n`,
     )
     .action(async (queryParts: string[]) => {
       try {

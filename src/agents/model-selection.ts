@@ -1,5 +1,6 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { ModelCatalogEntry } from "./model-catalog.js";
+import { supportsXHighThinking } from "../auto-reply/thinking.js";
 import { normalizeGoogleModelId } from "./models-config.providers.js";
 
 export type ModelRef = {
@@ -29,7 +30,7 @@ export function normalizeProviderId(provider: string): string {
   return normalized;
 }
 
-export function isCliProvider(provider: string, cfg?: ClawdbotConfig): boolean {
+export function isCliProvider(provider: string, cfg?: SurprisebotConfig): boolean {
   const normalized = normalizeProviderId(provider);
   if (normalized === "claude-cli") return true;
   if (normalized === "codex-cli") return true;
@@ -70,7 +71,7 @@ export function parseModelRef(raw: string, defaultProvider: string): ModelRef | 
 }
 
 export function buildModelAliasIndex(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   defaultProvider: string;
 }): ModelAliasIndex {
   const byAlias = new Map<string, { alias: string; ref: ModelRef }>();
@@ -113,7 +114,7 @@ export function resolveModelRefFromString(params: {
 }
 
 export function resolveConfiguredModelRef(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   defaultProvider: string;
   defaultModel: string;
 }): ModelRef {
@@ -141,7 +142,7 @@ export function resolveConfiguredModelRef(params: {
 }
 
 export function buildAllowedModelSet(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   catalog: ModelCatalogEntry[];
   defaultProvider: string;
   defaultModel?: string;
@@ -217,7 +218,7 @@ export type ModelRefStatus = {
 };
 
 export function getModelRefStatus(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   catalog: ModelCatalogEntry[];
   ref: ModelRef;
   defaultProvider: string;
@@ -239,7 +240,7 @@ export function getModelRefStatus(params: {
 }
 
 export function resolveAllowedModelRef(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   catalog: ModelCatalogEntry[];
   raw: string;
   defaultProvider: string;
@@ -278,13 +279,14 @@ export function resolveAllowedModelRef(params: {
 }
 
 export function resolveThinkingDefault(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   provider: string;
   model: string;
   catalog?: ModelCatalogEntry[];
 }): ThinkLevel {
   const configured = params.cfg.agents?.defaults?.thinkingDefault;
   if (configured) return configured;
+  if (supportsXHighThinking(params.provider, params.model)) return "xhigh";
   const candidate = params.catalog?.find(
     (entry) => entry.provider === params.provider && entry.id === params.model,
   );
@@ -297,7 +299,7 @@ export function resolveThinkingDefault(params: {
  * Returns null if hooks.gmail.model is not set.
  */
 export function resolveHooksGmailModel(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   defaultProvider: string;
 }): ModelRef | null {
   const hooksModel = params.cfg.hooks?.gmail?.model;

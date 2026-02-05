@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { createReplyToModeFilter, resolveReplyToMode } from "./reply-threading.js";
 
-const emptyCfg = {} as ClawdbotConfig;
+const emptyCfg = {} as SurprisebotConfig;
 
 describe("resolveReplyToMode", () => {
   it("defaults to first for Telegram", () => {
@@ -26,7 +26,7 @@ describe("resolveReplyToMode", () => {
         discord: { replyToMode: "first" },
         slack: { replyToMode: "all" },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     expect(resolveReplyToMode(cfg, "telegram")).toBe("all");
     expect(resolveReplyToMode(cfg, "discord")).toBe("first");
     expect(resolveReplyToMode(cfg, "slack")).toBe("all");

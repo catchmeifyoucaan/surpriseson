@@ -121,9 +121,9 @@ function createMinimalRun(params?: {
 
 describe("runReplyAgent typing (heartbeat)", () => {
   it("retries after compaction failure by resetting the session", async () => {
-    const prevStateDir = process.env.CLAWDBOT_STATE_DIR;
-    const stateDir = await fs.mkdtemp(path.join(tmpdir(), "clawdbot-session-compaction-reset-"));
-    process.env.CLAWDBOT_STATE_DIR = stateDir;
+    const prevStateDir = process.env.SURPRISEBOT_STATE_DIR;
+    const stateDir = await fs.mkdtemp(path.join(tmpdir(), "surprisebot-session-compaction-reset-"));
+    process.env.SURPRISEBOT_STATE_DIR = stateDir;
     try {
       const sessionId = "session";
       const storePath = path.join(stateDir, "sessions", "sessions.json");
@@ -162,16 +162,16 @@ describe("runReplyAgent typing (heartbeat)", () => {
       expect(persisted.main.sessionId).toBe(sessionStore.main.sessionId);
     } finally {
       if (prevStateDir) {
-        process.env.CLAWDBOT_STATE_DIR = prevStateDir;
+        process.env.SURPRISEBOT_STATE_DIR = prevStateDir;
       } else {
-        delete process.env.CLAWDBOT_STATE_DIR;
+        delete process.env.SURPRISEBOT_STATE_DIR;
       }
     }
   });
   it("retries after context overflow payload by resetting the session", async () => {
-    const prevStateDir = process.env.CLAWDBOT_STATE_DIR;
-    const stateDir = await fs.mkdtemp(path.join(tmpdir(), "clawdbot-session-overflow-reset-"));
-    process.env.CLAWDBOT_STATE_DIR = stateDir;
+    const prevStateDir = process.env.SURPRISEBOT_STATE_DIR;
+    const stateDir = await fs.mkdtemp(path.join(tmpdir(), "surprisebot-session-overflow-reset-"));
+    process.env.SURPRISEBOT_STATE_DIR = stateDir;
     try {
       const sessionId = "session";
       const storePath = path.join(stateDir, "sessions", "sessions.json");
@@ -216,9 +216,9 @@ describe("runReplyAgent typing (heartbeat)", () => {
       expect(persisted.main.sessionId).toBe(sessionStore.main.sessionId);
     } finally {
       if (prevStateDir) {
-        process.env.CLAWDBOT_STATE_DIR = prevStateDir;
+        process.env.SURPRISEBOT_STATE_DIR = prevStateDir;
       } else {
-        delete process.env.CLAWDBOT_STATE_DIR;
+        delete process.env.SURPRISEBOT_STATE_DIR;
       }
     }
   });

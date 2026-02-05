@@ -5,7 +5,7 @@ import { resolveDefaultAgentId } from "../agents/agent-scope.js";
 import { lookupContextTokens } from "../agents/context.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../agents/defaults.js";
 import { resolveConfiguredModelRef } from "../agents/model-selection.js";
-import { type ClawdbotConfig, loadConfig } from "../config/config.js";
+import { type SurprisebotConfig, loadConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import {
   buildGroupDisplayName,
@@ -104,7 +104,7 @@ function listExistingAgentIdsFromDisk(): string[] {
   }
 }
 
-function listConfiguredAgentIds(cfg: ClawdbotConfig): string[] {
+function listConfiguredAgentIds(cfg: SurprisebotConfig): string[] {
   const agents = cfg.agents?.list ?? [];
   if (agents.length > 0) {
     const ids = new Set<string>();
@@ -132,7 +132,7 @@ function listConfiguredAgentIds(cfg: ClawdbotConfig): string[] {
   return sorted;
 }
 
-export function listAgentsForGateway(cfg: ClawdbotConfig): {
+export function listAgentsForGateway(cfg: SurprisebotConfig): {
   defaultId: string;
   mainKey: string;
   scope: SessionScope;
@@ -176,12 +176,12 @@ function canonicalizeSessionKeyForAgent(agentId: string, key: string): string {
   return `agent:${normalizeAgentId(agentId)}:${key}`;
 }
 
-function resolveDefaultStoreAgentId(cfg: ClawdbotConfig): string {
+function resolveDefaultStoreAgentId(cfg: SurprisebotConfig): string {
   return normalizeAgentId(resolveDefaultAgentId(cfg));
 }
 
 export function resolveSessionStoreKey(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sessionKey: string;
 }): string {
   const raw = params.sessionKey.trim();
@@ -208,7 +208,7 @@ export function resolveSessionStoreKey(params: {
   return canonicalizeSessionKeyForAgent(agentId, raw);
 }
 
-function resolveSessionStoreAgentId(cfg: ClawdbotConfig, canonicalKey: string): string {
+function resolveSessionStoreAgentId(cfg: SurprisebotConfig, canonicalKey: string): string {
   if (canonicalKey === "global" || canonicalKey === "unknown") {
     return resolveDefaultStoreAgentId(cfg);
   }
@@ -225,7 +225,7 @@ function canonicalizeSpawnedByForAgent(agentId: string, spawnedBy?: string): str
   return `agent:${normalizeAgentId(agentId)}:${raw}`;
 }
 
-export function resolveGatewaySessionStoreTarget(params: { cfg: ClawdbotConfig; key: string }): {
+export function resolveGatewaySessionStoreTarget(params: { cfg: SurprisebotConfig; key: string }): {
   agentId: string;
   storePath: string;
   canonicalKey: string;
@@ -258,7 +258,7 @@ export function resolveGatewaySessionStoreTarget(params: { cfg: ClawdbotConfig; 
   };
 }
 
-export function loadCombinedSessionStoreForGateway(cfg: ClawdbotConfig): {
+export function loadCombinedSessionStoreForGateway(cfg: SurprisebotConfig): {
   storePath: string;
   store: Record<string, SessionEntry>;
 } {
@@ -297,7 +297,7 @@ export function loadCombinedSessionStoreForGateway(cfg: ClawdbotConfig): {
   return { storePath, store: combined };
 }
 
-export function getSessionDefaults(cfg: ClawdbotConfig): GatewaySessionsDefaults {
+export function getSessionDefaults(cfg: SurprisebotConfig): GatewaySessionsDefaults {
   const resolved = resolveConfiguredModelRef({
     cfg,
     defaultProvider: DEFAULT_PROVIDER,
@@ -314,7 +314,7 @@ export function getSessionDefaults(cfg: ClawdbotConfig): GatewaySessionsDefaults
 }
 
 export function resolveSessionModelRef(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   entry?: SessionEntry,
 ): { provider: string; model: string } {
   const resolved = resolveConfiguredModelRef({
@@ -333,7 +333,7 @@ export function resolveSessionModelRef(
 }
 
 export function listSessionsFromStore(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   storePath: string;
   store: Record<string, SessionEntry>;
   opts: import("./protocol/index.js").SessionsListParams;

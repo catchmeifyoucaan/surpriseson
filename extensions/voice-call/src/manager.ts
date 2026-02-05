@@ -47,7 +47,7 @@ export class CallManager {
     const rawPath =
       storePath ||
       config.store ||
-      path.join(os.homedir(), "clawd", "voice-calls");
+      path.join(os.homedir(), "surprisebot", "voice-calls");
     this.storePath = resolveUserPath(rawPath);
   }
 

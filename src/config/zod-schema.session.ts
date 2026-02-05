@@ -5,6 +5,13 @@ import { GroupChatSchema, NativeCommandsSettingSchema, QueueSchema } from "./zod
 export const SessionSchema = z
   .object({
     scope: z.union([z.literal("per-sender"), z.literal("global")]).optional(),
+    bridge: z
+      .object({
+        mode: z.union([z.literal("off"), z.literal("explicit"), z.literal("owner")]).optional(),
+        key: z.string().optional(),
+        includeGroups: z.boolean().optional(),
+      })
+      .optional(),
     resetTriggers: z.array(z.string()).optional(),
     idleMinutes: z.number().int().positive().optional(),
     heartbeatIdleMinutes: z.number().int().positive().optional(),
@@ -69,6 +76,8 @@ export const CommandsSchema = z
     config: z.boolean().optional(),
     debug: z.boolean().optional(),
     restart: z.boolean().optional(),
+    memory: z.boolean().optional(),
+    memoryForgetPolicy: z.union([z.literal("hard"), z.literal("deprecate")]).optional(),
     useAccessGroups: z.boolean().optional(),
   })
   .optional()

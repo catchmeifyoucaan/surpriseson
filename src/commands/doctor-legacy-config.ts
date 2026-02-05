@@ -1,12 +1,12 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { hasAnyWhatsAppAuth } from "../web/accounts.js";
 
-export function normalizeLegacyConfigValues(cfg: ClawdbotConfig): {
-  config: ClawdbotConfig;
+export function normalizeLegacyConfigValues(cfg: SurprisebotConfig): {
+  config: SurprisebotConfig;
   changes: string[];
 } {
   const changes: string[] = [];
-  let next: ClawdbotConfig = cfg;
+  let next: SurprisebotConfig = cfg;
 
   const legacyAckReaction = cfg.messages?.ackReaction?.trim();
   const hasWhatsAppConfig = cfg.channels?.whatsapp !== undefined;

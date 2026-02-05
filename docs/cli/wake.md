@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot wake` (enqueue a system event and optionally trigger an immediate heartbeat)"
+summary: "CLI reference for `surprisebot wake` (enqueue a system event and optionally trigger an immediate heartbeat)"
 read_when:
   - You want to “poke” a running Gateway to process a system event
   - You use `wake` with cron jobs or remote nodes
 ---
 
-# `clawdbot wake`
+# `surprisebot wake`
 
 Enqueue a system event on the Gateway and optionally trigger an immediate heartbeat.
 
@@ -18,8 +18,8 @@ Related:
 ## Common commands
 
 ```bash
-clawdbot wake --text "sync"
-clawdbot wake --text "sync" --mode now
+surprisebot wake --text "sync"
+surprisebot wake --text "sync" --mode now
 ```
 
 ## Flags

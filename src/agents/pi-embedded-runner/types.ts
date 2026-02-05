@@ -19,6 +19,23 @@ export type EmbeddedPiRunMeta = {
   agentMeta?: EmbeddedPiAgentMeta;
   aborted?: boolean;
   systemPromptReport?: SessionSystemPromptReport;
+  toolResults?: {
+    started: number;
+    ended: number;
+    pending: Array<{
+      id: string;
+      name: string;
+      meta?: string;
+      startedAt?: number;
+      timedOut?: boolean;
+    }>;
+    timedOut: Array<{
+      id: string;
+      name: string;
+      meta?: string;
+      startedAt?: number;
+    }>;
+  };
   error?: {
     kind: "context_overflow" | "compaction_failure";
     message: string;

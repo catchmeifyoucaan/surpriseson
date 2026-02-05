@@ -7,11 +7,11 @@ import {
   resolveConfiguredModelRef,
   resolveHooksGmailModel,
 } from "../agents/model-selection.js";
-import type { ClawdbotConfig } from "../config/config.js";
-import { CONFIG_PATH_CLAWDBOT, writeConfigFile } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT, writeConfigFile } from "../config/config.js";
 import { resolveGatewayService } from "../daemon/service.js";
 import { buildGatewayConnectionDetails } from "../gateway/call.js";
-import { resolveClawdbotPackageRoot } from "../infra/clawdbot-root.js";
+import { resolveSurprisebotPackageRoot } from "../infra/surprisebot-root.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
 import { note } from "../terminal/note.js";
@@ -45,7 +45,7 @@ import { ensureSystemdUserLingerInteractive } from "./systemd-linger.js";
 const intro = (message: string) => clackIntro(stylePromptTitle(message) ?? message);
 const outro = (message: string) => clackOutro(stylePromptTitle(message) ?? message);
 
-function resolveMode(cfg: ClawdbotConfig): "local" | "remote" {
+function resolveMode(cfg: SurprisebotConfig): "local" | "remote" {
   return cfg.gateway?.mode === "remote" ? "remote" : "local";
 }
 
@@ -55,9 +55,9 @@ export async function doctorCommand(
 ) {
   const prompter = createDoctorPrompter({ runtime, options });
   printWizardHeader(runtime);
-  intro("Clawdbot doctor");
+  intro("Surprisebot doctor");
 
-  const root = await resolveClawdbotPackageRoot({
+  const root = await resolveSurprisebotPackageRoot({
     moduleUrl: import.meta.url,
     argv1: process.argv[1],
     cwd: process.cwd(),
@@ -79,7 +79,7 @@ export async function doctorCommand(
     options,
     confirm: (p) => prompter.confirm(p),
   });
-  let cfg: ClawdbotConfig = configResult.cfg;
+  let cfg: SurprisebotConfig = configResult.cfg;
 
   cfg = await maybeRepairAnthropicOAuthProfileId(cfg, prompter);
   await noteAuthProfileHealth({
@@ -151,7 +151,7 @@ export async function doctorCommand(
     }
   }
 
-  await noteStateIntegrity(cfg, prompter, configResult.path ?? CONFIG_PATH_CLAWDBOT);
+  await noteStateIntegrity(cfg, prompter, configResult.path ?? CONFIG_PATH_SURPRISEBOT);
 
   cfg = await maybeRepairSandboxImages(cfg, runtime, prompter);
   noteSandboxScopeWarnings(cfg);
@@ -209,7 +209,7 @@ export async function doctorCommand(
     const service = resolveGatewayService();
     let loaded = false;
     try {
-      loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+      loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
     } catch {
       loaded = false;
     }
@@ -241,7 +241,7 @@ export async function doctorCommand(
 
   cfg = applyWizardMetadata(cfg, { command: "doctor", mode: resolveMode(cfg) });
   await writeConfigFile(cfg);
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
 
   if (options.workspaceSuggestions !== false) {
     const workspaceDir = resolveAgentWorkspaceDir(cfg, resolveDefaultAgentId(cfg));

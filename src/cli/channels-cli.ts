@@ -54,7 +54,7 @@ export function registerChannelsCli(program: Command) {
       () =>
         `\n${theme.muted("Docs:")} ${formatDocsLink(
           "/cli/channels",
-          "docs.clawd.bot/cli/channels",
+          "docs.surprisebot.bot/cli/channels",
         )}\n`,
     );
 

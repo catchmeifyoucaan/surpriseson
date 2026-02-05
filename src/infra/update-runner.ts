@@ -129,7 +129,7 @@ async function findPackageRoot(candidates: string[]) {
       try {
         const raw = await fs.readFile(pkgPath, "utf-8");
         const parsed = JSON.parse(raw) as { name?: string };
-        if (parsed?.name === "clawdbot") return current;
+        if (parsed?.name === "surprisebot") return current;
       } catch {
         // ignore
       }
@@ -271,7 +271,7 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
       status: "error",
       mode: "unknown",
       root: gitRoot,
-      reason: "not-clawdbot-root",
+      reason: "not-surprisebot-root",
       steps: [],
       durationMs: Date.now() - startedAt,
     };
@@ -373,10 +373,10 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
 
     const doctorStep = await runStep(
       step(
-        "clawdbot doctor",
-        managerScriptArgs(manager, "clawdbot", ["doctor", "--non-interactive"]),
+        "surprisebot doctor",
+        managerScriptArgs(manager, "surprisebot", ["doctor", "--non-interactive"]),
         gitRoot,
-        { CLAWDBOT_UPDATE_IN_PROGRESS: "1" },
+        { SURPRISEBOT_UPDATE_IN_PROGRESS: "1" },
       ),
     );
     steps.push(doctorStep);

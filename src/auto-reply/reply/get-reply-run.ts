@@ -5,7 +5,7 @@ import {
   isEmbeddedPiRunStreaming,
   resolveEmbeddedSessionLane,
 } from "../../agents/pi-embedded.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   resolveSessionFilePath,
   type SessionEntry,
@@ -40,7 +40,7 @@ import { ensureSkillSnapshot, prependSystemEvents } from "./session-updates.js";
 import type { TypingController } from "./typing.js";
 import { createTypingSignaler, resolveTypingMode } from "./typing-mode.js";
 
-type AgentDefaults = NonNullable<ClawdbotConfig["agents"]>["defaults"];
+type AgentDefaults = NonNullable<SurprisebotConfig["agents"]>["defaults"];
 
 const BARE_SESSION_RESET_PROMPT =
   "A new session was started via /new or /reset. Say hi briefly (1-2 sentences) and ask what the user wants to do next. Do not mention internal steps, files, tools, or reasoning.";
@@ -48,11 +48,11 @@ const BARE_SESSION_RESET_PROMPT =
 type RunPreparedReplyParams = {
   ctx: MsgContext;
   sessionCtx: TemplateContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
   agentDir: string;
   agentCfg: AgentDefaults;
-  sessionCfg: ClawdbotConfig["session"];
+  sessionCfg: SurprisebotConfig["session"];
   commandAuthorized: boolean;
   command: ReturnType<typeof buildCommandContext>;
   commandSource: string;

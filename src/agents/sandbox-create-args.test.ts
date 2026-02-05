@@ -5,8 +5,8 @@ import { buildSandboxCreateArgs, type SandboxDockerConfig } from "./sandbox.js";
 describe("buildSandboxCreateArgs", () => {
   it("includes hardening and resource flags", () => {
     const cfg: SandboxDockerConfig = {
-      image: "clawdbot-sandbox:bookworm-slim",
-      containerPrefix: "clawdbot-sbx-",
+      image: "surprisebot-sandbox:bookworm-slim",
+      containerPrefix: "surprisebot-sbx-",
       workdir: "/workspace",
       readOnlyRoot: true,
       tmpfs: ["/tmp"],
@@ -24,32 +24,32 @@ describe("buildSandboxCreateArgs", () => {
         core: "0",
       },
       seccompProfile: "/tmp/seccomp.json",
-      apparmorProfile: "clawdbot-sandbox",
+      apparmorProfile: "surprisebot-sandbox",
       dns: ["1.1.1.1"],
       extraHosts: ["internal.service:10.0.0.5"],
     };
 
     const args = buildSandboxCreateArgs({
-      name: "clawdbot-sbx-test",
+      name: "surprisebot-sbx-test",
       cfg,
       scopeKey: "main",
       createdAtMs: 1700000000000,
-      labels: { "clawdbot.sandboxBrowser": "1" },
+      labels: { "surprisebot.sandboxBrowser": "1" },
     });
 
     expect(args).toEqual(
       expect.arrayContaining([
         "create",
         "--name",
-        "clawdbot-sbx-test",
+        "surprisebot-sbx-test",
         "--label",
-        "clawdbot.sandbox=1",
+        "surprisebot.sandbox=1",
         "--label",
-        "clawdbot.sessionKey=main",
+        "surprisebot.sessionKey=main",
         "--label",
-        "clawdbot.createdAtMs=1700000000000",
+        "surprisebot.createdAtMs=1700000000000",
         "--label",
-        "clawdbot.sandboxBrowser=1",
+        "surprisebot.sandboxBrowser=1",
         "--read-only",
         "--tmpfs",
         "/tmp",
@@ -64,7 +64,7 @@ describe("buildSandboxCreateArgs", () => {
         "--security-opt",
         "seccomp=/tmp/seccomp.json",
         "--security-opt",
-        "apparmor=clawdbot-sandbox",
+        "apparmor=surprisebot-sandbox",
         "--dns",
         "1.1.1.1",
         "--add-host",
@@ -94,8 +94,8 @@ describe("buildSandboxCreateArgs", () => {
 
   it("emits -v flags for custom binds", () => {
     const cfg: SandboxDockerConfig = {
-      image: "clawdbot-sandbox:bookworm-slim",
-      containerPrefix: "clawdbot-sbx-",
+      image: "surprisebot-sandbox:bookworm-slim",
+      containerPrefix: "surprisebot-sbx-",
       workdir: "/workspace",
       readOnlyRoot: false,
       tmpfs: [],
@@ -105,7 +105,7 @@ describe("buildSandboxCreateArgs", () => {
     };
 
     const args = buildSandboxCreateArgs({
-      name: "clawdbot-sbx-binds",
+      name: "surprisebot-sbx-binds",
       cfg,
       scopeKey: "main",
       createdAtMs: 1700000000000,
@@ -125,8 +125,8 @@ describe("buildSandboxCreateArgs", () => {
 
   it("omits -v flags when binds is empty or undefined", () => {
     const cfg: SandboxDockerConfig = {
-      image: "clawdbot-sandbox:bookworm-slim",
-      containerPrefix: "clawdbot-sbx-",
+      image: "surprisebot-sandbox:bookworm-slim",
+      containerPrefix: "surprisebot-sbx-",
       workdir: "/workspace",
       readOnlyRoot: false,
       tmpfs: [],
@@ -136,7 +136,7 @@ describe("buildSandboxCreateArgs", () => {
     };
 
     const args = buildSandboxCreateArgs({
-      name: "clawdbot-sbx-no-binds",
+      name: "surprisebot-sbx-no-binds",
       cfg,
       scopeKey: "main",
       createdAtMs: 1700000000000,

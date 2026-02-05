@@ -27,7 +27,7 @@ import {
   isAudioPayload,
   signalTypingIfNeeded,
 } from "./agent-runner-helpers.js";
-import { runMemoryFlushIfNeeded } from "./agent-runner-memory.js";
+import { runMemoryCaptureIfNeeded, runMemoryFlushIfNeeded } from "./agent-runner-memory.js";
 import { buildReplyPayloads } from "./agent-runner-payloads.js";
 import { appendUsageLine, formatResponseUsageLine } from "./agent-runner-utils.js";
 import { createAudioAsVoiceBuffer, createBlockReplyPipeline } from "./block-reply-pipeline.js";
@@ -40,6 +40,40 @@ import type { TypingController } from "./typing.js";
 import { createTypingSignaler } from "./typing-mode.js";
 
 const BLOCK_REPLY_SEND_TIMEOUT_MS = 15_000;
+const TOOL_QUERY_RE =
+  /\b(ls|list|show|read|cat|grep|find|search|locate|tail|head|stat|du|df|ps|top|journalctl|systemctl|service|log|folder|directory|file|path|contents?)\b/i;
+const TOOL_CLAIM_RE =
+  /\btool call\b|\btool result\b|\btool results?\b|\btool result for id\b/i;
+const TOOL_WAIT_CLAIM_RE =
+  /\b(waiting|still waiting)\b.*\b(output|result|command|process|ls|exec|ps|find|cat|grep)\b/i;
+const TOOL_EXEC_CLAIM_RE =
+  /\b(I|I've|I am|I'm)\s+(ran|run|running|executed|executing|started)\b.*\b(command|process|ls|exec|ps|find|cat|grep|head|tail)\b/i;
+
+type PendingToolResult = {
+  id: string;
+  name: string;
+  meta?: string;
+  startedAt?: number;
+  timedOut?: boolean;
+};
+
+function shouldRequireToolForQuery(text: string): boolean {
+  return TOOL_QUERY_RE.test(text);
+}
+
+function formatMissingToolResults(pending: PendingToolResult[]): string {
+  const lines = [
+    "⚠️ Tool results missing. Reply blocked to avoid unverified output.",
+    ...pending.slice(0, 5).map((entry) => {
+      const meta = entry.meta ? ` ${entry.meta}` : "";
+      const timedOut = entry.timedOut ? " (timed out)" : "";
+      return `- ${entry.name} (${entry.id}${meta})${timedOut}`;
+    }),
+  ];
+  if (pending.length > 5) lines.push(`… +${pending.length - 5} more`);
+  lines.push("Retry the command or run it directly with /bash run …");
+  return lines.join("\n");
+}
 
 export async function runReplyAgent(params: {
   commandBody: string;
@@ -130,8 +164,10 @@ export async function runReplyAgent(params: {
   );
   const applyReplyToMode = createReplyToModeFilterForChannel(replyToMode, replyToChannel);
   const cfg = followupRun.run.config;
+  const strictToolResults = cfg.tools?.toolResults?.strict === true;
+  const effectiveBlockStreamingEnabled = strictToolResults ? false : blockStreamingEnabled;
   const blockReplyCoalescing =
-    blockStreamingEnabled && opts?.onBlockReply
+    effectiveBlockStreamingEnabled && opts?.onBlockReply
       ? resolveBlockStreamingCoalescing(
           cfg,
           sessionCtx.Provider,
@@ -140,7 +176,7 @@ export async function runReplyAgent(params: {
         )
       : undefined;
   const blockReplyPipeline =
-    blockStreamingEnabled && opts?.onBlockReply
+    effectiveBlockStreamingEnabled && opts?.onBlockReply
       ? createBlockReplyPipeline({
           onBlockReply: opts.onBlockReply,
           timeoutMs: blockReplyTimeoutMs,
@@ -178,6 +214,21 @@ export async function runReplyAgent(params: {
   }
 
   activeSessionEntry = await runMemoryFlushIfNeeded({
+    cfg,
+    followupRun,
+    sessionCtx,
+    opts,
+    defaultModel,
+    agentCfgContextTokens,
+    resolvedVerboseLevel,
+    sessionEntry: activeSessionEntry,
+    sessionStore: activeSessionStore,
+    sessionKey,
+    storePath,
+    isHeartbeat,
+  });
+
+  activeSessionEntry = await runMemoryCaptureIfNeeded({
     cfg,
     followupRun,
     sessionCtx,
@@ -240,14 +291,19 @@ export async function runReplyAgent(params: {
     return true;
   };
   try {
-    const runOutcome = await runAgentTurnWithFallback({
-      commandBody,
+    const toolPolicy = cfg.tools?.toolResults;
+    let effectiveCommandBody = commandBody;
+    let retriedMissingToolResults = false;
+    let retriedToollessQuery = false;
+    let retriedClaimedTool = false;
+    let runOutcome = await runAgentTurnWithFallback({
+      commandBody: effectiveCommandBody,
       followupRun,
       sessionCtx,
       opts,
       typingSignals,
       blockReplyPipeline,
-      blockStreamingEnabled,
+      blockStreamingEnabled: effectiveBlockStreamingEnabled,
       blockReplyChunking,
       resolvedBlockStreamingBreak,
       applyReplyToMode,
@@ -261,6 +317,114 @@ export async function runReplyAgent(params: {
       storePath,
       resolvedVerboseLevel,
     });
+    while (toolPolicy?.retryOnce === true && runOutcome.kind === "success") {
+      const pendingToolResults =
+        (runOutcome.runResult.meta.toolResults?.pending?.length ?? 0) > 0;
+      if (pendingToolResults && !retriedMissingToolResults) {
+        retriedMissingToolResults = true;
+        effectiveCommandBody = [
+          commandBody,
+          "Previous tool calls returned no results. Re-run any required tools and only respond after tool results complete.",
+        ].join("\n\n");
+        runOutcome = await runAgentTurnWithFallback({
+          commandBody: effectiveCommandBody,
+          followupRun,
+          sessionCtx,
+          opts,
+          typingSignals,
+          blockReplyPipeline,
+          blockStreamingEnabled: effectiveBlockStreamingEnabled,
+          blockReplyChunking,
+          resolvedBlockStreamingBreak,
+          applyReplyToMode,
+          shouldEmitToolResult,
+          pendingToolTasks,
+          resetSessionAfterCompactionFailure,
+          isHeartbeat,
+          sessionKey,
+          getActiveSessionEntry: () => activeSessionEntry,
+          activeSessionStore,
+          storePath,
+          resolvedVerboseLevel,
+        });
+        continue;
+      }
+      const replyText = (runOutcome.runResult.payloads ?? [])
+        .map((payload) => payload.text)
+        .filter((text): text is string => Boolean(text && text.trim()))
+        .join("\n");
+      const startedToolCount = runOutcome.runResult.meta.toolResults?.started ?? 0;
+      if (
+        toolPolicy?.warnOnMissing === true &&
+        startedToolCount === 0 &&
+        replyText &&
+        (TOOL_CLAIM_RE.test(replyText) ||
+          TOOL_WAIT_CLAIM_RE.test(replyText) ||
+          TOOL_EXEC_CLAIM_RE.test(replyText)) &&
+        !retriedClaimedTool
+      ) {
+        retriedClaimedTool = true;
+        effectiveCommandBody = [
+          commandBody,
+          "Do not claim tool usage unless a tool actually ran. If no tool is needed, answer directly.",
+          "If a tool is needed, run it now and wait for the result before replying.",
+        ].join("\n\n");
+        runOutcome = await runAgentTurnWithFallback({
+          commandBody: effectiveCommandBody,
+          followupRun,
+          sessionCtx,
+          opts,
+          typingSignals,
+          blockReplyPipeline,
+          blockStreamingEnabled: effectiveBlockStreamingEnabled,
+          blockReplyChunking,
+          resolvedBlockStreamingBreak,
+          applyReplyToMode,
+          shouldEmitToolResult,
+          pendingToolTasks,
+          resetSessionAfterCompactionFailure,
+          isHeartbeat,
+          sessionKey,
+          getActiveSessionEntry: () => activeSessionEntry,
+          activeSessionStore,
+          storePath,
+          resolvedVerboseLevel,
+        });
+        continue;
+      }
+      const shouldRequireTool =
+        toolPolicy?.requireToolForQueries === true && shouldRequireToolForQuery(commandBody);
+      if (shouldRequireTool && startedToolCount === 0 && !retriedToollessQuery) {
+        retriedToollessQuery = true;
+        effectiveCommandBody = [
+          commandBody,
+          "No tools were run for a filesystem/command query. Run the required tool now (exec/read), then only respond after tool results complete.",
+        ].join("\n\n");
+        runOutcome = await runAgentTurnWithFallback({
+          commandBody: effectiveCommandBody,
+          followupRun,
+          sessionCtx,
+          opts,
+          typingSignals,
+          blockReplyPipeline,
+          blockStreamingEnabled: effectiveBlockStreamingEnabled,
+          blockReplyChunking,
+          resolvedBlockStreamingBreak,
+          applyReplyToMode,
+          shouldEmitToolResult,
+          pendingToolTasks,
+          resetSessionAfterCompactionFailure,
+          isHeartbeat,
+          sessionKey,
+          getActiveSessionEntry: () => activeSessionEntry,
+          activeSessionStore,
+          storePath,
+          resolvedVerboseLevel,
+        });
+        continue;
+      }
+      break;
+    }
 
     if (runOutcome.kind === "final") {
       return finalizeWithFollowup(runOutcome.payload, queueKey, runFollowupTurn);
@@ -268,6 +432,66 @@ export async function runReplyAgent(params: {
 
     const { runResult, fallbackProvider, fallbackModel } = runOutcome;
     let { didLogHeartbeatStrip, autoCompactionCompleted } = runOutcome;
+    const toolResults = runResult.meta.toolResults;
+    const strictToolResults = toolPolicy?.strict === true;
+    const requireToolForQueries = toolPolicy?.requireToolForQueries === true;
+    const pendingToolResults = (toolResults?.pending ?? []) as PendingToolResult[];
+    const replyText = (runResult.payloads ?? [])
+      .map((payload) => payload.text)
+      .filter((text): text is string => Boolean(text && text.trim()))
+      .join("\n");
+
+    if (strictToolResults && pendingToolResults.length > 0) {
+      return finalizeWithFollowup(
+        {
+          text: formatMissingToolResults(pendingToolResults),
+          isError: true,
+        },
+        queueKey,
+        runFollowupTurn,
+      );
+    }
+
+    if (
+      requireToolForQueries &&
+      (toolResults?.started ?? 0) === 0 &&
+      shouldRequireToolForQuery(commandBody)
+    ) {
+      return finalizeWithFollowup(
+        {
+          text:
+            "⚠️ Tool verification required for filesystem/command queries. " +
+            "No tools were run in this reply. Please allow tools or ask me to run the command explicitly.",
+          isError: true,
+        },
+        queueKey,
+        runFollowupTurn,
+      );
+    }
+
+    if (
+      !isHeartbeat &&
+      toolPolicy?.warnOnMissing === true &&
+      (toolResults?.started ?? 0) === 0 &&
+      replyText &&
+      (TOOL_CLAIM_RE.test(replyText) ||
+        TOOL_WAIT_CLAIM_RE.test(replyText) ||
+        TOOL_EXEC_CLAIM_RE.test(replyText))
+    ) {
+      defaultRuntime.error(
+        "Reply claimed tool usage but no tool calls were recorded; blocking reply.",
+      );
+      return finalizeWithFollowup(
+        {
+          text:
+            "⚠️ Reply claimed tool usage, but no tool results were recorded. " +
+            "Reply blocked to avoid unverified output.",
+          isError: true,
+        },
+        queueKey,
+        runFollowupTurn,
+      );
+    }
 
     if (
       shouldInjectGroupIntro &&
@@ -304,7 +528,7 @@ export async function runReplyAgent(params: {
       payloads: payloadArray,
       isHeartbeat,
       didLogHeartbeatStrip,
-      blockStreamingEnabled,
+      blockStreamingEnabled: effectiveBlockStreamingEnabled,
       blockReplyPipeline,
       replyToMode,
       replyToChannel,

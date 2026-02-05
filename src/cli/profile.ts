@@ -86,7 +86,7 @@ export function parseCliProfileArgs(argv: string[]): CliProfileParseResult {
 
 function resolveProfileStateDir(profile: string, homedir: () => string): string {
   const suffix = profile.toLowerCase() === "default" ? "" : `-${profile}`;
-  return path.join(homedir(), `.clawdbot${suffix}`);
+  return path.join(homedir(), `.surprisebot${suffix}`);
 }
 
 export function applyCliProfileEnv(params: {
@@ -100,16 +100,16 @@ export function applyCliProfileEnv(params: {
   if (!profile) return;
 
   // Convenience only: fill defaults, never override explicit env values.
-  env.CLAWDBOT_PROFILE = profile;
+  env.SURPRISEBOT_PROFILE = profile;
 
-  const stateDir = env.CLAWDBOT_STATE_DIR?.trim() || resolveProfileStateDir(profile, homedir);
-  if (!env.CLAWDBOT_STATE_DIR?.trim()) env.CLAWDBOT_STATE_DIR = stateDir;
+  const stateDir = env.SURPRISEBOT_STATE_DIR?.trim() || resolveProfileStateDir(profile, homedir);
+  if (!env.SURPRISEBOT_STATE_DIR?.trim()) env.SURPRISEBOT_STATE_DIR = stateDir;
 
-  if (!env.CLAWDBOT_CONFIG_PATH?.trim()) {
-    env.CLAWDBOT_CONFIG_PATH = path.join(stateDir, "clawdbot.json");
+  if (!env.SURPRISEBOT_CONFIG_PATH?.trim()) {
+    env.SURPRISEBOT_CONFIG_PATH = path.join(stateDir, "surprisebot.json");
   }
 
-  if (profile === "dev" && !env.CLAWDBOT_GATEWAY_PORT?.trim()) {
-    env.CLAWDBOT_GATEWAY_PORT = "19001";
+  if (profile === "dev" && !env.SURPRISEBOT_GATEWAY_PORT?.trim()) {
+    env.SURPRISEBOT_GATEWAY_PORT = "19001";
   }
 }

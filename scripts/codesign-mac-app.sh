@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_BUNDLE="${1:-dist/Clawdbot.app}"
+APP_BUNDLE="${1:-dist/Surprisebot.app}"
 IDENTITY="${SIGN_IDENTITY:-}"
 TIMESTAMP_MODE="${CODESIGN_TIMESTAMP:-auto}"
-ENT_TMP_BASE=$(mktemp -t clawdbot-entitlements-base.XXXXXX)
-ENT_TMP_APP=$(mktemp -t clawdbot-entitlements-app.XXXXXX)
-ENT_TMP_APP_BASE=$(mktemp -t clawdbot-entitlements-app-base.XXXXXX)
-ENT_TMP_RUNTIME=$(mktemp -t clawdbot-entitlements-runtime.XXXXXX)
+ENT_TMP_BASE=$(mktemp -t surprisebot-entitlements-base.XXXXXX)
+ENT_TMP_APP=$(mktemp -t surprisebot-entitlements-app.XXXXXX)
+ENT_TMP_APP_BASE=$(mktemp -t surprisebot-entitlements-app-base.XXXXXX)
+ENT_TMP_RUNTIME=$(mktemp -t surprisebot-entitlements-runtime.XXXXXX)
 
 if [ ! -d "$APP_BUNDLE" ]; then
   echo "App bundle not found: $APP_BUNDLE" >&2
@@ -210,8 +210,8 @@ sign_plain_item() {
 }
 
 # Sign main binary
-if [ -f "$APP_BUNDLE/Contents/MacOS/Clawdbot" ]; then
-  echo "Signing main binary"; sign_item "$APP_BUNDLE/Contents/MacOS/Clawdbot" "$APP_ENTITLEMENTS"
+if [ -f "$APP_BUNDLE/Contents/MacOS/Surprisebot" ]; then
+  echo "Signing main binary"; sign_item "$APP_BUNDLE/Contents/MacOS/Surprisebot" "$APP_ENTITLEMENTS"
 fi
 
 # Sign bundled gateway payload (native addons, libvips dylibs)
@@ -222,8 +222,8 @@ if [ -d "$APP_BUNDLE/Contents/Resources/Relay" ]; then
   if [ -f "$APP_BUNDLE/Contents/Resources/Relay/node" ]; then
     echo "Signing embedded node"; sign_item "$APP_BUNDLE/Contents/Resources/Relay/node" "$ENT_TMP_RUNTIME"
   fi
-  if [ -f "$APP_BUNDLE/Contents/Resources/Relay/clawdbot" ]; then
-    echo "Signing embedded relay wrapper"; sign_plain_item "$APP_BUNDLE/Contents/Resources/Relay/clawdbot"
+  if [ -f "$APP_BUNDLE/Contents/Resources/Relay/surprisebot" ]; then
+    echo "Signing embedded relay wrapper"; sign_plain_item "$APP_BUNDLE/Contents/Resources/Relay/surprisebot"
   fi
 fi
 

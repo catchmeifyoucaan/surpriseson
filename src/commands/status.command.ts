@@ -239,7 +239,7 @@ export async function statusCommand(
     },
   ];
 
-  runtime.log(theme.heading("Clawdbot status"));
+  runtime.log(theme.heading("Surprisebot status"));
   runtime.log("");
   runtime.log(theme.heading("Overview"));
   runtime.log(
@@ -288,8 +288,8 @@ export async function statusCommand(
       runtime.log(theme.muted(`… +${sorted.length - shown.length} more`));
     }
   }
-  runtime.log(theme.muted("Full report: clawdbot security audit"));
-  runtime.log(theme.muted("Deep probe: clawdbot security audit --deep"));
+  runtime.log(theme.muted("Full report: surprisebot security audit"));
+  runtime.log(theme.muted("Deep probe: surprisebot security audit --deep"));
 
   runtime.log("");
   runtime.log(theme.heading("Channels"));
@@ -436,15 +436,15 @@ export async function statusCommand(
   }
 
   runtime.log("");
-  runtime.log("FAQ: https://docs.clawd.bot/faq");
-  runtime.log("Troubleshooting: https://docs.clawd.bot/troubleshooting");
+  runtime.log("FAQ: https://docs.surprisebot.bot/faq");
+  runtime.log("Troubleshooting: https://docs.surprisebot.bot/troubleshooting");
   runtime.log("");
   runtime.log("Next steps:");
-  runtime.log("  Need to share?      clawdbot status --all");
-  runtime.log("  Need to debug live? clawdbot logs --follow");
+  runtime.log("  Need to share?      surprisebot status --all");
+  runtime.log("  Need to debug live? surprisebot logs --follow");
   if (gatewayReachable) {
-    runtime.log("  Need to test channels? clawdbot status --deep");
+    runtime.log("  Need to test channels? surprisebot status --deep");
   } else {
-    runtime.log("  Fix reachability first: clawdbot gateway status");
+    runtime.log("  Fix reachability first: surprisebot gateway status");
   }
 }

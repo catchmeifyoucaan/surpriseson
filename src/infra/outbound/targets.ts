@@ -1,6 +1,6 @@
 import { getChannelPlugin, normalizeChannelId } from "../../channels/plugins/index.js";
 import type { ChannelId, ChannelOutboundTargetMode } from "../../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import type {
   DeliverableMessageChannel,
@@ -25,7 +25,7 @@ export function resolveOutboundTarget(params: {
   channel: GatewayMessageChannel;
   to?: string;
   allowFrom?: string[];
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   accountId?: string | null;
   mode?: ChannelOutboundTargetMode;
 }): OutboundTargetResolution {
@@ -33,7 +33,7 @@ export function resolveOutboundTarget(params: {
     return {
       ok: false,
       error: new Error(
-        "Delivering to WebChat is not supported via `clawdbot agent`; use WhatsApp/Telegram or run with --deliver=false.",
+        "Delivering to WebChat is not supported via `surprisebot agent`; use WhatsApp/Telegram or run with --deliver=false.",
       ),
     };
   }
@@ -77,7 +77,7 @@ export function resolveOutboundTarget(params: {
 }
 
 export function resolveHeartbeatDeliveryTarget(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   entry?: SessionEntry;
 }): OutboundTarget {
   const { cfg, entry } = params;

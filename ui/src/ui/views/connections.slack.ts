@@ -220,7 +220,7 @@ export function renderSlackCard(params: {
               props.onSlackChange({
                 slashName: (e.target as HTMLInputElement).value,
               })}
-            placeholder="clawd"
+            placeholder="surprisebot"
           />
         </label>
         <label class="field">

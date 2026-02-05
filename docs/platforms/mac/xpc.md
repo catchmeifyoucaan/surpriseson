@@ -1,11 +1,11 @@
 ---
-summary: "macOS IPC architecture for Clawdbot app, gateway node bridge, and PeekabooBridge"
+summary: "macOS IPC architecture for Surprisebot app, gateway node bridge, and PeekabooBridge"
 read_when:
   - Editing IPC contracts or menu bar app IPC
 ---
-# Clawdbot macOS IPC architecture
+# Surprisebot macOS IPC architecture
 
-**Current model:** there is **no local control socket** and no `clawdbot-mac` CLI. All agent actions go through the Gateway WebSocket and `node.invoke`. UI automation still uses PeekabooBridge.
+**Current model:** there is **no local control socket** and no `surprisebot-mac` CLI. All agent actions go through the Gateway WebSocket and `node.invoke`. UI automation still uses PeekabooBridge.
 
 ## Goals
 - Single GUI app instance that owns all TCC-facing work (notifications, screen recording, mic, speech, AppleScript).
@@ -19,7 +19,7 @@ read_when:
 
 ### PeekabooBridge (UI automation)
 - UI automation uses a separate UNIX socket named `bridge.sock` and the PeekabooBridge JSON protocol.
-- Host preference order (client-side): Peekaboo.app → Claude.app → Clawdbot.app → local execution.
+- Host preference order (client-side): Peekaboo.app → Claude.app → Surprisebot.app → local execution.
 - Security: bridge hosts require an allowed TeamID; DEBUG-only same-UID escape hatch is guarded by `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (Peekaboo convention).
 - See: [PeekabooBridge usage](/platforms/mac/peekaboo) for details.
 

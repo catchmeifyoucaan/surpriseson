@@ -14,7 +14,7 @@ export default defineConfig({
       "apps/macos/.build/**",
       "**/node_modules/**",
       "**/vendor/**",
-      "dist/Clawdbot.app/**",
+      "dist/Surprisebot.app/**",
       "**/*.live.test.ts",
     ],
     coverage: {

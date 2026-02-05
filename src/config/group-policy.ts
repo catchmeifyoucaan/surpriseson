@@ -1,5 +1,5 @@
 import { normalizeAccountId } from "../routing/session-key.js";
-import type { ClawdbotConfig } from "./config.js";
+import type { SurprisebotConfig } from "./config.js";
 
 export type GroupPolicyChannel = "whatsapp" | "telegram" | "imessage";
 
@@ -17,7 +17,7 @@ export type ChannelGroupPolicy = {
 type ChannelGroups = Record<string, ChannelGroupConfig>;
 
 function resolveChannelGroups(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   channel: GroupPolicyChannel,
   accountId?: string | null,
 ): ChannelGroups | undefined {
@@ -40,7 +40,7 @@ function resolveChannelGroups(
 }
 
 export function resolveChannelGroupPolicy(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: GroupPolicyChannel;
   groupId?: string | null;
   accountId?: string | null;
@@ -65,7 +65,7 @@ export function resolveChannelGroupPolicy(params: {
 }
 
 export function resolveChannelGroupRequireMention(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: GroupPolicyChannel;
   groupId?: string | null;
   accountId?: string | null;

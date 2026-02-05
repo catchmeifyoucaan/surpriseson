@@ -1,35 +1,34 @@
 ---
-summary: "CLI backends: text-only fallback via local AI CLIs"
+summary: "CLI backends: local tool-capable runtime via AI CLIs"
 read_when:
   - You want a reliable fallback when API providers fail
   - You are running Claude Code CLI or other local AI CLIs and want to reuse them
-  - You need a text-only, tool-free path that still supports sessions and images
+  - You want tool-capable local runs that still support sessions and images
 ---
-# CLI backends (fallback runtime)
+# CLI backends (tool-capable runtime)
 
-Clawdbot can run **local AI CLIs** as a **text-only fallback** when API providers are down,
-rate-limited, or temporarily misbehaving. This is intentionally conservative:
+Surprisebot can run **local AI CLIs** as a **tool-capable runtime**, either as a primary path or as a fallback when API providers are down,
+rate-limited, or temporarily misbehaving.
 
-- **Tools are disabled** (no tool calls).
+- **Tools are supported** (when the CLI supports tool calling).
 - **Text in → text out** (reliable).
 - **Sessions are supported** (so follow-up turns stay coherent).
 - **Images can be passed through** if the CLI accepts image paths.
 
-This is designed as a **safety net** rather than a primary path. Use it when you
-want “always works” text responses without relying on external APIs.
+This can be used as a **primary runtime** or as a safety net. Use it when you want local, tool-capable runs without relying entirely on external APIs.
 
 ## Beginner-friendly quick start
 
-You can use Claude Code CLI **without any config** (Clawdbot ships a built-in default):
+You can use Claude Code CLI **without any config** (Surprisebot ships a built-in default):
 
 ```bash
-clawdbot agent --message "hi" --model claude-cli/opus-4.5
+surprisebot agent --message "hi" --model claude-cli/opus-4.5
 ```
 
 Codex CLI also works out of the box:
 
 ```bash
-clawdbot agent --message "hi" --model codex-cli/gpt-5.2-codex
+surprisebot agent --message "hi" --model codex-cli/gpt-5.2-codex
 ```
 
 If your gateway runs under launchd/systemd and PATH is minimal, add just the
@@ -76,7 +75,7 @@ Add a CLI backend to your fallback list so it only runs when primary models fail
 
 Notes:
 - If you use `agents.defaults.models` (allowlist), you must include `claude-cli/...`.
-- If the primary provider fails (auth, rate limits, timeouts), Clawdbot will
+- If the primary provider fails (auth, rate limits, timeouts), Surprisebot will
   try the CLI backend next.
 
 ## Configuration overview
@@ -132,7 +131,7 @@ The provider id becomes the left side of your model ref:
 ## How it works
 
 1) **Selects a backend** based on the provider prefix (`claude-cli/...`).
-2) **Builds a system prompt** using the same Clawdbot prompt + workspace context.
+2) **Builds a system prompt** using the same Surprisebot prompt + workspace context.
 3) **Executes the CLI** with a session id (if supported) so history stays consistent.
 4) **Parses output** (JSON or plain text) and returns the final text.
 5) **Persists session ids** per backend, so follow-ups reuse the same CLI session.
@@ -159,8 +158,8 @@ imageArg: "--image",
 imageMode: "repeat"
 ```
 
-Clawdbot will write base64 images to temp files. If `imageArg` is set, those
-paths are passed as CLI args. If `imageArg` is missing, Clawdbot appends the
+Surprisebot will write base64 images to temp files. If `imageArg` is set, those
+paths are passed as CLI args. If `imageArg` is missing, Surprisebot appends the
 file paths to the prompt (path injection), which is enough for CLIs that auto-
 load local files from plain paths (Claude Code CLI behavior).
 
@@ -178,7 +177,7 @@ Input modes:
 
 ## Defaults (built-in)
 
-Clawdbot ships a default for `claude-cli`:
+Surprisebot ships a default for `claude-cli`:
 
 - `command: "claude"`
 - `args: ["-p", "--output-format", "json", "--dangerously-skip-permissions"]`
@@ -188,7 +187,7 @@ Clawdbot ships a default for `claude-cli`:
 - `systemPromptWhen: "first"`
 - `sessionMode: "always"`
 
-Clawdbot also ships a default for `codex-cli`:
+Surprisebot also ships a default for `codex-cli`:
 
 - `command: "codex"`
 - `args: ["exec","--json","--color","never","--sandbox","read-only","--skip-git-repo-check"]`
@@ -203,12 +202,12 @@ Override only if needed (common: absolute `command` path).
 
 ## Limitations
 
-- **No Clawdbot tools** (the CLI backend never receives tool calls). Some CLIs
+- **No Surprisebot tools** (the CLI backend never receives tool calls). Some CLIs
   may still run their own agent tooling.
 - **No streaming** (CLI output is collected then returned).
 - **Structured outputs** depend on the CLI’s JSON format.
 - **Codex CLI sessions** resume via text output (no JSONL), which is less
-  structured than the initial `--json` run. Clawdbot sessions still work
+  structured than the initial `--json` run. Surprisebot sessions still work
   normally.
 
 ## Troubleshooting
@@ -218,3 +217,25 @@ Override only if needed (common: absolute `command` path).
 - **No session continuity**: ensure `sessionArg` is set and `sessionMode` is not
   `none` (Codex CLI currently cannot resume with JSON output).
 - **Images ignored**: set `imageArg` (and verify CLI supports file paths).
+
+
+## Codex CLI seats (failover)
+
+Surprisebot can target **multiple Codex CLI seats** as providers. Configure a primary seat
+and fallback seats in your agent model config:
+
+```json5
+{
+  agents: {
+    defaults: {
+      model: {
+        primary: "codex-cli-seat1/gpt-5.2-codex",
+        fallbacks: ["codex-cli-seat2/gpt-5.2-codex", "codex-cli-seat3/gpt-5.2-codex"]
+      }
+    }
+  }
+}
+```
+
+This is failover (seat 2+ only used on errors/cooldowns).
+

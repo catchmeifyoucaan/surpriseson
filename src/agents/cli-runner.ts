@@ -1,11 +1,12 @@
 import type { ImageContent } from "@mariozechner/pi-ai";
 import { resolveHeartbeatPrompt } from "../auto-reply/heartbeat.js";
 import type { ThinkLevel } from "../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { shouldLogVerbose } from "../globals.js";
 import { createSubsystemLogger } from "../logging.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { resolveUserPath } from "../utils.js";
+import { resolveSurprisebotAgentDir } from "./agent-paths.js";
 import { resolveSessionAgentIds } from "./agent-scope.js";
 import { resolveCliBackendConfig } from "./cli-backends.js";
 import {
@@ -23,23 +24,33 @@ import {
   writeCliImages,
 } from "./cli-runner/helpers.js";
 import { FailoverError, resolveFailoverStatus } from "./failover-error.js";
+import { resolveModelAuthMode } from "./model-auth.js";
 import {
   buildBootstrapContextFiles,
   classifyFailoverReason,
   isFailoverErrorMessage,
   resolveBootstrapMaxChars,
 } from "./pi-embedded-helpers.js";
+import { resolveExecToolDefaults } from "./pi-embedded-runner/utils.js";
+import { createSurprisebotCodingTools } from "./pi-tools.js";
 import type { EmbeddedPiRunResult } from "./pi-embedded-runner.js";
 import { filterBootstrapFilesForSession, loadWorkspaceBootstrapFiles } from "./workspace.js";
 
 const log = createSubsystemLogger("agent/claude-cli");
+
+function resolveCliToolProvider(providerId: string): string | undefined {
+  const normalized = providerId.trim().toLowerCase();
+  if (normalized.startsWith("codex-cli")) return "openai-codex";
+  if (normalized.startsWith("claude-cli")) return "anthropic";
+  return undefined;
+}
 
 export async function runCliAgent(params: {
   sessionId: string;
   sessionKey?: string;
   sessionFile: string;
   workspaceDir: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   prompt: string;
   provider: string;
   model?: string;
@@ -64,12 +75,19 @@ export async function runCliAgent(params: {
   const normalizedModel = normalizeCliModel(modelId, backend);
   const modelDisplay = `${params.provider}/${modelId}`;
 
-  const extraSystemPrompt = [
-    params.extraSystemPrompt?.trim(),
-    "Tools are disabled in this session. Do not call tools.",
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const extraSystemPrompt = [params.extraSystemPrompt?.trim()].filter(Boolean).join("\n");
+  const toolProvider =
+    resolveCliToolProvider(backendResolved.id) ?? resolveCliToolProvider(params.provider);
+  const tools = createSurprisebotCodingTools({
+    exec: resolveExecToolDefaults(params.config),
+    sessionKey: params.sessionKey ?? params.sessionId,
+    agentDir: resolveSurprisebotAgentDir(),
+    workspaceDir,
+    config: params.config,
+    modelProvider: toolProvider ?? params.provider,
+    modelId: normalizedModel,
+    modelAuthMode: resolveModelAuthMode(toolProvider ?? params.provider, params.config),
+  });
 
   const bootstrapFiles = filterBootstrapFilesForSession(
     await loadWorkspaceBootstrapFiles(workspaceDir),
@@ -95,7 +113,7 @@ export async function runCliAgent(params: {
     extraSystemPrompt,
     ownerNumbers: params.ownerNumbers,
     heartbeatPrompt,
-    tools: [],
+    tools,
     contextFiles,
     modelDisplay,
   });
@@ -124,6 +142,10 @@ export async function runCliAgent(params: {
   let imagePaths: string[] | undefined;
   let cleanupImages: (() => Promise<void>) | undefined;
   let prompt = params.prompt;
+  if (systemPrompt && !backend.systemPromptArg) {
+    const trimmed = prompt.trim();
+    prompt = trimmed ? `${systemPrompt}\n\n${trimmed}` : systemPrompt;
+  }
   if (params.images && params.images.length > 0) {
     const imagePayload = await writeCliImages(params.images);
     imagePaths = imagePayload.paths;
@@ -161,7 +183,7 @@ export async function runCliAgent(params: {
       log.info(
         `cli exec: provider=${params.provider} model=${normalizedModel} promptChars=${params.prompt.length}`,
       );
-      const logOutputText = process.env.CLAWDBOT_CLAUDE_CLI_LOG_OUTPUT === "1";
+      const logOutputText = process.env.SURPRISEBOT_CLAUDE_CLI_LOG_OUTPUT === "1";
       if (logOutputText) {
         const logArgs: string[] = [];
         for (let i = 0; i < args.length; i += 1) {
@@ -267,6 +289,7 @@ export async function runCliAgent(params: {
           model: modelId,
           usage: output.usage,
         },
+        ...(output.toolResults ? { toolResults: output.toolResults } : {}),
       },
     };
   } catch (err) {
@@ -295,7 +318,7 @@ export async function runClaudeCliAgent(params: {
   sessionKey?: string;
   sessionFile: string;
   workspaceDir: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   prompt: string;
   provider?: string;
   model?: string;

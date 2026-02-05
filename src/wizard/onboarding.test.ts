@@ -77,7 +77,7 @@ vi.mock("../tui/tui.js", () => ({
 describe("runOnboardingWizard", () => {
   it("exits when config is invalid", async () => {
     readConfigFileSnapshot.mockResolvedValueOnce({
-      path: "/tmp/.clawdbot/clawdbot.json",
+      path: "/tmp/.surprisebot/surprisebot.json",
       exists: true,
       raw: "{}",
       parsed: {},
@@ -174,7 +174,7 @@ describe("runOnboardingWizard", () => {
   it("launches TUI without auto-delivery when hatching", async () => {
     runTui.mockClear();
 
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-onboard-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-onboard-"));
     await fs.writeFile(path.join(workspaceDir, DEFAULT_BOOTSTRAP_FILENAME), "{}");
 
     const confirm: WizardPrompter["confirm"] = vi.fn(async (opts) => {

@@ -1,6 +1,7 @@
 import { Type } from "@sinclair/typebox";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
+import { loadConfig } from "../../config/config.js";
 import { getMemorySearchManager } from "../../memory/index.js";
 import { resolveSessionAgentId } from "../agent-scope.js";
 import { resolveMemorySearchConfig } from "../memory-search.js";
@@ -20,16 +21,37 @@ const MemoryGetSchema = Type.Object({
 });
 
 export function createMemorySearchTool(options: {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   agentSessionKey?: string;
 }): AnyAgentTool | null {
-  const cfg = options.config;
-  if (!cfg) return null;
+  const cfg = (() => {
+    if (options.config) return options.config;
+    try {
+      return loadConfig();
+    } catch {
+      return null;
+    }
+  })();
   const agentId = resolveSessionAgentId({
     sessionKey: options.agentSessionKey,
-    config: cfg,
+    config: cfg ?? undefined,
   });
-  if (!resolveMemorySearchConfig(cfg, agentId)) return null;
+  if (!cfg || !resolveMemorySearchConfig(cfg, agentId)) {
+    return {
+      label: "Memory Search",
+      name: "memory_search",
+      description:
+        "Memory search is unavailable in this context (disabled or config missing).",
+      parameters: MemorySearchSchema,
+      execute: async (_toolCallId) => {
+        return jsonResult({
+          results: [],
+          disabled: true,
+          error: cfg ? "memory search disabled" : "memory search config unavailable",
+        });
+      },
+    };
+  }
   return {
     label: "Memory Search",
     name: "memory_search",
@@ -64,16 +86,38 @@ export function createMemorySearchTool(options: {
 }
 
 export function createMemoryGetTool(options: {
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   agentSessionKey?: string;
 }): AnyAgentTool | null {
-  const cfg = options.config;
-  if (!cfg) return null;
+  const cfg = (() => {
+    if (options.config) return options.config;
+    try {
+      return loadConfig();
+    } catch {
+      return null;
+    }
+  })();
   const agentId = resolveSessionAgentId({
     sessionKey: options.agentSessionKey,
-    config: cfg,
+    config: cfg ?? undefined,
   });
-  if (!resolveMemorySearchConfig(cfg, agentId)) return null;
+  if (!cfg || !resolveMemorySearchConfig(cfg, agentId)) {
+    return {
+      label: "Memory Get",
+      name: "memory_get",
+      description: "Memory get is unavailable in this context (disabled or config missing).",
+      parameters: MemoryGetSchema,
+      execute: async (_toolCallId, params) => {
+        const relPath = readStringParam(params, "path", { required: true });
+        return jsonResult({
+          path: relPath,
+          text: "",
+          disabled: true,
+          error: cfg ? "memory search disabled" : "memory search config unavailable",
+        });
+      },
+    };
+  }
   return {
     label: "Memory Get",
     name: "memory_get",

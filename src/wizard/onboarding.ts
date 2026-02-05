@@ -25,9 +25,9 @@ import type {
   OnboardOptions,
   ResetScope,
 } from "../commands/onboard-types.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   DEFAULT_GATEWAY_PORT,
   readConfigFileSnapshot,
   resolveGatewayPort,
@@ -49,12 +49,12 @@ async function requireRiskAcknowledgement(params: {
 
   await params.prompter.note(
     [
-      "Please read: https://docs.clawd.bot/security",
+      "Please read: https://docs.surprisebot.bot/security",
       "",
-      "Clawdbot agents can run commands, read/write files, and act through any tools you enable. They can only send messages on channels you configure (for example, an account you log in on this machine, or a bot account like Slack/Discord).",
+      "Surprisebot agents can run commands, read/write files, and act through any tools you enable. They can only send messages on channels you configure (for example, an account you log in on this machine, or a bot account like Slack/Discord).",
       "",
       "If you’re new to this, start with the sandbox and least privilege. It helps limit what an agent can do if it’s tricked or makes a mistake.",
-      "Learn more: https://docs.clawd.bot/sandboxing",
+      "Learn more: https://docs.surprisebot.bot/sandboxing",
     ].join("\n"),
     "Security",
   );
@@ -74,11 +74,11 @@ export async function runOnboardingWizard(
   prompter: WizardPrompter,
 ) {
   printWizardHeader(runtime);
-  await prompter.intro("Clawdbot onboarding");
+  await prompter.intro("Surprisebot onboarding");
   await requireRiskAcknowledgement({ opts, prompter });
 
   const snapshot = await readConfigFileSnapshot();
-  let baseConfig: ClawdbotConfig = snapshot.valid ? snapshot.config : {};
+  let baseConfig: SurprisebotConfig = snapshot.valid ? snapshot.config : {};
 
   if (snapshot.exists) {
     const title = snapshot.valid ? "Existing config detected" : "Invalid config";
@@ -88,7 +88,7 @@ export async function runOnboardingWizard(
         [
           ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
           "",
-          "Docs: https://docs.clawd.bot/gateway/configuration",
+          "Docs: https://docs.surprisebot.bot/gateway/configuration",
         ].join("\n"),
         "Config issues",
       );
@@ -96,7 +96,7 @@ export async function runOnboardingWizard(
 
     if (!snapshot.valid) {
       await prompter.outro(
-        "Config invalid. Run `clawdbot doctor` to repair it, then re-run onboarding.",
+        "Config invalid. Run `surprisebot doctor` to repair it, then re-run onboarding.",
       );
       runtime.exit(1);
       return;
@@ -132,7 +132,7 @@ export async function runOnboardingWizard(
     }
   }
 
-  const quickstartHint = "Configure details later via clawdbot configure.";
+  const quickstartHint = "Configure details later via surprisebot configure.";
   const advancedHint = "Configure port, network, Tailscale, and auth options.";
   const explicitFlowRaw = opts.flow?.trim();
   if (explicitFlowRaw && explicitFlowRaw !== "quickstart" && explicitFlowRaw !== "advanced") {
@@ -253,8 +253,8 @@ export async function runOnboardingWizard(
   const localUrl = `ws://127.0.0.1:${localPort}`;
   const localProbe = await probeGatewayReachable({
     url: localUrl,
-    token: baseConfig.gateway?.auth?.token ?? process.env.CLAWDBOT_GATEWAY_TOKEN,
-    password: baseConfig.gateway?.auth?.password ?? process.env.CLAWDBOT_GATEWAY_PASSWORD,
+    token: baseConfig.gateway?.auth?.token ?? process.env.SURPRISEBOT_GATEWAY_TOKEN,
+    password: baseConfig.gateway?.auth?.password ?? process.env.SURPRISEBOT_GATEWAY_PASSWORD,
   });
   const remoteUrl = baseConfig.gateway?.remote?.url?.trim() ?? "";
   const remoteProbe = remoteUrl
@@ -294,7 +294,7 @@ export async function runOnboardingWizard(
     let nextConfig = await promptRemoteGatewayConfig(baseConfig, prompter);
     nextConfig = applyWizardMetadata(nextConfig, { command: "onboard", mode });
     await writeConfigFile(nextConfig);
-    runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+    runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
     await prompter.outro("Remote gateway configured.");
     return;
   }
@@ -310,7 +310,7 @@ export async function runOnboardingWizard(
 
   const workspaceDir = resolveUserPath(workspaceInput.trim() || DEFAULT_WORKSPACE);
 
-  let nextConfig: ClawdbotConfig = {
+  let nextConfig: SurprisebotConfig = {
     ...baseConfig,
     agents: {
       ...baseConfig.agents,
@@ -393,7 +393,7 @@ export async function runOnboardingWizard(
   }
 
   await writeConfigFile(nextConfig);
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   await ensureWorkspaceAndSessions(workspaceDir, runtime, {
     skipBootstrap: Boolean(nextConfig.agents?.defaults?.skipBootstrap),
   });

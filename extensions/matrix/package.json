@@ -1,9 +1,9 @@
 {
-  "name": "@clawdbot/matrix",
+  "name": "@surprisebot/matrix",
   "version": "2026.1.14-1",
   "type": "module",
-  "description": "Clawdbot Matrix channel plugin",
-  "clawdbot": {
+  "description": "Surprisebot Matrix channel plugin",
+  "surprisebot": {
     "extensions": ["./index.ts"]
   },
   "dependencies": {

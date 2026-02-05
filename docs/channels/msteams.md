@@ -14,7 +14,7 @@ Status: text + DM attachments are supported; channel/group attachments require M
 
 ## Quick setup (beginner)
 1) Create an **Azure Bot** (App ID + client secret + tenant ID).
-2) Configure Clawdbot with those credentials.
+2) Configure Surprisebot with those credentials.
 3) Expose `/api/messages` (port 3978 by default) via a public URL or tunnel.
 4) Install the Teams app package and start the gateway.
 
@@ -35,7 +35,7 @@ Minimal config:
 Note: group chats are blocked by default (`channels.msteams.groupPolicy: "allowlist"`). To allow group replies, set `channels.msteams.groupAllowFrom` (or use `groupPolicy: "open"` to allow any member, mention-gated).
 
 ## Goals
-- Talk to Clawdbot via Teams DMs, group chats, or channels.
+- Talk to Surprisebot via Teams DMs, group chats, or channels.
 - Keep routing deterministic: replies always go back to the channel they arrived on.
 - Default to safe channel behavior (mentions required unless configured otherwise).
 
@@ -76,12 +76,12 @@ Example:
 1. Create an **Azure Bot** (App ID + secret + tenant ID).
 2. Build a **Teams app package** that references the bot and includes the RSC permissions below.
 3. Upload/install the Teams app into a team (or personal scope for DMs).
-4. Configure `msteams` in `~/.clawdbot/clawdbot.json` (or env vars) and start the gateway.
+4. Configure `msteams` in `~/.surprisebot/surprisebot.json` (or env vars) and start the gateway.
 5. The gateway listens for Bot Framework webhook traffic on `/api/messages` by default.
 
 ## Azure Bot Setup (Prerequisites)
 
-Before configuring Clawdbot, you need to create an Azure Bot resource.
+Before configuring Surprisebot, you need to create an Azure Bot resource.
 
 ### Step 1: Create Azure Bot
 
@@ -90,7 +90,7 @@ Before configuring Clawdbot, you need to create an Azure Bot resource.
 
    | Field | Value |
    |-------|-------|
-   | **Bot handle** | Your bot name, e.g., `clawdbot-msteams` (must be unique) |
+   | **Bot handle** | Your bot name, e.g., `surprisebot-msteams` (must be unique) |
    | **Subscription** | Select your Azure subscription |
    | **Resource group** | Create new or use existing |
    | **Pricing tier** | **Free** for dev/testing |
@@ -180,7 +180,7 @@ This is often easier than hand-editing JSON manifests.
    - Create icons: `outline.png` (32x32) and `color.png` (192x192).
    - Zip all three files together: `manifest.json`, `outline.png`, `color.png`.
 
-3. **Configure Clawdbot**
+3. **Configure Surprisebot**
    ```json
    {
      "msteams": {
@@ -234,14 +234,14 @@ Minimal, valid example with the required fields. Replace IDs and URLs.
   "manifestVersion": "1.23",
   "version": "1.0.0",
   "id": "00000000-0000-0000-0000-000000000000",
-  "name": { "short": "Clawdbot" },
+  "name": { "short": "Surprisebot" },
   "developer": {
     "name": "Your Org",
     "websiteUrl": "https://example.com",
     "privacyUrl": "https://example.com/privacy",
     "termsOfUseUrl": "https://example.com/terms"
   },
-  "description": { "short": "Clawdbot in Teams", "full": "Clawdbot in Teams" },
+  "description": { "short": "Surprisebot in Teams", "full": "Surprisebot in Teams" },
   "icons": { "outline": "outline.png", "color": "color.png" },
   "accentColor": "#5B6DEF",
   "bots": [
@@ -342,7 +342,7 @@ Teams delivers messages via HTTP webhook. If processing takes too long (e.g., sl
 - Teams retrying the message (causing duplicates)
 - Dropped replies
 
-Clawdbot handles this by returning quickly and sending replies proactively, but very slow responses may still cause issues.
+Surprisebot handles this by returning quickly and sending replies proactively, but very slow responses may still cause issues.
 
 ### Formatting
 Teams markdown is more limited than Slack or Discord:
@@ -414,13 +414,13 @@ Teams recently introduced two channel UI styles over the same underlying data mo
 - **Channels/groups:** Attachments live in M365 storage (SharePoint/OneDrive). The webhook payload only includes an HTML stub, not the actual file bytes. **Graph API permissions are required** to download channel attachments.
 
 Without Graph permissions, channel messages with images will be received as text-only (the image content is not accessible to the bot).
-By default, Clawdbot only downloads media from Microsoft/Teams hostnames. Override with `channels.msteams.mediaAllowHosts` (use `["*"]` to allow any host).
+By default, Surprisebot only downloads media from Microsoft/Teams hostnames. Override with `channels.msteams.mediaAllowHosts` (use `["*"]` to allow any host).
 
 ## Polls (Adaptive Cards)
-Clawdbot sends Teams polls as Adaptive Cards (there is no native Teams poll API).
+Surprisebot sends Teams polls as Adaptive Cards (there is no native Teams poll API).
 
-- CLI: `clawdbot message poll --channel msteams --to conversation:<id> ...`
-- Votes are recorded by the gateway in `~/.clawdbot/msteams-polls.json`.
+- CLI: `surprisebot message poll --channel msteams --to conversation:<id> ...`
+- Votes are recorded by the gateway in `~/.surprisebot/msteams-polls.json`.
 - The gateway must stay online to record votes.
 - Polls do not auto-post result summaries yet (inspect the store file if needed).
 

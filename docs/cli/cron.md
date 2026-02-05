@@ -1,16 +1,16 @@
 ---
-summary: "CLI reference for `clawdbot cron` (schedule and run background jobs)"
+summary: "CLI reference for `surprisebot cron` (schedule and run background jobs)"
 read_when:
   - You want scheduled jobs and wakeups
   - You’re debugging cron execution and logs
 ---
 
-# `clawdbot cron`
+# `surprisebot cron`
 
 Manage cron jobs for the Gateway scheduler.
 
 Related:
 - Cron jobs: [Cron jobs](/automation/cron-jobs)
 
-Tip: run `clawdbot cron --help` for the full command surface.
+Tip: run `surprisebot cron --help` for the full command surface.
 

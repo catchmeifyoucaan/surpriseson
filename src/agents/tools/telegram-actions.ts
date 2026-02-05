@@ -1,6 +1,6 @@
 import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import { resolveChannelCapabilities } from "../../config/channel-capabilities.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   deleteMessageTelegram,
   reactMessageTelegram,
@@ -22,7 +22,7 @@ type TelegramButton = {
 };
 
 function hasInlineButtonsCapability(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   accountId?: string | undefined;
 }): boolean {
   const caps =
@@ -75,7 +75,7 @@ export function readTelegramButtons(
 
 export async function handleTelegramAction(
   params: Record<string, unknown>,
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
 ): Promise<AgentToolResult<unknown>> {
   const action = readStringParam(params, "action", { required: true });
   const accountId = readStringParam(params, "accountId");

@@ -1,0 +1,43 @@
+name: Installer Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  installer-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Shellcheck installers
+        run: shellcheck public/install.sh public/install-cli.sh
+
+      - name: Dry-run install.sh (npm)
+        env:
+          SURPRISEBOT_DRY_RUN: "1"
+          SURPRISEBOT_NO_ONBOARD: "1"
+          SURPRISEBOT_NO_PROMPT: "1"
+        run: bash public/install.sh --dry-run --no-onboard --no-prompt --install-method npm
+
+      - name: Dry-run install.sh (git)
+        env:
+          SURPRISEBOT_DRY_RUN: "1"
+          SURPRISEBOT_NO_ONBOARD: "1"
+          SURPRISEBOT_NO_PROMPT: "1"
+        run: bash public/install.sh --dry-run --no-onboard --no-prompt --install-method git --git-dir /tmp/surprisebot
+
+      - name: Dry-run install-cli.sh
+        env:
+          SURPRISEBOT_DRY_RUN: "1"
+          SURPRISEBOT_NO_ONBOARD: "1"
+        run: bash public/install-cli.sh --dry-run --no-onboard
+
+      - name: Ensure install.ps1 exists
+        run: test -f public/install.ps1

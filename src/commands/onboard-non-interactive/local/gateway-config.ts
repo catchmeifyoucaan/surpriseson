@@ -1,15 +1,15 @@
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { randomToken } from "../../onboard-helpers.js";
 import type { OnboardOptions } from "../../onboard-types.js";
 
 export function applyNonInteractiveGatewayConfig(params: {
-  nextConfig: ClawdbotConfig;
+  nextConfig: SurprisebotConfig;
   opts: OnboardOptions;
   runtime: RuntimeEnv;
   defaultPort: number;
 }): {
-  nextConfig: ClawdbotConfig;
+  nextConfig: SurprisebotConfig;
   port: number;
   bind: string;
   authMode: string;

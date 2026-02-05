@@ -19,10 +19,10 @@ describe("config preservation on validation failure", () => {
 
   it("preserves config data when validation fails", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".clawdbot");
+      const configDir = path.join(home, ".surprisebot");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
-        path.join(configDir, "clawdbot.json"),
+        path.join(configDir, "surprisebot.json"),
         JSON.stringify({
           agents: { list: [{ id: "pi" }] },
           routing: { allowFrom: ["+15555550123"] },

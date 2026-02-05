@@ -42,10 +42,10 @@ describe("discord native commands", () => {
         defaults: {
           model: "anthropic/claude-opus-4-5",
           humanDelay: { mode: "off" },
-          workspace: "/tmp/clawd",
+          workspace: "/tmp/surprisebot",
         },
       },
-      session: { store: "/tmp/clawdbot-sessions.json" },
+      session: { store: "/tmp/surprisebot-sessions.json" },
       discord: { dm: { enabled: true, policy: "open" } },
     } as ReturnType<typeof import("../config/config.js").loadConfig>;
 

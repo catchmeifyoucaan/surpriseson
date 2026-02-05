@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const loadJsonFile = vi.fn();
 const saveJsonFile = vi.fn();
-const resolveStateDir = vi.fn().mockReturnValue("/tmp/clawdbot-state");
+const resolveStateDir = vi.fn().mockReturnValue("/tmp/surprisebot-state");
 
 vi.mock("../infra/json-file.js", () => ({
   loadJsonFile,

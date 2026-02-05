@@ -18,7 +18,7 @@ function snapshotEnv(): EnvSnapshot {
     userProfile: process.env.USERPROFILE,
     homeDrive: process.env.HOMEDRIVE,
     homePath: process.env.HOMEPATH,
-    stateDir: process.env.CLAWDBOT_STATE_DIR,
+    stateDir: process.env.SURPRISEBOT_STATE_DIR,
   };
 }
 
@@ -31,7 +31,7 @@ function restoreEnv(snapshot: EnvSnapshot) {
   restoreKey("USERPROFILE", snapshot.userProfile);
   restoreKey("HOMEDRIVE", snapshot.homeDrive);
   restoreKey("HOMEPATH", snapshot.homePath);
-  restoreKey("CLAWDBOT_STATE_DIR", snapshot.stateDir);
+  restoreKey("SURPRISEBOT_STATE_DIR", snapshot.stateDir);
 }
 
 function snapshotExtraEnv(keys: string[]): Record<string, string | undefined> {
@@ -50,7 +50,7 @@ function restoreExtraEnv(snapshot: Record<string, string | undefined>) {
 function setTempHome(base: string) {
   process.env.HOME = base;
   process.env.USERPROFILE = base;
-  process.env.CLAWDBOT_STATE_DIR = path.join(base, ".clawdbot");
+  process.env.SURPRISEBOT_STATE_DIR = path.join(base, ".surprisebot");
 
   if (process.platform !== "win32") return;
   const match = base.match(/^([A-Za-z]:)(.*)$/);
@@ -63,7 +63,7 @@ export async function withTempHome<T>(
   fn: (home: string) => Promise<T>,
   opts: { env?: Record<string, EnvValue>; prefix?: string } = {},
 ): Promise<T> {
-  const base = await fs.mkdtemp(path.join(os.tmpdir(), opts.prefix ?? "clawdbot-test-home-"));
+  const base = await fs.mkdtemp(path.join(os.tmpdir(), opts.prefix ?? "surprisebot-test-home-"));
   const snapshot = snapshotEnv();
   const envKeys = Object.keys(opts.env ?? {});
   for (const key of envKeys) {

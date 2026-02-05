@@ -117,7 +117,7 @@ function emitGatewayError(
 ) {
   const details = buildGatewayConnectionDetails({ url: opts.url });
   const message = "Gateway not reachable. Is it running and accessible?";
-  const hint = "Hint: run `clawdbot doctor`.";
+  const hint = "Hint: run `surprisebot doctor`.";
   const errorText = err instanceof Error ? err.message : String(err);
 
   if (mode === "json") {
@@ -152,7 +152,7 @@ export function registerLogsCli(program: Command) {
     .option("--no-color", "Disable ANSI colors")
     .addHelpText(
       "after",
-      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/logs", "docs.clawd.bot/cli/logs")}\n`,
+      () => `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/logs", "docs.surprisebot.bot/cli/logs")}\n`,
     );
 
   addGatewayClientOptions(logs);

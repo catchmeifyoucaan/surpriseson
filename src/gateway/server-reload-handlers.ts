@@ -77,7 +77,7 @@ export function createGatewayReloadHandlers(params: {
 
     if (plan.restartGmailWatcher) {
       await stopGmailWatcher().catch(() => {});
-      if (process.env.CLAWDBOT_SKIP_GMAIL_WATCHER !== "1") {
+      if (process.env.SURPRISEBOT_SKIP_GMAIL_WATCHER !== "1") {
         try {
           const gmailResult = await startGmailWatcher(nextConfig);
           if (gmailResult.started) {
@@ -93,17 +93,17 @@ export function createGatewayReloadHandlers(params: {
           params.logHooks.error(`gmail watcher failed to start: ${String(err)}`);
         }
       } else {
-        params.logHooks.info("skipping gmail watcher restart (CLAWDBOT_SKIP_GMAIL_WATCHER=1)");
+        params.logHooks.info("skipping gmail watcher restart (SURPRISEBOT_SKIP_GMAIL_WATCHER=1)");
       }
     }
 
     if (plan.restartChannels.size > 0) {
       if (
-        process.env.CLAWDBOT_SKIP_CHANNELS === "1" ||
-        process.env.CLAWDBOT_SKIP_PROVIDERS === "1"
+        process.env.SURPRISEBOT_SKIP_CHANNELS === "1" ||
+        process.env.SURPRISEBOT_SKIP_PROVIDERS === "1"
       ) {
         params.logChannels.info(
-          "skipping channel reload (CLAWDBOT_SKIP_CHANNELS=1 or CLAWDBOT_SKIP_PROVIDERS=1)",
+          "skipping channel reload (SURPRISEBOT_SKIP_CHANNELS=1 or SURPRISEBOT_SKIP_PROVIDERS=1)",
         );
       } else {
         const restartChannel = async (name: ChannelKind) => {

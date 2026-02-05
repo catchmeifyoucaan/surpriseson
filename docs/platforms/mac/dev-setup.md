@@ -1,11 +1,11 @@
 ---
-summary: "Setup guide for developers working on the Clawdbot macOS app"
+summary: "Setup guide for developers working on the Surprisebot macOS app"
 read_when:
   - Setting up the macOS development environment
 ---
 # macOS Developer Setup
 
-This guide covers the necessary steps to build and run the Clawdbot macOS application from source.
+This guide covers the necessary steps to build and run the Surprisebot macOS application from source.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Before building the app, ensure you have the following installed:
 
 ## 1. Initialize Submodules
 
-Clawdbot depends on several submodules (like `Peekaboo`). You must initialize these recursively:
+Surprisebot depends on several submodules (like `Peekaboo`). You must initialize these recursively:
 
 ```bash
 git submodule update --init --recursive
@@ -32,7 +32,7 @@ pnpm install
 
 ## 3. Build and Package the App
 
-To build the macOS app and package it into `dist/Clawdbot.app`, run:
+To build the macOS app and package it into `dist/Surprisebot.app`, run:
 
 ```bash
 ./scripts/package-mac-app.sh
@@ -44,16 +44,16 @@ If you don't have an Apple Developer ID certificate, the script will automatical
 
 ## 4. Install the CLI
 
-The macOS app expects a global `clawdbot` CLI install to manage background tasks.
+The macOS app expects a global `surprisebot` CLI install to manage background tasks.
 
 **To install it (recommended):**
-1.  Open the Clawdbot app.
+1.  Open the Surprisebot app.
 2.  Go to the **General** settings tab.
 3.  Click **"Install CLI"**.
 
 Alternatively, install it manually:
 ```bash
-npm install -g clawdbot@<version>
+npm install -g surprisebot@<version>
 ```
 
 ## Troubleshooting
@@ -79,16 +79,16 @@ If the app crashes when you try to allow **Speech Recognition** or **Microphone*
 **Fix:**
 1. Reset the TCC permissions:
    ```bash
-   tccutil reset All com.clawdbot.mac.debug
+   tccutil reset All com.surprisebot.mac.debug
    ```
-2. If that fails, change the `BUNDLE_ID` temporarily in [`scripts/package-mac-app.sh`](https://github.com/clawdbot/clawdbot/blob/main/scripts/package-mac-app.sh) to force a "clean slate" from macOS.
+2. If that fails, change the `BUNDLE_ID` temporarily in [`scripts/package-mac-app.sh`](https://github.com/surprisebot/surprisebot/blob/main/scripts/package-mac-app.sh) to force a "clean slate" from macOS.
 
 ### Gateway "Starting..." indefinitely
 If the gateway status stays on "Starting...", check if a zombie process is holding the port:
 
 ```bash
-clawdbot daemon status
-clawdbot daemon stop
+surprisebot daemon status
+surprisebot daemon stop
 
 # If you’re not using a LaunchAgent (dev mode / manual runs), find the listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN

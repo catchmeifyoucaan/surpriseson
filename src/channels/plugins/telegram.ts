@@ -1,5 +1,5 @@
 import { chunkMarkdownText } from "../../auto-reply/chunk.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { writeConfigFile } from "../../config/config.js";
 import { shouldLogVerbose } from "../../globals.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../routing/session-key.js";
@@ -392,7 +392,7 @@ export const telegramPlugin: ChannelPlugin<ResolvedTelegramAccount> = {
     },
     logoutAccount: async ({ accountId, cfg }) => {
       const envToken = process.env.TELEGRAM_BOT_TOKEN?.trim() ?? "";
-      const nextCfg = { ...cfg } as ClawdbotConfig;
+      const nextCfg = { ...cfg } as SurprisebotConfig;
       const nextTelegram = cfg.channels?.telegram ? { ...cfg.channels.telegram } : undefined;
       let cleared = false;
       let changed = false;

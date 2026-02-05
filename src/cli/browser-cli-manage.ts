@@ -40,7 +40,7 @@ export function registerBrowserManageCommands(
         }
         defaultRuntime.log(
           [
-            `profile: ${status.profile ?? "clawd"}`,
+            `profile: ${status.profile ?? "surprisebot"}`,
             `enabled: ${status.enabled}`,
             `running: ${status.running}`,
             `controlUrl: ${status.controlUrl}`,
@@ -70,7 +70,7 @@ export function registerBrowserManageCommands(
           defaultRuntime.log(JSON.stringify(status, null, 2));
           return;
         }
-        const name = status.profile ?? "clawd";
+        const name = status.profile ?? "surprisebot";
         defaultRuntime.log(info(`🦞 browser [${name}] running: ${status.running}`));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
@@ -92,7 +92,7 @@ export function registerBrowserManageCommands(
           defaultRuntime.log(JSON.stringify(status, null, 2));
           return;
         }
-        const name = status.profile ?? "clawd";
+        const name = status.profile ?? "surprisebot";
         defaultRuntime.log(info(`🦞 browser [${name}] running: ${status.running}`));
       } catch (err) {
         defaultRuntime.error(danger(String(err)));
@@ -382,7 +382,7 @@ export function registerBrowserManageCommands(
     .requiredOption("--name <name>", "Profile name (lowercase, numbers, hyphens)")
     .option("--color <hex>", "Profile color (hex format, e.g. #0066CC)")
     .option("--cdp-url <url>", "CDP URL for remote Chrome (http/https)")
-    .option("--driver <driver>", "Profile driver (clawd|extension). Default: clawd")
+    .option("--driver <driver>", "Profile driver (surprisebot|extension). Default: surprisebot")
     .action(
       async (opts: { name: string; color?: string; cdpUrl?: string; driver?: string }, cmd) => {
         const parent = parentOpts(cmd);

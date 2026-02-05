@@ -34,14 +34,14 @@ export type MemorySearchConfig = {
   /** Enable vector memory search (default: true). */
   enabled?: boolean;
   /** Embedding provider mode. */
-  provider?: "openai" | "local";
+  provider?: "openai" | "local" | "google" | "gemini";
   remote?: {
     baseUrl?: string;
     apiKey?: string;
     headers?: Record<string, string>;
   };
   /** Fallback behavior when local embeddings fail. */
-  fallback?: "openai" | "none";
+  fallback?: "openai" | "google" | "gemini" | "none";
   /** Embedding model id (remote) or alias (local). */
   model?: string;
   /** Local embedding settings (node-llama-cpp). */
@@ -76,6 +76,32 @@ export type MemorySearchConfig = {
   };
 };
 
+export type MemoryGraphConfig = {
+  /** Enable memory graph (default: false). */
+  enabled?: boolean;
+  /** Neo4j bolt URL (e.g. bolt://127.0.0.1:7687). */
+  url?: string;
+  /** Neo4j username. */
+  username?: string;
+  /** Neo4j password. */
+  password?: string;
+  /** Optional Neo4j database name. */
+  database?: string;
+  /** Sync behavior. */
+  sync?: {
+    onSessionStart?: boolean;
+    onSearch?: boolean;
+    watch?: boolean;
+    watchDebounceMs?: number;
+    intervalMinutes?: number;
+  };
+  /** Query behavior. */
+  query?: {
+    maxResults?: number;
+    maxHops?: number;
+  };
+};
+
 export type ToolsConfig = {
   /** Base tool profile applied before allow/deny lists. */
   profile?: ToolProfileId;
@@ -87,16 +113,38 @@ export type ToolsConfig = {
     search?: {
       /** Enable web search tool (default: true when API key is present). */
       enabled?: boolean;
-      /** Search provider (currently "brave"). */
-      provider?: "brave";
+      /** Search provider ("brave", "serper", "serpapi", or "hybrid"). */
+      provider?: "brave" | "serper" | "serpapi" | "hybrid";
       /** Brave Search API key (optional; defaults to BRAVE_API_KEY env var). */
       apiKey?: string;
+      /** Serper API key (optional; defaults to SERPER_API_KEY env var). */
+      serperApiKey?: string;
+      /** SerpAPI API key (optional; defaults to SERPAPI_API_KEY env var). */
+      serpapiApiKey?: string;
+      /** SerpAPI engines to query (default: ["google"]). */
+      serpapiEngines?: string[];
+      /** Perplexity API key for query expansion (optional; defaults to PPLX_API_KEY env var). */
+      perplexityApiKey?: string;
       /** Default search results count (1-10). */
       maxResults?: number;
       /** Timeout in seconds for search requests. */
       timeoutSeconds?: number;
       /** Cache TTL in minutes for search results. */
       cacheTtlMinutes?: number;
+      /** Hybrid search configuration. */
+      hybrid?: {
+        /** Providers to include in hybrid mode (default: brave, serper, serpapi). */
+        providers?: Array<"brave" | "serper" | "serpapi">;
+        /** Query expansion controls (Perplexity). */
+        queryExpansion?: {
+          /** Enable query expansion (default: false). */
+          enabled?: boolean;
+          /** Max extra queries to generate (default: 2). */
+          maxQueries?: number;
+          /** Perplexity model to use (default: "sonar"). */
+          model?: string;
+        };
+      };
     };
     fetch?: {
       /** Enable web fetch tool (default: false). */
@@ -174,5 +222,22 @@ export type ToolsConfig = {
       allow?: string[];
       deny?: string[];
     };
+  };
+  /** Tool-result verification and timeout controls. */
+  toolResults?: {
+    /** Require tool results before sending replies when tools were invoked. */
+    strict?: boolean;
+    /** Automatically retry once when tool results are missing. */
+    retryOnce?: boolean;
+    /** Require tool usage for filesystem/command queries. */
+    requireToolForQueries?: boolean;
+    /** Warn when a tool exceeds this duration (ms) without returning. */
+    timeoutMs?: number;
+    /** Emit periodic tool heartbeat updates at this interval (ms). */
+    heartbeatMs?: number;
+    /** Emit user-visible warnings for missing tool results. */
+    warnOnMissing?: boolean;
+    /** Emit user-visible warnings for tool timeouts. */
+    warnOnTimeout?: boolean;
   };
 };

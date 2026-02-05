@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { SILENT_REPLY_TOKEN } from "../tokens.js";
 
 const mocks = vi.hoisted(() => ({
@@ -96,8 +96,8 @@ describe("routeReply", () => {
   it("applies responsePrefix when routing", async () => {
     mocks.sendMessageSlack.mockClear();
     const cfg = {
-      messages: { responsePrefix: "[clawdbot]" },
-    } as unknown as ClawdbotConfig;
+      messages: { responsePrefix: "[surprisebot]" },
+    } as unknown as SurprisebotConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "slack",
@@ -106,7 +106,7 @@ describe("routeReply", () => {
     });
     expect(mocks.sendMessageSlack).toHaveBeenCalledWith(
       "channel:C123",
-      "[clawdbot] hi",
+      "[surprisebot] hi",
       expect.any(Object),
     );
   });
@@ -123,7 +123,7 @@ describe("routeReply", () => {
         ],
       },
       messages: {},
-    } as unknown as ClawdbotConfig;
+    } as unknown as SurprisebotConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "slack",
@@ -227,7 +227,7 @@ describe("routeReply", () => {
           enabled: true,
         },
       },
-    } as unknown as ClawdbotConfig;
+    } as unknown as SurprisebotConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "msteams",

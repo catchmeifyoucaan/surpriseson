@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveGatewayPort, resolveIsNixMode } from "../config/paths.js";
 import { resolveGatewayLaunchAgentLabel } from "../daemon/constants.js";
 import { findExtraGatewayServices, renderGatewayServiceCleanupHints } from "../daemon/inspect.js";
@@ -49,7 +49,7 @@ function normalizeExecutablePath(value: string): string {
 }
 
 export async function maybeMigrateLegacyGatewayService(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   mode: "local" | "remote",
   runtime: RuntimeEnv,
   prompter: DoctorPrompter,
@@ -63,7 +63,7 @@ export async function maybeMigrateLegacyGatewayService(
   );
 
   const migrate = await prompter.confirmSkipInNonInteractive({
-    message: "Migrate legacy gateway services to Clawdbot now?",
+    message: "Migrate legacy gateway services to Surprisebot now?",
     initialValue: true,
   });
   if (!migrate) return;
@@ -89,14 +89,14 @@ export async function maybeMigrateLegacyGatewayService(
   }
 
   const service = resolveGatewayService();
-  const loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+  const loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
   if (loaded) {
-    note(`Clawdbot ${service.label} already ${service.loadedText}.`, "Gateway");
+    note(`Surprisebot ${service.label} already ${service.loadedText}.`, "Gateway");
     return;
   }
 
   const install = await prompter.confirmSkipInNonInteractive({
-    message: "Install Clawdbot gateway service now?",
+    message: "Install Surprisebot gateway service now?",
     initialValue: true,
   });
   if (!install) return;
@@ -125,10 +125,10 @@ export async function maybeMigrateLegacyGatewayService(
   const environment = buildServiceEnvironment({
     env: process.env,
     port,
-    token: cfg.gateway?.auth?.token ?? process.env.CLAWDBOT_GATEWAY_TOKEN,
+    token: cfg.gateway?.auth?.token ?? process.env.SURPRISEBOT_GATEWAY_TOKEN,
     launchdLabel:
       process.platform === "darwin"
-        ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+        ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
         : undefined,
   });
   await service.install({
@@ -141,7 +141,7 @@ export async function maybeMigrateLegacyGatewayService(
 }
 
 export async function maybeRepairGatewayServiceConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   mode: "local" | "remote",
   runtime: RuntimeEnv,
   prompter: DoctorPrompter,
@@ -242,10 +242,10 @@ export async function maybeRepairGatewayServiceConfig(
   const environment = buildServiceEnvironment({
     env: process.env,
     port,
-    token: cfg.gateway?.auth?.token ?? process.env.CLAWDBOT_GATEWAY_TOKEN,
+    token: cfg.gateway?.auth?.token ?? process.env.SURPRISEBOT_GATEWAY_TOKEN,
     launchdLabel:
       process.platform === "darwin"
-        ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+        ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
         : undefined,
   });
 

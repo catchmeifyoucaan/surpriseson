@@ -1,6 +1,6 @@
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
 import { abortEmbeddedPiRun } from "../../agents/pi-embedded.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   loadSessionStore,
   resolveStorePath,
@@ -54,7 +54,7 @@ function resolveAbortTargetKey(ctx: MsgContext): string | undefined {
 
 export async function tryFastAbortFromMessage(params: {
   ctx: MsgContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
 }): Promise<{ handled: boolean; aborted: boolean }> {
   const { ctx, cfg } = params;
   const commandAuthorized = ctx.CommandAuthorized ?? true;

@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveGatewayPort } from "../config/config.js";
 import { resolveGatewayLaunchAgentLabel } from "../daemon/constants.js";
 import { readLastGatewayErrorLine } from "../daemon/diagnostics.js";
@@ -27,7 +27,7 @@ import { healthCommand } from "./health.js";
 import { formatHealthCheckFailure } from "./health-format.js";
 
 export async function maybeRepairGatewayDaemon(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   runtime: RuntimeEnv;
   prompter: DoctorPrompter;
   options: DoctorOptions;
@@ -37,7 +37,7 @@ export async function maybeRepairGatewayDaemon(params: {
   if (params.healthOk) return;
 
   const service = resolveGatewayService();
-  const loaded = await service.isLoaded({ profile: process.env.CLAWDBOT_PROFILE });
+  const loaded = await service.isLoaded({ profile: process.env.SURPRISEBOT_PROFILE });
   let serviceRuntime: Awaited<ReturnType<typeof service.readRuntime>> | undefined;
   if (loaded) {
     serviceRuntime = await service.readRuntime(process.env).catch(() => undefined);
@@ -92,10 +92,10 @@ export async function maybeRepairGatewayDaemon(params: {
         const environment = buildServiceEnvironment({
           env: process.env,
           port,
-          token: params.cfg.gateway?.auth?.token ?? process.env.CLAWDBOT_GATEWAY_TOKEN,
+          token: params.cfg.gateway?.auth?.token ?? process.env.SURPRISEBOT_GATEWAY_TOKEN,
           launchdLabel:
             process.platform === "darwin"
-              ? resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE)
+              ? resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE)
               : undefined,
         });
         await service.install({
@@ -129,7 +129,7 @@ export async function maybeRepairGatewayDaemon(params: {
     });
     if (start) {
       await service.restart({
-        profile: process.env.CLAWDBOT_PROFILE,
+        profile: process.env.SURPRISEBOT_PROFILE,
         stdout: process.stdout,
       });
       await sleep(1500);
@@ -137,9 +137,9 @@ export async function maybeRepairGatewayDaemon(params: {
   }
 
   if (process.platform === "darwin") {
-    const label = resolveGatewayLaunchAgentLabel(process.env.CLAWDBOT_PROFILE);
+    const label = resolveGatewayLaunchAgentLabel(process.env.SURPRISEBOT_PROFILE);
     note(
-      `LaunchAgent loaded; stopping requires "clawdbot daemon stop" or launchctl bootout gui/$UID/${label}.`,
+      `LaunchAgent loaded; stopping requires "surprisebot daemon stop" or launchctl bootout gui/$UID/${label}.`,
       "Gateway",
     );
   }
@@ -151,7 +151,7 @@ export async function maybeRepairGatewayDaemon(params: {
     });
     if (restart) {
       await service.restart({
-        profile: process.env.CLAWDBOT_PROFILE,
+        profile: process.env.SURPRISEBOT_PROFILE,
         stdout: process.stdout,
       });
       await sleep(1500);

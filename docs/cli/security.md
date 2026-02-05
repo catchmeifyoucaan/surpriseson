@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot security` (audit and fix common security footguns)"
+summary: "CLI reference for `surprisebot security` (audit and fix common security footguns)"
 read_when:
   - You want to run a quick security audit on config/state
   - You want to apply safe “fix” suggestions (chmod, tighten defaults)
 ---
 
-# `clawdbot security`
+# `surprisebot security`
 
 Security tools (audit + optional fixes).
 
@@ -15,8 +15,8 @@ Related:
 ## Audit
 
 ```bash
-clawdbot security audit
-clawdbot security audit --deep
-clawdbot security audit --fix
+surprisebot security audit
+surprisebot security audit --deep
+surprisebot security audit --fix
 ```
 

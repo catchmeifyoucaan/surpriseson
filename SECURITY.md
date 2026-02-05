@@ -1,6 +1,6 @@
 # Security Policy
 
-If you believe you’ve found a security issue in Clawdbot, please report it privately.
+If you believe you’ve found a security issue in Surprisebot, please report it privately.
 
 ## Reporting
 
@@ -9,7 +9,7 @@ If you believe you’ve found a security issue in Clawdbot, please report it pri
 
 ## Operational Guidance
 
-For threat model + hardening guidance (including `clawdbot security audit --deep` and `--fix`), see:
+For threat model + hardening guidance (including `surprisebot security audit --deep` and `--fix`), see:
 
-- `https://docs.clawd.bot/gateway/security`
+- `https://docs.surprisebot.bot/gateway/security`
 

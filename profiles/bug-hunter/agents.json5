@@ -1,0 +1,59 @@
+// Bug-hunter roster (preseeded). Apply with: surprisebot init --profile-template bug-hunter
+// Notes:
+// - Models/workspaces are omitted so defaults apply.
+// - Channel bindings are intentionally excluded; configure per-user.
+// - Legacy cron agents are included but optional; you can remove them.
+{
+  agents: {
+    list: [
+      // Core orchestrator
+      {
+        id: "surprisebot-core",
+        default: true,
+        name: "Surprisebot",
+        identity: { name: "Surprisebot", theme: "Surprisebot", emoji: "🧠⚡" },
+      },
+
+      // Domain specialists
+      { id: "surprisebot-recon", name: "Recon Specialist" },
+      { id: "surprisebot-web", name: "Web App Specialist" },
+      { id: "surprisebot-api", name: "API Specialist" },
+      { id: "surprisebot-auth", name: "Auth & Session Specialist" },
+      { id: "surprisebot-client", name: "Client-Side Specialist" },
+      { id: "surprisebot-logic", name: "Business Logic Specialist" },
+      { id: "surprisebot-ssrf", name: "SSRF & Infra Specialist" },
+      { id: "surprisebot-cloud", name: "Cloud & Storage Specialist" },
+      { id: "surprisebot-data", name: "Data Exposure Specialist" },
+      { id: "surprisebot-crypto", name: "Token/JWT Specialist" },
+      { id: "surprisebot-report", name: "Reporting Specialist" },
+      { id: "surprisebot-artifact-writer", name: "Artifact Writer" },
+      { id: "surprisebot-ops", name: "Ops & Automation" },
+      { id: "surprisebot-memory", name: "Memory Curator" },
+      { id: "surprisebot-qa", name: "QA & Verification" },
+
+      // Research agents (current)
+      { id: "research-exposures", name: "Exposure Hunter" },
+      { id: "research-cves", name: "CVE Monitor" },
+      { id: "research-dorks", name: "Dorking Research" },
+      { id: "research-bughunters", name: "Elite Hunter Intel" },
+      { id: "research-osint", name: "OSINT & Public Intel" },
+      { id: "research-ai", name: "AI/Tech Trends" },
+      { id: "research-vuln-feeds", name: "Vulnerability Feeds" },
+      { id: "research-general", name: "General Research" },
+
+      // Legacy cron agents (optional)
+      { id: "bug-recon", name: "Bug Recon (Legacy Cron)" },
+      { id: "bug-client", name: "Bug Client (Legacy Cron)" },
+      { id: "bug-cloud", name: "Bug Cloud (Legacy Cron)" },
+      { id: "bug-report", name: "Bug Report (Legacy Cron)" },
+      { id: "bug-lead", name: "Bug Lead (Legacy Cron)" },
+      { id: "research-leaks", name: "Exposure Research (Legacy Cron)" },
+      { id: "research-cve", name: "CVE Research (Legacy Cron)" },
+      { id: "research-hunters", name: "Hunter Research (Legacy Cron)" },
+      { id: "research-lead", name: "Research Lead (Legacy Cron)" },
+      { id: "research-trends", name: "Research Trends (Legacy Cron)" },
+      { id: "research-people", name: "Research People (Legacy Cron)" },
+      { id: "research-programs", name: "Research Programs (Legacy Cron)" },
+    ],
+  },
+}

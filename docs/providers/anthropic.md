@@ -1,13 +1,13 @@
 ---
-summary: "Use Anthropic Claude via API keys or Claude Code CLI auth in Clawdbot"
+summary: "Use Anthropic Claude via API keys or Claude Code CLI auth in Surprisebot"
 read_when:
-  - You want to use Anthropic models in Clawdbot
+  - You want to use Anthropic models in Surprisebot
   - You want setup-token or Claude Code CLI auth instead of API keys
 ---
 # Anthropic (Claude)
 
 Anthropic builds the **Claude** model family and provides access via an API.
-In Clawdbot you can authenticate with an API key or reuse **Claude Code CLI** credentials
+In Surprisebot you can authenticate with an API key or reuse **Claude Code CLI** credentials
 (setup-token or OAuth).
 
 ## Option A: Anthropic API key
@@ -18,11 +18,11 @@ Create your API key in the Anthropic Console.
 ### CLI setup
 
 ```bash
-clawdbot onboard
+surprisebot onboard
 # choose: Anthropic API key
 
 # or non-interactive
-clawdbot onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
+surprisebot onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
 ```
 
 ### Config snippet
@@ -42,10 +42,10 @@ clawdbot onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
 
 ```bash
 # Run setup-token on the gateway host (wizard can run it for you)
-clawdbot onboard --auth-choice setup-token
+surprisebot onboard --auth-choice setup-token
 
 # Reuse Claude Code CLI OAuth credentials if already logged in
-clawdbot onboard --auth-choice claude-cli
+surprisebot onboard --auth-choice claude-cli
 ```
 
 ### Config snippet
@@ -59,7 +59,7 @@ clawdbot onboard --auth-choice claude-cli
 ## Notes
 
 - The wizard can run `claude setup-token` on the gateway host and store the token.
-- Clawdbot writes `auth.profiles["anthropic:claude-cli"].mode` as `"oauth"` so the profile
+- Surprisebot writes `auth.profiles["anthropic:claude-cli"].mode` as `"oauth"` so the profile
   accepts both OAuth and setup-token credentials. Older configs using `"token"` are
   auto-migrated on load.
 - Auth details + reuse rules are in [/concepts/oauth](/concepts/oauth).

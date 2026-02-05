@@ -1,8 +1,9 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "./defaults.js";
 import { coerceToFailoverError, describeFailoverError, isFailoverError } from "./failover-error.js";
 import {
   buildModelAliasIndex,
+  isCliProvider,
   modelKey,
   parseModelRef,
   resolveConfiguredModelRef,
@@ -24,6 +25,20 @@ type FallbackAttempt = {
   code?: string;
 };
 
+type CliCooldownEntry = {
+  until: number;
+  reason?: FailoverReason;
+  lastError?: string;
+  lastAt: number;
+};
+
+const CLI_COOLDOWNS = new Map<string, CliCooldownEntry>();
+const CLI_COOLDOWN_MIN_MS = 60 * 1000;
+const CLI_COOLDOWN_RATE_LIMIT_MS = 15 * 60 * 1000;
+const CLI_COOLDOWN_BILLING_MS = 6 * 60 * 60 * 1000;
+const CLI_COOLDOWN_TIMEOUT_MS = 2 * 60 * 1000;
+const CLI_COOLDOWN_MAX_MS = 24 * 60 * 60 * 1000;
+
 function isAbortError(err: unknown): boolean {
   if (!err || typeof err !== "object") return false;
   const name = "name" in err ? String(err.name) : "";
@@ -33,8 +48,108 @@ function isAbortError(err: unknown): boolean {
   return message.includes("aborted");
 }
 
+function parseCooldownMsFromError(message: string): number | null {
+  if (!message) return null;
+  const retryDelayJson = message.match(/retryDelay\"?:\s*\"?(\d+)s/i);
+  if (retryDelayJson) {
+    const seconds = Number(retryDelayJson[1]);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return seconds * 1000;
+    }
+  }
+  const retryAfter = message.match(/retry\s+after\s+(\d+)(?:\s*s|\s*seconds)?/i);
+  if (retryAfter) {
+    const seconds = Number(retryAfter[1]);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return seconds * 1000;
+    }
+  }
+  const retryIn = message.match(/retry\s+in\s+(\d+)(?:\s*s|\s*seconds)?/i);
+  if (retryIn) {
+    const seconds = Number(retryIn[1]);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return seconds * 1000;
+    }
+  }
+  const resetsIn = message.match(/resets_in_seconds\"?:\s*(\d+)/i);
+  if (resetsIn) {
+    const seconds = Number(resetsIn[1]);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return seconds * 1000;
+    }
+  }
+  const resetsAt = message.match(/resets_at\"?:\s*(\d+)/i);
+  if (resetsAt) {
+    const epoch = Number(resetsAt[1]);
+    if (Number.isFinite(epoch) && epoch > 0) {
+      const ms = epoch * 1000 - Date.now();
+      if (ms > 0) return ms;
+    }
+  }
+  return null;
+}
+
+function resolveCliCooldownMs(reason: FailoverReason | undefined, message: string): number | null {
+  if (!reason) return null;
+  if (reason === "rate_limit") {
+    return parseCooldownMsFromError(message) ?? CLI_COOLDOWN_RATE_LIMIT_MS;
+  }
+  if (reason === "billing") return CLI_COOLDOWN_BILLING_MS;
+  if (reason === "timeout") return CLI_COOLDOWN_TIMEOUT_MS;
+  return null;
+}
+
+function clampCooldownMs(value: number): number {
+  const bounded = Math.max(CLI_COOLDOWN_MIN_MS, value);
+  return Math.min(CLI_COOLDOWN_MAX_MS, bounded);
+}
+
+function markCliCooldown(params: {
+  provider: string;
+  model: string;
+  reason?: FailoverReason;
+  message: string;
+}): void {
+  const cooldownMs = resolveCliCooldownMs(params.reason, params.message);
+  if (!cooldownMs) return;
+  const until = Date.now() + clampCooldownMs(cooldownMs);
+  const key = modelKey(params.provider, params.model);
+  CLI_COOLDOWNS.set(key, {
+    until,
+    reason: params.reason,
+    lastError: params.message,
+    lastAt: Date.now(),
+  });
+}
+
+function isCliInCooldown(provider: string, model: string): boolean {
+  const key = modelKey(provider, model);
+  const entry = CLI_COOLDOWNS.get(key);
+  if (!entry) return false;
+  if (Date.now() >= entry.until) {
+    CLI_COOLDOWNS.delete(key);
+    return false;
+  }
+  return true;
+}
+
+function applyCliCooldownFilter(params: {
+  cfg: SurprisebotConfig | undefined;
+  candidates: ModelCandidate[];
+}): ModelCandidate[] {
+  const filtered = params.candidates.filter((candidate) => {
+    if (!isCliProvider(candidate.provider, params.cfg)) return true;
+    return !isCliInCooldown(candidate.provider, candidate.model);
+  });
+  return filtered.length > 0 ? filtered : params.candidates;
+}
+
+export function __resetCliCooldownsForTest() {
+  CLI_COOLDOWNS.clear();
+}
+
 function buildAllowedModelKeys(
-  cfg: ClawdbotConfig | undefined,
+  cfg: SurprisebotConfig | undefined,
   defaultProvider: string,
 ): Set<string> | null {
   const rawAllowlist = (() => {
@@ -52,7 +167,7 @@ function buildAllowedModelKeys(
 }
 
 function resolveImageFallbackCandidates(params: {
-  cfg: ClawdbotConfig | undefined;
+  cfg: SurprisebotConfig | undefined;
   defaultProvider: string;
   modelOverride?: string;
 }): ModelCandidate[] {
@@ -113,7 +228,7 @@ function resolveImageFallbackCandidates(params: {
 }
 
 function resolveFallbackCandidates(params: {
-  cfg: ClawdbotConfig | undefined;
+  cfg: SurprisebotConfig | undefined;
   provider: string;
   model: string;
   /** Optional explicit fallbacks list; when provided (even empty), replaces agents.defaults.model.fallbacks. */
@@ -175,7 +290,7 @@ function resolveFallbackCandidates(params: {
 }
 
 export async function runWithModelFallback<T>(params: {
-  cfg: ClawdbotConfig | undefined;
+  cfg: SurprisebotConfig | undefined;
   provider: string;
   model: string;
   /** Optional explicit fallbacks list; when provided (even empty), replaces agents.defaults.model.fallbacks. */
@@ -194,11 +309,15 @@ export async function runWithModelFallback<T>(params: {
   model: string;
   attempts: FallbackAttempt[];
 }> {
-  const candidates = resolveFallbackCandidates({
+  const candidatesRaw = resolveFallbackCandidates({
     cfg: params.cfg,
     provider: params.provider,
     model: params.model,
     fallbacksOverride: params.fallbacksOverride,
+  });
+  const candidates = applyCliCooldownFilter({
+    cfg: params.cfg,
+    candidates: candidatesRaw,
   });
   const attempts: FallbackAttempt[] = [];
   let lastError: unknown;
@@ -232,6 +351,14 @@ export async function runWithModelFallback<T>(params: {
         status: described.status,
         code: described.code,
       });
+      if (isCliProvider(candidate.provider, params.cfg)) {
+        markCliCooldown({
+          provider: candidate.provider,
+          model: candidate.model,
+          reason: described.reason,
+          message: described.message,
+        });
+      }
       await params.onError?.({
         provider: candidate.provider,
         model: candidate.model,
@@ -260,7 +387,7 @@ export async function runWithModelFallback<T>(params: {
 }
 
 export async function runWithImageModelFallback<T>(params: {
-  cfg: ClawdbotConfig | undefined;
+  cfg: SurprisebotConfig | undefined;
   modelOverride?: string;
   run: (provider: string, model: string) => Promise<T>;
   onError?: (attempt: {

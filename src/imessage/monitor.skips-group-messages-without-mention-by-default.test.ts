@@ -36,7 +36,7 @@ vi.mock("../pairing/pairing-store.js", () => ({
 }));
 
 vi.mock("../config/sessions.js", () => ({
-  resolveStorePath: vi.fn(() => "/tmp/clawdbot-sessions.json"),
+  resolveStorePath: vi.fn(() => "/tmp/surprisebot-sessions.json"),
   updateLastRoute: (...args: unknown[]) => updateLastRouteMock(...args),
 }));
 
@@ -74,7 +74,7 @@ beforeEach(() => {
     },
     session: { mainKey: "main" },
     messages: {
-      groupChat: { mentionPatterns: ["@clawd"] },
+      groupChat: { mentionPatterns: ["@surprisebot"] },
     },
   };
   requestMock.mockReset().mockImplementation((method: string) => {
@@ -213,7 +213,7 @@ describe("monitorIMessageProvider", () => {
           chat_id: 123,
           sender: "+15550001111",
           is_from_me: false,
-          text: "@clawd hello",
+          text: "@surprisebot hello",
           is_group: true,
         },
       },
@@ -362,7 +362,7 @@ describe("monitorIMessageProvider", () => {
           chat_id: 42,
           sender: "+15550002222",
           is_from_me: false,
-          text: "@clawd ping",
+          text: "@surprisebot ping",
           is_group: true,
           chat_name: "Lobster Squad",
           participants: ["+1555", "+1556"],
@@ -404,7 +404,7 @@ describe("monitorIMessageProvider", () => {
           chat_id: 202,
           sender: "+15550003333",
           is_from_me: false,
-          text: "@clawd hi",
+          text: "@surprisebot hi",
           is_group: true,
         },
       },
@@ -439,7 +439,7 @@ describe("monitorIMessageProvider", () => {
           chat_id: 303,
           sender: "+15550003333",
           is_from_me: false,
-          text: "@clawd hi",
+          text: "@surprisebot hi",
           is_group: true,
         },
       },

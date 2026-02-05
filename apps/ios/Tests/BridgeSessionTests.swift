@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import Clawdbot
+@testable import Surprisebot
 
 @Suite struct BridgeSessionTests {
     @Test func initialStateIsIdle() async {

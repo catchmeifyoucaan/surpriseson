@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import {
   listDiscordAccountIds,
@@ -13,7 +13,7 @@ import { addWildcardAllowFrom, promptAccountId } from "./helpers.js";
 
 const channel = "discord" as const;
 
-function setDiscordDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy) {
+function setDiscordDmPolicy(cfg: SurprisebotConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open" ? addWildcardAllowFrom(cfg.channels?.discord?.dm?.allowFrom) : undefined;
   return {

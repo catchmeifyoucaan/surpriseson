@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { GroupKeyResolution } from "../../config/sessions.js";
 import type { TemplateContext } from "../templating.js";
 import { resolveGroupRequireMention } from "./groups.js";
 
 describe("resolveGroupRequireMention", () => {
   it("respects Discord guild/channel requireMention settings", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: {
         discord: {
           guilds: {
@@ -36,7 +36,7 @@ describe("resolveGroupRequireMention", () => {
   });
 
   it("respects Slack channel requireMention settings", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       channels: {
         slack: {
           channels: {

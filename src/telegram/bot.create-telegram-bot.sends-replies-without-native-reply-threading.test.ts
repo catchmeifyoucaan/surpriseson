@@ -159,7 +159,7 @@ describe("createTelegramBot", () => {
         date: 1736380800,
         message_id: 101,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -187,7 +187,7 @@ describe("createTelegramBot", () => {
         date: 1736380800,
         message_id: 101,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -222,7 +222,7 @@ describe("createTelegramBot", () => {
         text: "hi",
         date: 1736380800,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -249,7 +249,7 @@ describe("createTelegramBot", () => {
         date: 1736380800,
         message_id: 101,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -278,10 +278,10 @@ describe("createTelegramBot", () => {
     await handler({
       message: {
         chat: { id: 456, type: "group", title: "Ops" },
-        text: "@clawdbot_bot hello",
+        text: "@surprisebot_bot hello",
         date: 1736380800,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -306,7 +306,7 @@ describe("createTelegramBot", () => {
         text: "hello",
         date: 1736380800,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 
@@ -316,7 +316,7 @@ describe("createTelegramBot", () => {
     onSpy.mockReset();
     const replySpy = replyModule.__replySpy as unknown as ReturnType<typeof vi.fn>;
     replySpy.mockReset();
-    const storeDir = fs.mkdtempSync(path.join(os.tmpdir(), "clawdbot-telegram-"));
+    const storeDir = fs.mkdtempSync(path.join(os.tmpdir(), "surprisebot-telegram-"));
     const storePath = path.join(storeDir, "sessions.json");
     fs.writeFileSync(
       storePath,
@@ -353,7 +353,7 @@ describe("createTelegramBot", () => {
         text: "hello",
         date: 1736380800,
       },
-      me: { username: "clawdbot_bot" },
+      me: { username: "surprisebot_bot" },
       getFile: async () => ({ download: async () => new Uint8Array() }),
     });
 

@@ -8,7 +8,7 @@ read_when:
 
 # Gateway protocol (WebSocket)
 
-The Gateway WS protocol is the **full control plane** for Clawdbot. It is
+The Gateway WS protocol is the **full control plane** for Surprisebot. It is
 loopback-only by default and is intended for local clients (CLI, web UI,
 automations).
 
@@ -41,7 +41,7 @@ Client → Gateway:
     "caps": [],
     "auth": { "token": "…" },
     "locale": "en-US",
-    "userAgent": "clawdbot-cli/1.2.3"
+    "userAgent": "surprisebot-cli/1.2.3"
   }
 }
 ```
@@ -76,7 +76,7 @@ Side-effecting methods require **idempotency keys** (see schema).
 
 ## Auth
 
-- If `CLAWDBOT_GATEWAY_TOKEN` (or `--token`) is set, `connect.params.auth.token`
+- If `SURPRISEBOT_GATEWAY_TOKEN` (or `--token`) is set, `connect.params.auth.token`
   must match or the socket is closed.
 
 ## Scope

@@ -1,4 +1,4 @@
-import type { AgentDefaultsConfig } from "./types.agent-defaults.js";
+import type { AgentDefaultsConfig, AgentMemoryCaptureConfig } from "./types.agent-defaults.js";
 import type { HumanDelayConfig, IdentityConfig } from "./types.base.js";
 import type { GroupChatConfig } from "./types.messages.js";
 import type {
@@ -6,7 +6,7 @@ import type {
   SandboxDockerSettings,
   SandboxPruneSettings,
 } from "./types.sandbox.js";
-import type { AgentToolsConfig, MemorySearchConfig } from "./types.tools.js";
+import type { AgentToolsConfig, MemoryGraphConfig, MemorySearchConfig } from "./types.tools.js";
 
 export type AgentModelConfig =
   | string
@@ -25,6 +25,14 @@ export type AgentConfig = {
   agentDir?: string;
   model?: AgentModelConfig;
   memorySearch?: MemorySearchConfig;
+  memoryGraph?: MemoryGraphConfig;
+  memoryCapture?: AgentMemoryCaptureConfig;
+  sharedMemory?: {
+    enabled?: boolean;
+    path?: string;
+    pendingPath?: string;
+    allowWriteAgents?: string[];
+  };
   /** Human-like delay between block replies for this agent. */
   humanDelay?: HumanDelayConfig;
   identity?: IdentityConfig;

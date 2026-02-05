@@ -52,11 +52,11 @@ export function pickProbeHostForBind(
 export function safeDaemonEnv(env: Record<string, string> | undefined): string[] {
   if (!env) return [];
   const allow = [
-    "CLAWDBOT_PROFILE",
-    "CLAWDBOT_STATE_DIR",
-    "CLAWDBOT_CONFIG_PATH",
-    "CLAWDBOT_GATEWAY_PORT",
-    "CLAWDBOT_NIX_MODE",
+    "SURPRISEBOT_PROFILE",
+    "SURPRISEBOT_STATE_DIR",
+    "SURPRISEBOT_CONFIG_PATH",
+    "SURPRISEBOT_GATEWAY_PORT",
+    "SURPRISEBOT_NIX_MODE",
   ];
   const lines: string[] = [];
   for (const key of allow) {
@@ -122,7 +122,7 @@ export function renderRuntimeHints(
     }
   })();
   if (runtime.missingUnit) {
-    hints.push("Service not installed. Run: clawdbot daemon install");
+    hints.push("Service not installed. Run: surprisebot daemon install");
     if (fileLog) hints.push(`File logs: ${fileLog}`);
     return hints;
   }
@@ -133,10 +133,10 @@ export function renderRuntimeHints(
       hints.push(`Launchd stdout (if installed): ${logs.stdoutPath}`);
       hints.push(`Launchd stderr (if installed): ${logs.stderrPath}`);
     } else if (process.platform === "linux") {
-      const unit = resolveGatewaySystemdServiceName(env.CLAWDBOT_PROFILE);
+      const unit = resolveGatewaySystemdServiceName(env.SURPRISEBOT_PROFILE);
       hints.push(`Logs: journalctl --user -u ${unit}.service -n 200 --no-pager`);
     } else if (process.platform === "win32") {
-      const task = resolveGatewayWindowsTaskName(env.CLAWDBOT_PROFILE);
+      const task = resolveGatewayWindowsTaskName(env.SURPRISEBOT_PROFILE);
       hints.push(`Logs: schtasks /Query /TN "${task}" /V /FO LIST`);
     }
   }
@@ -144,8 +144,8 @@ export function renderRuntimeHints(
 }
 
 export function renderGatewayServiceStartHints(env: NodeJS.ProcessEnv = process.env): string[] {
-  const base = ["clawdbot daemon install", "clawdbot gateway"];
-  const profile = env.CLAWDBOT_PROFILE;
+  const base = ["surprisebot daemon install", "surprisebot gateway"];
+  const profile = env.SURPRISEBOT_PROFILE;
   switch (process.platform) {
     case "darwin": {
       const label = resolveGatewayLaunchAgentLabel(profile);

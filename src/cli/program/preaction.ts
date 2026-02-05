@@ -42,7 +42,7 @@ export function registerPreActionHooks(program: Command, programVersion: string)
       .join("\n");
     defaultRuntime.error(
       danger(
-        `Legacy config entries detected. Run "clawdbot doctor" (or ask your agent) to migrate.\n${issues}`,
+        `Legacy config entries detected. Run "surprisebot doctor" (or ask your agent) to migrate.\n${issues}`,
       ),
     );
     process.exit(1);

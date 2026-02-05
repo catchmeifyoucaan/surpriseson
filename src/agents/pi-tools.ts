@@ -5,7 +5,8 @@ import {
   createWriteTool,
   readTool,
 } from "@mariozechner/pi-coding-agent";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { resolveDefaultAgentId } from "./agent-scope.js";
 import { isSubagentSessionKey } from "../routing/session-key.js";
 import { resolveGatewayMessageChannel } from "../utils/message-channel.js";
 import { createApplyPatchTool } from "./apply-patch.js";
@@ -16,7 +17,8 @@ import {
   type ProcessToolDefaults,
 } from "./bash-tools.js";
 import { listChannelAgentTools } from "./channel-tools.js";
-import { createClawdbotTools } from "./clawdbot-tools.js";
+import { createSurprisebotTools } from "./surprisebot-tools.js";
+import { isSharedMemoryTarget, resolveSharedMemorySettings } from "./shared-memory.js";
 import type { ModelAuthMode } from "./model-auth.js";
 import { wrapToolWithAbortSignal } from "./pi-tools.abort.js";
 import {
@@ -28,7 +30,7 @@ import {
 import {
   assertRequiredParams,
   CLAUDE_PARAM_GROUPS,
-  createClawdbotReadTool,
+  createSurprisebotReadTool,
   createSandboxedEditTool,
   createSandboxedReadTool,
   createSandboxedWriteTool,
@@ -76,7 +78,135 @@ export const __testing = {
   assertRequiredParams,
 } as const;
 
-export function createClawdbotCodingTools(options?: {
+function normalizeAgentIdForCompare(value?: string): string {
+  return (value ?? "").trim().toLowerCase();
+}
+
+function resolveSharedMemoryWritePolicy(params: {
+  config?: SurprisebotConfig;
+  agentId?: string;
+}): { sharedPath?: string; allowWrite: boolean } {
+  const cfg = params.config;
+  if (!cfg) return { sharedPath: undefined, allowWrite: true };
+  const resolvedAgentId = params.agentId ?? resolveDefaultAgentId(cfg);
+  const settings = resolveSharedMemorySettings({ cfg, agentId: resolvedAgentId });
+  if (!settings) return { sharedPath: undefined, allowWrite: true };
+  const allowList = settings.allowWriteAgents
+    .map((entry) => normalizeAgentIdForCompare(entry))
+    .filter(Boolean);
+  const resolvedDefault = resolveDefaultAgentId(cfg);
+  const allowed =
+    allowList.length > 0
+      ? allowList.includes(normalizeAgentIdForCompare(resolvedAgentId))
+      : normalizeAgentIdForCompare(resolvedAgentId) ===
+          normalizeAgentIdForCompare(resolvedDefault);
+  return { sharedPath: settings.path, allowWrite: allowed };
+}
+
+async function assertSharedMemoryWriteAllowed(params: {
+  filePath?: string;
+  workspaceDir: string;
+  sharedPath?: string;
+  allowWrite: boolean;
+  toolName: string;
+}): Promise<void> {
+  if (!params.sharedPath || params.allowWrite) return;
+  if (!params.filePath) return;
+  const hit = await isSharedMemoryTarget({
+    filePath: params.filePath,
+    workspaceDir: params.workspaceDir,
+    sharedPath: params.sharedPath,
+  });
+  if (!hit) return;
+  throw new Error(
+    `${params.toolName}: shared memory is read-only for this agent. Ask the core agent to update it.`,
+  );
+}
+
+function wrapSharedMemoryWriteGuard(
+  tool: AnyAgentTool,
+  opts: { sharedPath?: string; allowWrite: boolean; workspaceDir: string },
+): AnyAgentTool {
+  if (!opts.sharedPath || opts.allowWrite) return tool;
+  return {
+    ...tool,
+    execute: async (toolCallId, params, signal, onUpdate) => {
+      const normalized = normalizeToolParams(params);
+      const record =
+        normalized ??
+        (params && typeof params === "object"
+          ? (params as Record<string, unknown>)
+          : undefined);
+      const filePath =
+        typeof record?.path === "string"
+          ? record.path
+          : typeof record?.file_path === "string"
+            ? record.file_path
+            : undefined;
+      await assertSharedMemoryWriteAllowed({
+        filePath,
+        workspaceDir: opts.workspaceDir,
+        sharedPath: opts.sharedPath,
+        allowWrite: opts.allowWrite,
+        toolName: tool.name,
+      });
+      return tool.execute(toolCallId, normalized ?? params, signal, onUpdate);
+    },
+  };
+}
+
+function extractPatchPaths(input: string): string[] {
+  const paths = new Set<string>();
+  const lines = input.split(/\r?\n/);
+  const patterns = [
+    "*** Add File: ",
+    "*** Update File: ",
+    "*** Delete File: ",
+    "*** Move to: ",
+  ];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    for (const prefix of patterns) {
+      if (trimmed.startsWith(prefix)) {
+        const value = trimmed.slice(prefix.length).trim();
+        if (value) paths.add(value);
+      }
+    }
+  }
+  return [...paths];
+}
+
+function wrapSharedMemoryPatchGuard(
+  tool: AnyAgentTool,
+  opts: { sharedPath?: string; allowWrite: boolean; workspaceDir: string },
+): AnyAgentTool {
+  if (!opts.sharedPath || opts.allowWrite) return tool;
+  return {
+    ...tool,
+    execute: async (toolCallId, params, signal, onUpdate) => {
+      const record =
+        params && typeof params === "object"
+          ? (params as Record<string, unknown>)
+          : undefined;
+      const input = typeof record?.input === "string" ? record.input : "";
+      if (input.trim()) {
+        const paths = extractPatchPaths(input);
+        for (const filePath of paths) {
+          await assertSharedMemoryWriteAllowed({
+            filePath,
+            workspaceDir: opts.workspaceDir,
+            sharedPath: opts.sharedPath,
+            allowWrite: opts.allowWrite,
+            toolName: tool.name,
+          });
+        }
+      }
+      return tool.execute(toolCallId, params, signal, onUpdate);
+    },
+  };
+}
+
+export function createSurprisebotCodingTools(options?: {
   exec?: ExecToolDefaults & ProcessToolDefaults;
   messageProvider?: string;
   agentAccountId?: string;
@@ -84,7 +214,7 @@ export function createClawdbotCodingTools(options?: {
   sessionKey?: string;
   agentDir?: string;
   workspaceDir?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   abortSignal?: AbortSignal;
   /**
    * Provider of the currently selected model (used for provider-specific tool quirks).
@@ -123,6 +253,11 @@ export function createClawdbotCodingTools(options?: {
     modelProvider: options?.modelProvider,
     modelId: options?.modelId,
   });
+  const resolvedAgentId = agentId ?? (options?.config ? resolveDefaultAgentId(options.config) : undefined);
+  const sharedMemoryPolicy = resolveSharedMemoryWritePolicy({
+    config: options?.config,
+    agentId: resolvedAgentId,
+  });
   const profilePolicy = resolveToolProfilePolicy(profile);
   const providerProfilePolicy = resolveToolProfilePolicy(providerProfile);
   const scopeKey = options?.exec?.scopeKey ?? (agentId ? `agent:${agentId}` : undefined);
@@ -159,20 +294,38 @@ export function createClawdbotCodingTools(options?: {
         return [createSandboxedReadTool(sandboxRoot)];
       }
       const freshReadTool = createReadTool(workspaceRoot);
-      return [createClawdbotReadTool(freshReadTool)];
+      return [createSurprisebotReadTool(freshReadTool, { workspaceRoot })];
     }
     if (tool.name === "bash" || tool.name === execToolName) return [];
     if (tool.name === "write") {
       if (sandboxRoot) return [];
       // Wrap with param normalization for Claude Code compatibility
+      const writeTool = wrapToolParamNormalization(
+        createWriteTool(workspaceRoot),
+        CLAUDE_PARAM_GROUPS.write,
+      );
       return [
-        wrapToolParamNormalization(createWriteTool(workspaceRoot), CLAUDE_PARAM_GROUPS.write),
+        wrapSharedMemoryWriteGuard(writeTool, {
+          sharedPath: sharedMemoryPolicy.sharedPath,
+          allowWrite: sharedMemoryPolicy.allowWrite,
+          workspaceDir: workspaceRoot,
+        }),
       ];
     }
     if (tool.name === "edit") {
       if (sandboxRoot) return [];
       // Wrap with param normalization for Claude Code compatibility
-      return [wrapToolParamNormalization(createEditTool(workspaceRoot), CLAUDE_PARAM_GROUPS.edit)];
+      const editTool = wrapToolParamNormalization(
+        createEditTool(workspaceRoot),
+        CLAUDE_PARAM_GROUPS.edit,
+      );
+      return [
+        wrapSharedMemoryWriteGuard(editTool, {
+          sharedPath: sharedMemoryPolicy.sharedPath,
+          allowWrite: sharedMemoryPolicy.allowWrite,
+          workspaceDir: workspaceRoot,
+        }),
+      ];
     }
     return [tool as AnyAgentTool];
   });
@@ -206,6 +359,13 @@ export function createClawdbotCodingTools(options?: {
           cwd: sandboxRoot ?? workspaceRoot,
           sandboxRoot: sandboxRoot && allowWorkspaceWrites ? sandboxRoot : undefined,
         });
+  const guardedApplyPatchTool = applyPatchTool
+    ? wrapSharedMemoryPatchGuard(applyPatchTool as unknown as AnyAgentTool, {
+        sharedPath: sharedMemoryPolicy.sharedPath,
+        allowWrite: sharedMemoryPolicy.allowWrite,
+        workspaceDir: workspaceRoot,
+      })
+    : null;
   const tools: AnyAgentTool[] = [
     ...base,
     ...(sandboxRoot
@@ -213,13 +373,13 @@ export function createClawdbotCodingTools(options?: {
         ? [createSandboxedEditTool(sandboxRoot), createSandboxedWriteTool(sandboxRoot)]
         : []
       : []),
-    ...(applyPatchTool ? [applyPatchTool as unknown as AnyAgentTool] : []),
+    ...(guardedApplyPatchTool ? [guardedApplyPatchTool as AnyAgentTool] : []),
     execTool as unknown as AnyAgentTool,
     bashTool,
     processTool as unknown as AnyAgentTool,
     // Channel docking: include channel-defined agent tools (login, etc.).
     ...listChannelAgentTools({ cfg: options?.config }),
-    ...createClawdbotTools({
+    ...createSurprisebotTools({
       browserControlUrl: sandbox?.browser?.controlUrl,
       allowHostBrowserControl: sandbox ? sandbox.browserAllowHostControl : true,
       allowedControlUrls: sandbox?.browserAllowedControlUrls,

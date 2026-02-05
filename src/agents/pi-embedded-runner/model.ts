@@ -1,12 +1,12 @@
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { discoverAuthStorage, discoverModels } from "@mariozechner/pi-coding-agent";
 
-import type { ClawdbotConfig } from "../../config/config.js";
-import { resolveClawdbotAgentDir } from "../agent-paths.js";
+import type { SurprisebotConfig } from "../../config/config.js";
+import { resolveSurprisebotAgentDir } from "../agent-paths.js";
 import { DEFAULT_CONTEXT_TOKENS } from "../defaults.js";
 import { normalizeModelCompat } from "../model-compat.js";
 
-export function buildModelAliasLines(cfg?: ClawdbotConfig) {
+export function buildModelAliasLines(cfg?: SurprisebotConfig) {
   const models = cfg?.agents?.defaults?.models ?? {};
   const entries: Array<{ alias: string; model: string }> = [];
   for (const [keyRaw, entryRaw] of Object.entries(models)) {
@@ -25,14 +25,14 @@ export function resolveModel(
   provider: string,
   modelId: string,
   agentDir?: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
 ): {
   model?: Model<Api>;
   error?: string;
   authStorage: ReturnType<typeof discoverAuthStorage>;
   modelRegistry: ReturnType<typeof discoverModels>;
 } {
-  const resolvedAgentDir = agentDir ?? resolveClawdbotAgentDir();
+  const resolvedAgentDir = agentDir ?? resolveSurprisebotAgentDir();
   const authStorage = discoverAuthStorage(resolvedAgentDir);
   const modelRegistry = discoverModels(authStorage, resolvedAgentDir);
   const model = modelRegistry.find(provider, modelId) as Model<Api> | null;

@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { type Api, getEnvApiKey, type Model } from "@mariozechner/pi-ai";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { ModelProviderConfig } from "../config/types.js";
 import { getShellEnvAppliedKeys } from "../infra/shell-env.js";
 import {
@@ -17,7 +17,7 @@ import { normalizeProviderId } from "./model-selection.js";
 export { ensureAuthProfileStore, resolveAuthProfileOrder } from "./auth-profiles.js";
 
 export function getCustomProviderApiKey(
-  cfg: ClawdbotConfig | undefined,
+  cfg: SurprisebotConfig | undefined,
   provider: string,
 ): string | undefined {
   const providers = cfg?.models?.providers ?? {};
@@ -28,7 +28,7 @@ export function getCustomProviderApiKey(
 
 export async function resolveApiKeyForProvider(params: {
   provider: string;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   profileId?: string;
   preferredProfile?: string;
   store?: AuthProfileStore;
@@ -103,7 +103,7 @@ export async function resolveApiKeyForProvider(params: {
     [
       `No API key found for provider "${provider}".`,
       `Auth store: ${authStorePath} (agentDir: ${resolvedAgentDir}).`,
-      "Configure auth for this agent (clawdbot agents add <id>) or copy auth-profiles.json from the main agentDir.",
+      "Configure auth for this agent (surprisebot agents add <id>) or copy auth-profiles.json from the main agentDir.",
     ].join(" "),
   );
 }
@@ -111,14 +111,25 @@ export async function resolveApiKeyForProvider(params: {
 export type EnvApiKeyResult = { apiKey: string; source: string };
 export type ModelAuthMode = "api-key" | "oauth" | "token" | "mixed" | "unknown";
 
+const ENV_KEY_ROTATION = new Map<string, number>();
+
 export function resolveEnvApiKey(provider: string): EnvApiKeyResult | null {
   const normalized = normalizeProviderId(provider);
   const applied = new Set(getShellEnvAppliedKeys());
   const pick = (envVar: string): EnvApiKeyResult | null => {
     const value = process.env[envVar]?.trim();
     if (!value) return null;
+    const keys = value
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    if (keys.length === 0) return null;
     const source = applied.has(envVar) ? `shell env: ${envVar}` : `env: ${envVar}`;
-    return { apiKey: value, source };
+    if (keys.length === 1) return { apiKey: keys[0], source };
+    const current = ENV_KEY_ROTATION.get(envVar) ?? 0;
+    const next = current + 1;
+    ENV_KEY_ROTATION.set(envVar, next % keys.length);
+    return { apiKey: keys[current % keys.length], source: `${source} (rotating)` };
   };
 
   if (normalized === "github-copilot") {
@@ -154,6 +165,7 @@ export function resolveEnvApiKey(provider: string): EnvApiKeyResult | null {
     cerebras: "CEREBRAS_API_KEY",
     xai: "XAI_API_KEY",
     openrouter: "OPENROUTER_API_KEY",
+    perplexity: "PPLX_API_KEY",
     moonshot: "MOONSHOT_API_KEY",
     minimax: "MINIMAX_API_KEY",
     synthetic: "SYNTHETIC_API_KEY",
@@ -167,7 +179,7 @@ export function resolveEnvApiKey(provider: string): EnvApiKeyResult | null {
 
 export function resolveModelAuthMode(
   provider?: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
   store?: AuthProfileStore,
 ): ModelAuthMode | undefined {
   const resolved = provider?.trim();
@@ -202,7 +214,7 @@ export function resolveModelAuthMode(
 
 export async function getApiKeyForModel(params: {
   model: Model<Api>;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   profileId?: string;
   preferredProfile?: string;
   store?: AuthProfileStore;

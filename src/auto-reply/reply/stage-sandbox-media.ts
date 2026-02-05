@@ -2,14 +2,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ensureSandboxWorkspaceForSession } from "../../agents/sandbox.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { logVerbose } from "../../globals.js";
 import type { MsgContext, TemplateContext } from "../templating.js";
 
 export async function stageSandboxMedia(params: {
   ctx: MsgContext;
   sessionCtx: TemplateContext;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sessionKey?: string;
   workspaceDir: string;
 }) {

@@ -1,5 +1,5 @@
 ---
-summary: "Frequently asked questions about Clawdbot setup, configuration, and usage"
+summary: "Frequently asked questions about Surprisebot setup, configuration, and usage"
 ---
 # FAQ
 
@@ -7,10 +7,10 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
 ## Table of contents
 
-- [What is Clawdbot?](#what-is-clawdbot)
-  - [What is Clawdbot, in one paragraph?](#what-is-clawdbot-in-one-paragraph)
+- [What is Surprisebot?](#what-is-surprisebot)
+  - [What is Surprisebot, in one paragraph?](#what-is-surprisebot-in-one-paragraph)
 - [Quick start and first-run setup](#quick-start-and-first-run-setup)
-  - [What’s the recommended way to install and set up Clawdbot?](#whats-the-recommended-way-to-install-and-set-up-clawdbot)
+  - [What’s the recommended way to install and set up Surprisebot?](#whats-the-recommended-way-to-install-and-set-up-surprisebot)
   - [How do I open the dashboard after onboarding?](#how-do-i-open-the-dashboard-after-onboarding)
   - [How do I authenticate the dashboard (token) on localhost vs remote?](#how-do-i-authenticate-the-dashboard-token-on-localhost-vs-remote)
   - [What runtime do I need?](#what-runtime-do-i-need)
@@ -23,7 +23,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I keep hosted model traffic in a specific region?](#how-do-i-keep-hosted-model-traffic-in-a-specific-region)
   - [Can I use Bun?](#can-i-use-bun)
   - [Telegram: what goes in `allowFrom`?](#telegram-what-goes-in-allowfrom)
-  - [Can multiple people use one WhatsApp number with different Clawdbots?](#can-multiple-people-use-one-whatsapp-number-with-different-clawdbots)
+  - [Can multiple people use one WhatsApp number with different Surprisebots?](#can-multiple-people-use-one-whatsapp-number-with-different-surprisebots)
   - [Can I run a "fast chat" agent and an "Opus for coding" agent?](#can-i-run-a-fast-chat-agent-and-an-opus-for-coding-agent)
   - [Does Homebrew work on Linux?](#does-homebrew-work-on-linux)
   - [Can I switch between npm and git installs later?](#can-i-switch-between-npm-and-git-installs-later)
@@ -41,9 +41,9 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How does memory work?](#how-does-memory-work)
   - [Does semantic memory search require an OpenAI API key?](#does-semantic-memory-search-require-an-openai-api-key)
 - [Where things live on disk](#where-things-live-on-disk)
-  - [Where does Clawdbot store its data?](#where-does-clawdbot-store-its-data)
+  - [Where does Surprisebot store its data?](#where-does-surprisebot-store-its-data)
   - [Where should AGENTS.md / SOUL.md / USER.md / MEMORY.md live?](#where-should-agentsmd--soulmd--usermd--memorymd-live)
-  - [How do I completely uninstall Clawdbot?](#how-do-i-completely-uninstall-clawdbot)
+  - [How do I completely uninstall Surprisebot?](#how-do-i-completely-uninstall-surprisebot)
   - [Can agents work outside the workspace?](#can-agents-work-outside-the-workspace)
   - [I’m in remote mode — where is the session store?](#im-in-remote-mode-where-is-the-session-store)
 - [Config basics](#config-basics)
@@ -53,7 +53,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [Do I have to restart after changing config?](#do-i-have-to-restart-after-changing-config)
   - [How do I enable web search (and web fetch)?](#how-do-i-enable-web-search-and-web-fetch)
   - [How do I run a central Gateway with specialized workers across devices?](#how-do-i-run-a-central-gateway-with-specialized-workers-across-devices)
-  - [Can the Clawdbot browser run headless?](#can-the-clawdbot-browser-run-headless)
+  - [Can the Surprisebot browser run headless?](#can-the-surprisebot-browser-run-headless)
 - [Remote gateways + nodes](#remote-gateways-nodes)
   - [How do commands propagate between Telegram, the gateway, and nodes?](#how-do-commands-propagate-between-telegram-the-gateway-and-nodes)
   - [Do nodes run a gateway daemon?](#do-nodes-run-a-gateway-daemon)
@@ -62,15 +62,15 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [How do I set up Tailscale on a VPS and connect from my Mac?](#how-do-i-set-up-tailscale-on-a-vps-and-connect-from-my-mac)
   - [How do I connect a Mac node to a remote Gateway (Tailscale Serve)?](#how-do-i-connect-a-mac-node-to-a-remote-gateway-tailscale-serve)
 - [Env vars and .env loading](#env-vars-and-env-loading)
-  - [How does Clawdbot load environment variables?](#how-does-clawdbot-load-environment-variables)
+  - [How does Surprisebot load environment variables?](#how-does-surprisebot-load-environment-variables)
   - [“I started the Gateway via a daemon and my env vars disappeared.” What now?](#i-started-the-gateway-via-a-daemon-and-my-env-vars-disappeared-what-now)
   - [I set `COPILOT_GITHUB_TOKEN`, but models status shows “Shell env: off.” Why?](#i-set-copilot_github_token-but-models-status-shows-shell-env-off-why)
 - [Sessions & multiple chats](#sessions-multiple-chats)
   - [How do I start a fresh conversation?](#how-do-i-start-a-fresh-conversation)
-  - [How do I completely reset Clawdbot (but keep it installed)?](#how-do-i-completely-reset-clawdbot-but-keep-it-installed)
+  - [How do I completely reset Surprisebot (but keep it installed)?](#how-do-i-completely-reset-surprisebot-but-keep-it-installed)
   - [I’m getting “context too large” errors — how do I reset or compact?](#im-getting-context-too-large-errors-how-do-i-reset-or-compact)
   - [Do I need to add a “bot account” to a WhatsApp group?](#do-i-need-to-add-a-bot-account-to-a-whatsapp-group)
-  - [Why doesn’t Clawdbot reply in a group?](#why-doesnt-clawdbot-reply-in-a-group)
+  - [Why doesn’t Surprisebot reply in a group?](#why-doesnt-surprisebot-reply-in-a-group)
   - [Do groups/threads share context with DMs?](#do-groupsthreads-share-context-with-dms)
 - [Models: defaults, selection, aliases, switching](#models-defaults-selection-aliases-switching)
   - [What is the “default model”?](#what-is-the-default-model)
@@ -93,10 +93,10 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
   - [OAuth vs API key: what’s the difference?](#oauth-vs-api-key-whats-the-difference)
 - [Gateway: ports, “already running”, and remote mode](#gateway-ports-already-running-and-remote-mode)
   - [What port does the Gateway use?](#what-port-does-the-gateway-use)
-  - [Why does `clawdbot daemon status` say `Runtime: running` but `RPC probe: failed`?](#why-does-clawdbot-daemon-status-say-runtime-running-but-rpc-probe-failed)
-  - [Why does `clawdbot daemon status` show `Config (cli)` and `Config (daemon)` different?](#why-does-clawdbot-daemon-status-show-config-cli-and-config-daemon-different)
+  - [Why does `surprisebot daemon status` say `Runtime: running` but `RPC probe: failed`?](#why-does-surprisebot-daemon-status-say-runtime-running-but-rpc-probe-failed)
+  - [Why does `surprisebot daemon status` show `Config (cli)` and `Config (daemon)` different?](#why-does-surprisebot-daemon-status-show-config-cli-and-config-daemon-different)
   - [What does “another gateway instance is already listening” mean?](#what-does-another-gateway-instance-is-already-listening-mean)
-  - [How do I run Clawdbot in remote mode (client connects to a Gateway elsewhere)?](#how-do-i-run-clawdbot-in-remote-mode-client-connects-to-a-gateway-elsewhere)
+  - [How do I run Surprisebot in remote mode (client connects to a Gateway elsewhere)?](#how-do-i-run-surprisebot-in-remote-mode-client-connects-to-a-gateway-elsewhere)
   - [The Control UI says “unauthorized” (or keeps reconnecting). What now?](#the-control-ui-says-unauthorized-or-keeps-reconnecting-what-now)
   - [I set `gateway.bind: "tailnet"` but it can’t bind / nothing listens](#i-set-gatewaybind-tailnet-but-it-cant-bind-nothing-listens)
   - [Can I run multiple Gateways on the same host?](#can-i-run-multiple-gateways-on-the-same-host)
@@ -108,7 +108,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 - [Media & attachments](#media-attachments)
   - [My skill generated an image/PDF, but nothing was sent](#my-skill-generated-an-imagepdf-but-nothing-was-sent)
 - [Security and access control](#security-and-access-control)
-  - [Is it safe to expose Clawdbot to inbound DMs?](#is-it-safe-to-expose-clawdbot-to-inbound-dms)
+  - [Is it safe to expose Surprisebot to inbound DMs?](#is-it-safe-to-expose-surprisebot-to-inbound-dms)
   - [WhatsApp: will it message my contacts? How does pairing work?](#whatsapp-will-it-message-my-contacts-how-does-pairing-work)
 - [Chat commands, aborting tasks, and “it won’t stop”](#chat-commands-aborting-tasks-and-it-wont-stop)
   - [How do I stop/cancel a running task?](#how-do-i-stopcancel-a-running-task)
@@ -128,66 +128,66 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
 1) **Quick status (first check)**
    ```bash
-   clawdbot status
+   surprisebot status
    ```
    Fast local summary: OS + update, gateway/daemon reachability, agents/sessions, provider config + runtime issues (when gateway is reachable).
 
 2) **Pasteable report (safe to share)**
    ```bash
-   clawdbot status --all
+   surprisebot status --all
    ```
    Read-only diagnosis with log tail (tokens redacted).
 
 3) **Daemon + port state**
    ```bash
-   clawdbot daemon status
+   surprisebot daemon status
    ```
    Shows supervisor runtime vs RPC reachability, the probe target URL, and which config the daemon likely used.
 
 4) **Deep probes**
    ```bash
-   clawdbot status --deep
+   surprisebot status --deep
    ```
    Runs gateway health checks + provider probes (requires a reachable gateway). See [Health](/gateway/health).
 
 5) **Tail the latest log**
    ```bash
-   clawdbot logs --follow
+   surprisebot logs --follow
    ```
    If RPC is down, fall back to:
    ```bash
-   tail -f "$(ls -t /tmp/clawdbot/clawdbot-*.log | head -1)"
+   tail -f "$(ls -t /tmp/surprisebot/surprisebot-*.log | head -1)"
    ```
    File logs are separate from service logs; see [Logging](/logging) and [Troubleshooting](/gateway/troubleshooting).
 
 6) **Run the doctor (repairs)**
    ```bash
-   clawdbot doctor
+   surprisebot doctor
    ```
    Repairs/migrates config/state + runs health checks. See [Doctor](/gateway/doctor).
 
 7) **Gateway snapshot**
    ```bash
-   clawdbot health --json
-   clawdbot health --verbose   # shows the target URL + config path on errors
+   surprisebot health --json
+   surprisebot health --verbose   # shows the target URL + config path on errors
    ```
    Asks the running gateway for a full snapshot (WS-only). See [Health](/gateway/health).
 
-## What is Clawdbot?
+## What is Surprisebot?
 
-### What is Clawdbot, in one paragraph?
+### What is Surprisebot, in one paragraph?
 
-Clawdbot is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always‑on control plane; the assistant is the product.
+Surprisebot is a personal AI assistant you run on your own devices. It replies on the messaging surfaces you already use (WhatsApp, Telegram, Slack, Discord, Signal, iMessage, WebChat) and can also do voice + a live Canvas on supported platforms. The **Gateway** is the always‑on control plane; the assistant is the product.
 
 ## Quick start and first-run setup
 
-### What’s the recommended way to install and set up Clawdbot?
+### What’s the recommended way to install and set up Surprisebot?
 
 The repo recommends running from source and using the onboarding wizard:
 
 ```bash
-git clone https://github.com/clawdbot/clawdbot.git
-cd clawdbot
+git clone https://github.com/surprisebot/surprisebot.git
+cd surprisebot
 
 pnpm install
 
@@ -197,7 +197,7 @@ pnpm build
 # If the Control UI assets are missing or you want the dashboard:
 pnpm ui:build # auto-installs UI deps on first run
 
-pnpm clawdbot onboard
+pnpm surprisebot onboard
 ```
 
 The wizard can also build UI assets automatically. After onboarding, you typically run the Gateway on port **18789**.
@@ -210,13 +210,13 @@ The wizard now opens your browser with a tokenized dashboard URL right after onb
 
 **Localhost (same machine):**
 - Open `http://127.0.0.1:18789/`.
-- If it asks for auth, run `clawdbot dashboard` and use the tokenized link (`?token=...`).
-- The token is the same value as `gateway.auth.token` (or `CLAWDBOT_GATEWAY_TOKEN`) and is stored by the UI after first load.
+- If it asks for auth, run `surprisebot dashboard` and use the tokenized link (`?token=...`).
+- The token is the same value as `gateway.auth.token` (or `SURPRISEBOT_GATEWAY_TOKEN`) and is stored by the UI after first load.
 
 **Not on localhost:**
-- **Tailscale Serve** (recommended): keep bind loopback, run `clawdbot gateway --tailscale serve`, open `https://<magicdns>/`. If `gateway.auth.allowTailscale` is `true`, identity headers satisfy auth (no token).
-- **Tailnet bind**: run `clawdbot gateway --bind tailnet --token "<token>"`, open `http://<tailscale-ip>:18789/`, paste token in dashboard settings.
-- **SSH tunnel**: `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/?token=...` from `clawdbot dashboard`.
+- **Tailscale Serve** (recommended): keep bind loopback, run `surprisebot gateway --tailscale serve`, open `https://<magicdns>/`. If `gateway.auth.allowTailscale` is `true`, identity headers satisfy auth (no token).
+- **Tailnet bind**: run `surprisebot gateway --bind tailnet --token "<token>"`, open `http://<tailscale-ip>:18789/`, paste token in dashboard settings.
+- **SSH tunnel**: `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/?token=...` from `surprisebot dashboard`.
 
 See [Dashboard](/web/dashboard) and [Web surfaces](/web) for bind modes and auth details.
 
@@ -226,7 +226,7 @@ Node **>= 22** is required. `pnpm` is recommended. Bun is **not recommended** fo
 
 ### What does the onboarding wizard actually do?
 
-`clawdbot onboard` is the recommended setup path. In **local mode** it walks you through:
+`surprisebot onboard` is the recommended setup path. In **local mode** it walks you through:
 
 - **Model/auth setup** (Anthropic **setup-token** recommended for Claude subscriptions, OpenAI Codex OAuth supported, API keys optional, LM Studio local models supported)
 - **Workspace** location + bootstrap files
@@ -241,13 +241,13 @@ It also warns if your configured model is unknown or missing auth.
 
 The wizard can run `claude setup-token` on the gateway host (or you run it yourself), then stores the token as an auth profile for the **anthropic** provider. That profile is used for model calls the same way an API key or OAuth profile would be. If you already ran `claude setup-token`, pick **Anthropic token (paste setup-token)** and paste it. More detail: [OAuth](/concepts/oauth).
 
-Clawdbot keeps `auth.profiles["anthropic:claude-cli"].mode` set to `"oauth"` so
+Surprisebot keeps `auth.profiles["anthropic:claude-cli"].mode` set to `"oauth"` so
 the profile accepts both OAuth and setup-token credentials; older `"token"` mode
 entries auto-migrate.
 
 ### Do you support Claude subscription auth (Claude Code OAuth)?
 
-Yes. Clawdbot can **reuse Claude Code CLI credentials** (OAuth) and also supports **setup-token**. If you have a Claude subscription, we recommend **setup-token** on the gateway host for the most reliable long‑running setup (requires Claude Pro/Max + the `claude` CLI). OAuth reuse is supported, but avoid logging in separately via Clawdbot and Claude Code to prevent token conflicts. See [Anthropic](/providers/anthropic) and [OAuth](/concepts/oauth).
+Yes. Surprisebot can **reuse Claude Code CLI credentials** (OAuth) and also supports **setup-token**. If you have a Claude subscription, we recommend **setup-token** on the gateway host for the most reliable long‑running setup (requires Claude Pro/Max + the `claude` CLI). OAuth reuse is supported, but avoid logging in separately via Surprisebot and Claude Code to prevent token conflicts. See [Anthropic](/providers/anthropic) and [OAuth](/concepts/oauth).
 
 Note: Claude subscription access is governed by Anthropic’s terms. For production or multi‑user workloads, API keys are usually the safer choice.
 
@@ -257,11 +257,11 @@ Yes — via pi‑ai’s **Amazon Bedrock (Converse)** provider with **manual con
 
 ### How does Codex auth work?
 
-Clawdbot supports **OpenAI Code (Codex)** via OAuth or by reusing your Codex CLI login (`~/.codex/auth.json`). The wizard can import the CLI login or run the OAuth flow and will set the default model to `openai-codex/gpt-5.2` when appropriate. See [Model providers](/concepts/model-providers) and [Wizard](/start/wizard).
+Surprisebot supports **OpenAI Code (Codex)** via OAuth or by reusing your Codex CLI login (`~/.codex/auth.json`). The wizard can import the CLI login or run the OAuth flow and will set the default model to `openai-codex/gpt-5.2` when appropriate. See [Model providers](/concepts/model-providers) and [Wizard](/start/wizard).
 
 ### Is a local model OK for casual chats?
 
-Usually no. Clawdbot needs large context + strong safety; small cards truncate and leak. If you must, run the **largest** MiniMax M2.1 build you can locally (LM Studio) and see [/gateway/local-models](/gateway/local-models). Smaller/quantized models increase prompt-injection risk — see [Security](/gateway/security).
+Usually no. Surprisebot needs large context + strong safety; small cards truncate and leak. If you must, run the **largest** MiniMax M2.1 build you can locally (LM Studio) and see [/gateway/local-models](/gateway/local-models). Smaller/quantized models increase prompt-injection risk — see [Security](/gateway/security).
 
 ### How do I keep hosted model traffic in a specific region?
 
@@ -280,7 +280,7 @@ without WhatsApp/Telegram.
 `channels.telegram.allowFrom` is **the human sender’s Telegram user ID** (numeric, recommended) or `@username`. It is not the bot username.
 
 Safer (no third-party bot):
-- DM your bot, then run `clawdbot logs --follow` and read `from.id`.
+- DM your bot, then run `surprisebot logs --follow` and read `from.id`.
 
 Official Bot API:
 - DM your bot, then call `https://api.telegram.org/bot<bot_token>/getUpdates` and read `message.from.id`.
@@ -290,7 +290,7 @@ Third-party (less private):
 
 See [/channels/telegram](/channels/telegram#access-control-dms--groups).
 
-### Can multiple people use one WhatsApp number with different Clawdbots?
+### Can multiple people use one WhatsApp number with different Surprisebots?
 
 Yes, via **multi‑agent routing**. Bind each sender’s WhatsApp **DM** (peer `kind: "dm"`, sender E.164 like `+15551234567`) to a different `agentId`, so each person gets their own workspace and session store. Replies still come from the **same WhatsApp account**, and DM access control (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) is global per WhatsApp account. See [Multi-Agent Routing](/concepts/multi-agent) and [WhatsApp](/channels/whatsapp).
 
@@ -309,7 +309,7 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew install <formula>
 ```
 
-If you run Clawdbot via systemd, ensure the service PATH includes `/home/linuxbrew/.linuxbrew/bin` (or your brew prefix) so `brew`-installed tools resolve in non‑login shells.
+If you run Surprisebot via systemd, ensure the service PATH includes `/home/linuxbrew/.linuxbrew/bin` (or your brew prefix) so `brew`-installed tools resolve in non‑login shells.
 
 ### Can I switch between npm and git installs later?
 
@@ -318,20 +318,20 @@ Yes. Install the other flavor, then run Doctor so the gateway service points at 
 From npm → git:
 
 ```bash
-git clone https://github.com/clawdbot/clawdbot.git
-cd clawdbot
+git clone https://github.com/surprisebot/surprisebot.git
+cd surprisebot
 pnpm install
 pnpm build
-pnpm clawdbot doctor
-clawdbot daemon restart
+pnpm surprisebot doctor
+surprisebot daemon restart
 ```
 
 From git → npm:
 
 ```bash
-npm install -g clawdbot@latest
-clawdbot doctor
-clawdbot daemon restart
+npm install -g surprisebot@latest
+surprisebot doctor
+surprisebot daemon restart
 ```
 
 Doctor detects a gateway service entrypoint mismatch and offers to rewrite the service config to match the current install (use `--repair` in automation).
@@ -349,7 +349,7 @@ lowest friction and you’re okay with sleep/restarts, run it locally.
 - **Pros:** always‑on, stable network, no laptop sleep issues, easier to keep running.
 - **Cons:** often run headless (use screenshots), remote file access only, you must SSH for updates.
 
-**Clawdbot‑specific note:** WhatsApp/Telegram/Slack/Discord all work fine from a VPS. The only real trade‑off is **headless browser** vs a visible window. See [Browser](/tools/browser).
+**Surprisebot‑specific note:** WhatsApp/Telegram/Slack/Discord all work fine from a VPS. The only real trade‑off is **headless browser** vs a visible window. See [Browser](/tools/browser).
 
 **Recommended default:** VPS if you had gateway disconnects before. Local is great when you’re actively using the Mac and want local file access or UI automation with a visible browser.
 
@@ -357,11 +357,11 @@ lowest friction and you’re okay with sleep/restarts, run it locally.
 
 ### How do I customize skills without keeping the repo dirty?
 
-Use managed overrides instead of editing the repo copy. Put your changes in `~/.clawdbot/skills/<name>/SKILL.md` (or add a folder via `skills.load.extraDirs` in `~/.clawdbot/clawdbot.json`). Precedence is `<workspace>/skills` > `~/.clawdbot/skills` > bundled, so managed overrides win without touching git. Only upstream-worthy edits should live in the repo and go out as PRs.
+Use managed overrides instead of editing the repo copy. Put your changes in `~/.surprisebot/skills/<name>/SKILL.md` (or add a folder via `skills.load.extraDirs` in `~/.surprisebot/surprisebot.json`). Precedence is `<workspace>/skills` > `~/.surprisebot/skills` > bundled, so managed overrides win without touching git. Only upstream-worthy edits should live in the repo and go out as PRs.
 
 ### Can I load skills from a custom folder?
 
-Yes. Add extra directories via `skills.load.extraDirs` in `~/.clawdbot/clawdbot.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.clawdbot/skills` → bundled → `skills.load.extraDirs`. `clawdhub` installs into `./skills` by default, which Clawdbot treats as `<workspace>/skills`.
+Yes. Add extra directories via `skills.load.extraDirs` in `~/.surprisebot/surprisebot.json` (lowest precedence). Default precedence remains: `<workspace>/skills` → `~/.surprisebot/skills` → bundled → `skills.load.extraDirs`. `surprisebothub` installs into `./skills` by default, which Surprisebot treats as `<workspace>/skills`.
 
 ### How can I use different models for different tasks?
 
@@ -374,17 +374,17 @@ See [Cron jobs](/automation/cron-jobs), [Multi-Agent Routing](/concepts/multi-ag
 
 ### How do I install skills on Linux?
 
-Use **ClawdHub** (CLI) or drop skills into your workspace. The macOS Skills UI isn’t available on Linux.
-Browse skills at https://clawdhub.com.
+Use **SurprisebotHub** (CLI) or drop skills into your workspace. The macOS Skills UI isn’t available on Linux.
+Browse skills at https://surprisebothub.com.
 
-Install the ClawdHub CLI (pick one package manager):
+Install the SurprisebotHub CLI (pick one package manager):
 
 ```bash
-npm i -g clawdhub
+npm i -g surprisebothub
 ```
 
 ```bash
-pnpm add -g clawdhub
+pnpm add -g surprisebothub
 ```
 
 ### Do you have a Notion or HeyGen integration?
@@ -405,26 +405,26 @@ targeting those APIs.
 Install skills:
 
 ```bash
-clawdhub install <skill-slug>
-clawdhub update --all
+surprisebothub install <skill-slug>
+surprisebothub update --all
 ```
 
-ClawdHub installs into `./skills` under your current directory (or falls back to your configured Clawdbot workspace); Clawdbot treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.clawdbot/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [ClawdHub](/tools/clawdhub).
+SurprisebotHub installs into `./skills` under your current directory (or falls back to your configured Surprisebot workspace); Surprisebot treats that as `<workspace>/skills` on the next session. For shared skills across agents, place them in `~/.surprisebot/skills/<name>/SKILL.md`. Some skills expect binaries installed via Homebrew; on Linux that means Linuxbrew (see the Homebrew Linux FAQ entry above). See [Skills](/tools/skills) and [SurprisebotHub](/tools/surprisebothub).
 
 ### How do I install the Chrome extension for browser takeover?
 
 Use the built-in installer, then load the unpacked extension in Chrome:
 
 ```bash
-clawdbot browser extension install
-clawdbot browser extension path
+surprisebot browser extension install
+surprisebot browser extension path
 ```
 
 Then Chrome → `chrome://extensions` → enable “Developer mode” → “Load unpacked” → pick that folder.
 
 Full guide (including remote Gateway via Tailscale + security notes): [Chrome extension](/tools/chrome-extension)
 
-If the Gateway runs on the same machine as Chrome (default setup), you usually **do not** need `clawdbot browser serve`.
+If the Gateway runs on the same machine as Chrome (default setup), you usually **do not** need `surprisebot browser serve`.
 You still need to click the extension button on the tab you want to control (it doesn’t auto-attach).
 
 ## Sandboxing and memory
@@ -449,11 +449,11 @@ Set `agents.defaults.sandbox.docker.binds` to `["host:path:mode"]` (e.g., `"/hom
 
 ### How does memory work?
 
-Clawdbot memory is just Markdown files in the agent workspace:
+Surprisebot memory is just Markdown files in the agent workspace:
 - Daily notes in `memory/YYYY-MM-DD.md`
 - Curated long-term notes in `MEMORY.md` (main/private sessions only)
 
-Clawdbot also runs a **silent pre-compaction memory flush** to remind the model
+Surprisebot also runs a **silent pre-compaction memory flush** to remind the model
 to write durable notes before auto-compaction. This only runs when the workspace
 is writable (read-only sandboxes skip it). See [Memory](/concepts/memory).
 
@@ -470,39 +470,39 @@ for the setup details.
 
 ## Where things live on disk
 
-### Where does Clawdbot store its data?
+### Where does Surprisebot store its data?
 
-Everything lives under `$CLAWDBOT_STATE_DIR` (default: `~/.clawdbot`):
+Everything lives under `$SURPRISEBOT_STATE_DIR` (default: `~/.surprisebot`):
 
 | Path | Purpose |
 |------|---------|
-| `$CLAWDBOT_STATE_DIR/clawdbot.json` | Main config (JSON5) |
-| `$CLAWDBOT_STATE_DIR/credentials/oauth.json` | Legacy OAuth import (copied into auth profiles on first use) |
-| `$CLAWDBOT_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth + API keys) |
-| `$CLAWDBOT_STATE_DIR/agents/<agentId>/agent/auth.json` | Runtime auth cache (managed automatically) |
-| `$CLAWDBOT_STATE_DIR/credentials/` | Provider state (e.g. `whatsapp/<accountId>/creds.json`) |
-| `$CLAWDBOT_STATE_DIR/agents/` | Per‑agent state (agentDir + sessions) |
-| `$CLAWDBOT_STATE_DIR/agents/<agentId>/sessions/` | Conversation history & state (per agent) |
-| `$CLAWDBOT_STATE_DIR/agents/<agentId>/sessions/sessions.json` | Session metadata (per agent) |
+| `$SURPRISEBOT_STATE_DIR/surprisebot.json` | Main config (JSON5) |
+| `$SURPRISEBOT_STATE_DIR/credentials/oauth.json` | Legacy OAuth import (copied into auth profiles on first use) |
+| `$SURPRISEBOT_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth + API keys) |
+| `$SURPRISEBOT_STATE_DIR/agents/<agentId>/agent/auth.json` | Runtime auth cache (managed automatically) |
+| `$SURPRISEBOT_STATE_DIR/credentials/` | Provider state (e.g. `whatsapp/<accountId>/creds.json`) |
+| `$SURPRISEBOT_STATE_DIR/agents/` | Per‑agent state (agentDir + sessions) |
+| `$SURPRISEBOT_STATE_DIR/agents/<agentId>/sessions/` | Conversation history & state (per agent) |
+| `$SURPRISEBOT_STATE_DIR/agents/<agentId>/sessions/sessions.json` | Session metadata (per agent) |
 
-Legacy single‑agent path: `~/.clawdbot/agent/*` (migrated by `clawdbot doctor`).
+Legacy single‑agent path: `~/.surprisebot/agent/*` (migrated by `surprisebot doctor`).
 
-Your **workspace** (AGENTS.md, memory files, skills, etc.) is separate and configured via `agents.defaults.workspace` (default: `~/clawd`).
+Your **workspace** (AGENTS.md, memory files, skills, etc.) is separate and configured via `agents.defaults.workspace` (default: `~/surprisebot`).
 
 ### Where should AGENTS.md / SOUL.md / USER.md / MEMORY.md live?
 
-These files live in the **agent workspace**, not `~/.clawdbot`.
+These files live in the **agent workspace**, not `~/.surprisebot`.
 
 - **Workspace (per agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
   `MEMORY.md` (or `memory.md`), `memory/YYYY-MM-DD.md`, optional `HEARTBEAT.md`.
-- **State dir (`~/.clawdbot`)**: config, credentials, auth profiles, sessions, logs,
-  and shared skills (`~/.clawdbot/skills`).
+- **State dir (`~/.surprisebot`)**: config, credentials, auth profiles, sessions, logs,
+  and shared skills (`~/.surprisebot/skills`).
 
-Default workspace is `~/clawd`, configurable via:
+Default workspace is `~/surprisebot`, configurable via:
 
 ```json5
 {
-  agents: { defaults: { workspace: "~/clawd" } }
+  agents: { defaults: { workspace: "~/surprisebot" } }
 }
 ```
 
@@ -512,7 +512,7 @@ workspace, not your local laptop).
 
 See [Agent workspace](/concepts/agent-workspace) and [Memory](/concepts/memory).
 
-### How do I completely uninstall Clawdbot?
+### How do I completely uninstall Surprisebot?
 
 See the dedicated guide: [Uninstall](/install/uninstall).
 
@@ -523,7 +523,7 @@ Relative paths resolve inside the workspace, but absolute paths can access other
 host locations unless sandboxing is enabled. If you need isolation, use
 [`agents.defaults.sandbox`](/gateway/sandboxing) or per‑agent sandbox settings. If you
 want a repo to be the default working directory, point that agent’s
-`workspace` to the repo root. The Clawdbot repo is just source code; keep the
+`workspace` to the repo root. The Surprisebot repo is just source code; keep the
 workspace separate unless you intentionally want the agent to work inside it.
 
 Example (repo as default cwd):
@@ -546,17 +546,17 @@ Session state is owned by the **gateway host**. If you’re in remote mode, the 
 
 ### What format is the config? Where is it?
 
-Clawdbot reads an optional **JSON5** config from `$CLAWDBOT_CONFIG_PATH` (default: `~/.clawdbot/clawdbot.json`):
+Surprisebot reads an optional **JSON5** config from `$SURPRISEBOT_CONFIG_PATH` (default: `~/.surprisebot/surprisebot.json`):
 
 ```
-$CLAWDBOT_CONFIG_PATH
+$SURPRISEBOT_CONFIG_PATH
 ```
 
-If the file is missing, it uses safe‑ish defaults (including a default workspace of `~/clawd`).
+If the file is missing, it uses safe‑ish defaults (including a default workspace of `~/surprisebot`).
 
 ### I set `gateway.bind: "lan"` (or `"tailnet"`) and now nothing listens / the UI says unauthorized
 
-Non-loopback binds **require auth**. Configure `gateway.auth.mode` + `gateway.auth.token` (or use `CLAWDBOT_GATEWAY_TOKEN`).
+Non-loopback binds **require auth**. Configure `gateway.auth.mode` + `gateway.auth.token` (or use `SURPRISEBOT_GATEWAY_TOKEN`).
 
 ```json5
 {
@@ -578,7 +578,7 @@ Notes:
 
 The wizard generates a gateway token by default (even on loopback) so **local WS clients must authenticate**. This blocks other local processes from calling the Gateway. Paste the token into the Control UI settings (or your client config) to connect.
 
-If you **really** want open loopback, remove `gateway.auth` from your config. Doctor can generate a token for you any time: `clawdbot doctor --generate-gateway-token`.
+If you **really** want open loopback, remove `gateway.auth` from your config. Doctor can generate a token for you any time: `surprisebot doctor --generate-gateway-token`.
 
 ### Do I have to restart after changing config?
 
@@ -590,7 +590,7 @@ The Gateway watches the config and supports hot‑reload:
 ### How do I enable web search (and web fetch)?
 
 `web_fetch` works without an API key. `web_search` requires a Brave Search API
-key. **Recommended:** run `clawdbot configure --section web` to store it in
+key. **Recommended:** run `surprisebot configure --section web` to store it in
 `tools.web.search.apiKey`. Environment alternative: set `BRAVE_API_KEY` for the
 Gateway process.
 
@@ -614,7 +614,7 @@ Gateway process.
 Notes:
 - If you use allowlists, add `web_search`/`web_fetch` or `group:web`.
 - `web_fetch` is enabled by default (unless explicitly disabled).
-- Daemons read env vars from `~/.clawdbot/.env` (or the service environment).
+- Daemons read env vars from `~/.surprisebot/.env` (or the service environment).
 
 Docs: [Web tools](/tools/web).
 
@@ -630,7 +630,7 @@ The common pattern is **one Gateway** (e.g. Raspberry Pi) plus **nodes** and **a
 
 Docs: [Nodes](/nodes), [Remote access](/gateway/remote), [Multi-Agent Routing](/concepts/multi-agent), [Sub-agents](/tools/subagents), [TUI](/tui).
 
-### Can the Clawdbot browser run headless?
+### Can the Surprisebot browser run headless?
 
 Yes. It’s a config option:
 
@@ -678,7 +678,7 @@ Yes. `config.apply` validates + writes the full config and restarts the Gateway 
 
 ```json5
 {
-  agents: { defaults: { workspace: "~/clawd" } },
+  agents: { defaults: { workspace: "~/surprisebot" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } }
 }
 ```
@@ -704,7 +704,7 @@ Minimal steps:
 
 If you want the Control UI without SSH, use Tailscale Serve on the VPS:
 ```bash
-clawdbot gateway --tailscale serve
+surprisebot gateway --tailscale serve
 ```
 This keeps the gateway bound to loopback and exposes HTTPS via Tailscale. See [Tailscale](/gateway/tailscale).
 
@@ -725,20 +725,20 @@ Recommended setup:
    The app will tunnel the bridge port and connect as a node.
 4) **Approve the node** on the gateway:
    ```bash
-   clawdbot nodes pending
-   clawdbot nodes approve <requestId>
+   surprisebot nodes pending
+   surprisebot nodes approve <requestId>
    ```
 
 Docs: [Bridge protocol](/gateway/bridge-protocol), [Discovery](/gateway/discovery), [macOS remote mode](/platforms/mac/remote).
 
 ## Env vars and .env loading
 
-### How does Clawdbot load environment variables?
+### How does Surprisebot load environment variables?
 
-Clawdbot reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
+Surprisebot reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
 
 - `.env` from the current working directory
-- a global fallback `.env` from `~/.clawdbot/.env` (aka `$CLAWDBOT_STATE_DIR/.env`)
+- a global fallback `.env` from `~/.surprisebot/.env` (aka `$SURPRISEBOT_STATE_DIR/.env`)
 
 Neither `.env` file overrides existing env vars.
 
@@ -759,7 +759,7 @@ See [/environment](/environment) for full precedence and sources.
 
 Two common fixes:
 
-1) Put the missing keys in `~/.clawdbot/.env` so they’re picked up even when the daemon doesn’t inherit your shell env.
+1) Put the missing keys in `~/.surprisebot/.env` so they’re picked up even when the daemon doesn’t inherit your shell env.
 2) Enable shell import (opt‑in convenience):
 
 ```json5
@@ -774,18 +774,18 @@ Two common fixes:
 ```
 
 This runs your login shell and imports only missing expected keys (never overrides). Env var equivalents:
-`CLAWDBOT_LOAD_SHELL_ENV=1`, `CLAWDBOT_SHELL_ENV_TIMEOUT_MS=15000`.
+`SURPRISEBOT_LOAD_SHELL_ENV=1`, `SURPRISEBOT_SHELL_ENV_TIMEOUT_MS=15000`.
 
 ### I set `COPILOT_GITHUB_TOKEN`, but models status shows “Shell env: off.” Why?
 
-`clawdbot models status` reports whether **shell env import** is enabled. “Shell env: off”
-does **not** mean your env vars are missing — it just means Clawdbot won’t load
+`surprisebot models status` reports whether **shell env import** is enabled. “Shell env: off”
+does **not** mean your env vars are missing — it just means Surprisebot won’t load
 your login shell automatically.
 
 If the Gateway runs as a daemon (launchd/systemd), it won’t inherit your shell
 environment. Fix by doing one of these:
 
-1) Put the token in `~/.clawdbot/.env`:
+1) Put the token in `~/.surprisebot/.env`:
    ```
    COPILOT_GITHUB_TOKEN=...
    ```
@@ -794,7 +794,7 @@ environment. Fix by doing one of these:
 
 Then restart the gateway and recheck:
 ```bash
-clawdbot models status
+surprisebot models status
 ```
 
 Copilot tokens are read from `COPILOT_GITHUB_TOKEN` (also `GH_TOKEN` / `GITHUB_TOKEN`).
@@ -806,30 +806,30 @@ See [/concepts/model-providers](/concepts/model-providers) and [/environment](/e
 
 Send `/new` or `/reset` as a standalone message. See [Session management](/concepts/session).
 
-### How do I completely reset Clawdbot (but keep it installed)?
+### How do I completely reset Surprisebot (but keep it installed)?
 
 Use the reset command:
 
 ```bash
-clawdbot reset
+surprisebot reset
 ```
 
 Non-interactive full reset:
 
 ```bash
-clawdbot reset --scope full --yes --non-interactive
+surprisebot reset --scope full --yes --non-interactive
 ```
 
 Then re-run onboarding:
 
 ```bash
-clawdbot onboard --install-daemon
+surprisebot onboard --install-daemon
 ```
 
 Notes:
 - The onboarding wizard also offers **Reset** if it sees an existing config. See [Wizard](/start/wizard).
-- If you used profiles (`--profile` / `CLAWDBOT_PROFILE`), reset each state dir (defaults are `~/.clawdbot-<profile>`).
-- Dev reset: `clawdbot gateway --dev --reset` (dev-only; wipes dev config + credentials + sessions + workspace).
+- If you used profiles (`--profile` / `SURPRISEBOT_PROFILE`), reset each state dir (defaults are `~/.surprisebot-<profile>`).
+- Dev reset: `surprisebot gateway --dev --reset` (dev-only; wipes dev config + credentials + sessions + workspace).
 
 ### I’m getting “context too large” errors — how do I reset or compact?
 
@@ -855,7 +855,7 @@ Docs: [Compaction](/concepts/compaction), [Session pruning](/concepts/session-pr
 
 ### Do I need to add a “bot account” to a WhatsApp group?
 
-No. Clawdbot runs on **your own account**, so if you’re in the group, Clawdbot can see it.
+No. Surprisebot runs on **your own account**, so if you’re in the group, Surprisebot can see it.
 By default, group replies are blocked until you allow senders (`groupPolicy: "allowlist"`).
 
 If you want only **you** to be able to trigger group replies:
@@ -871,7 +871,7 @@ If you want only **you** to be able to trigger group replies:
 }
 ```
 
-### Why doesn’t Clawdbot reply in a group?
+### Why doesn’t Surprisebot reply in a group?
 
 Two common causes:
 - Mention gating is on (default). You must @mention the bot (or match `mentionPatterns`).
@@ -887,13 +887,13 @@ Direct chats collapse to the main session by default. Groups/channels have their
 
 ### What is the “default model”?
 
-Clawdbot’s default model is whatever you set as:
+Surprisebot’s default model is whatever you set as:
 
 ```
 agents.defaults.model.primary
 ```
 
-Models are referenced as `provider/model` (example: `anthropic/claude-opus-4-5`). If you omit the provider, Clawdbot currently assumes `anthropic` as a temporary deprecation fallback — but you should still **explicitly** set `provider/model`.
+Models are referenced as `provider/model` (example: `anthropic/claude-opus-4-5`). If you omit the provider, Surprisebot currently assumes `anthropic` as a temporary deprecation fallback — but you should still **explicitly** set `provider/model`.
 
 ### How do I switch models on the fly (without restarting)?
 
@@ -953,7 +953,7 @@ Fix checklist:
    `minimax/MiniMax-M2.1-lightning`.
 4) Run:
    ```bash
-   clawdbot models list
+   surprisebot models list
    ```
    and pick from the list (or `/model list` in chat).
 
@@ -994,7 +994,7 @@ Docs: [Models](/concepts/models), [Multi-Agent Routing](/concepts/multi-agent), 
 
 ### Are opus / sonnet / gpt built‑in shortcuts?
 
-Yes. Clawdbot ships a few default shorthands (only applied when the model exists in `agents.defaults.models`):
+Yes. Surprisebot ships a few default shorthands (only applied when the model exists in `agents.defaults.models`):
 
 - `opus` → `anthropic/claude-opus-4-5`
 - `sonnet` → `anthropic/claude-sonnet-4-5`
@@ -1064,11 +1064,11 @@ This usually means the **new agent** has an empty auth store. Auth is per-agent 
 stored in:
 
 ```
-~/.clawdbot/agents/<agentId>/agent/auth-profiles.json
+~/.surprisebot/agents/<agentId>/agent/auth-profiles.json
 ```
 
 Fix options:
-- Run `clawdbot agents add <id>` and configure auth during the wizard.
+- Run `surprisebot agents add <id>` and configure auth during the wizard.
 - Or copy `auth-profiles.json` from the main agent’s `agentDir` into the new agent’s `agentDir`.
 
 Do **not** reuse `agentDir` across agents; it causes auth/session collisions.
@@ -1082,7 +1082,7 @@ Failover happens in two stages:
 1) **Auth profile rotation** within the same provider.
 2) **Model fallback** to the next model in `agents.defaults.model.fallbacks`.
 
-Cooldowns apply to failing profiles (exponential backoff), so Clawdbot can keep responding even when a provider is rate‑limited or temporarily failing.
+Cooldowns apply to failing profiles (exponential backoff), so Surprisebot can keep responding even when a provider is rate‑limited or temporarily failing.
 
 ### What does this error mean?
 
@@ -1095,14 +1095,14 @@ It means the system attempted to use the auth profile ID `anthropic:default`, bu
 ### Fix checklist for `No credentials found for profile "anthropic:default"`
 
 - **Confirm where auth profiles live** (new vs legacy paths)
-  - Current: `~/.clawdbot/agents/<agentId>/agent/auth-profiles.json`
-  - Legacy: `~/.clawdbot/agent/*` (migrated by `clawdbot doctor`)
+  - Current: `~/.surprisebot/agents/<agentId>/agent/auth-profiles.json`
+  - Legacy: `~/.surprisebot/agent/*` (migrated by `surprisebot doctor`)
 - **Confirm your env var is loaded by the Gateway**
-  - If you set `ANTHROPIC_API_KEY` in your shell but run the Gateway via systemd/launchd, it may not inherit it. Put it in `~/.clawdbot/.env` or enable `env.shellEnv`.
+  - If you set `ANTHROPIC_API_KEY` in your shell but run the Gateway via systemd/launchd, it may not inherit it. Put it in `~/.surprisebot/.env` or enable `env.shellEnv`.
 - **Make sure you’re editing the correct agent**
   - Multi‑agent setups mean there can be multiple `auth-profiles.json` files.
 - **Sanity‑check model/auth status**
-  - Use `clawdbot models status` to see configured models and whether providers are authenticated.
+  - Use `surprisebot models status` to see configured models and whether providers are authenticated.
 
 ### Fix checklist for `No credentials found for profile "anthropic:claude-cli"`
 
@@ -1110,20 +1110,20 @@ This means the run is pinned to the **Claude Code CLI** profile, but the Gateway
 can’t find that profile in its auth store.
 
 - **Sync the Claude Code CLI token on the gateway host**
-  - Run `clawdbot models status` (it loads + syncs Claude Code CLI credentials).
-  - If it still says missing: run `claude setup-token` (or `clawdbot models auth setup-token --provider anthropic`) and retry.
+  - Run `surprisebot models status` (it loads + syncs Claude Code CLI credentials).
+  - If it still says missing: run `claude setup-token` (or `surprisebot models auth setup-token --provider anthropic`) and retry.
 - **If you want to use an API key instead**
-  - Put `ANTHROPIC_API_KEY` in `~/.clawdbot/.env` on the **gateway host**.
+  - Put `ANTHROPIC_API_KEY` in `~/.surprisebot/.env` on the **gateway host**.
   - Clear any pinned order that forces `anthropic:claude-cli`:
     ```bash
-    clawdbot models auth order clear --provider anthropic
+    surprisebot models auth order clear --provider anthropic
     ```
 - **Confirm you’re running commands on the gateway host**
   - In remote mode, auth profiles live on the gateway machine, not your laptop.
 
 ### Why did it also try Google Gemini and fail?
 
-If your model config includes Google Gemini as a fallback (or you switched to a Gemini shorthand), Clawdbot will try it during model fallback. If you haven’t configured Google credentials, you’ll see `No API key found for provider "google"`.
+If your model config includes Google Gemini as a fallback (or you switched to a Gemini shorthand), Surprisebot will try it during model fallback. If you haven’t configured Google credentials, you’ll see `No API key found for provider "google"`.
 
 Fix: either provide Google auth, or remove/avoid Google models in `agents.defaults.model.fallbacks` / aliases so fallback doesn’t route there.
 
@@ -1143,12 +1143,12 @@ Related: [/concepts/oauth](/concepts/oauth) (OAuth flows, token storage, multi-a
 An auth profile is a named credential record (OAuth or API key) tied to a provider. Profiles live in:
 
 ```
-~/.clawdbot/agents/<agentId>/agent/auth-profiles.json
+~/.surprisebot/agents/<agentId>/agent/auth-profiles.json
 ```
 
 ### What are typical profile IDs?
 
-Clawdbot uses provider‑prefixed IDs like:
+Surprisebot uses provider‑prefixed IDs like:
 
 - `anthropic:default` (common when no email identity exists)
 - `anthropic:<email>` for OAuth identities
@@ -1158,33 +1158,33 @@ Clawdbot uses provider‑prefixed IDs like:
 
 Yes. Config supports optional metadata for profiles and an ordering per provider (`auth.order.<provider>`). This does **not** store secrets; it maps IDs to provider/mode and sets rotation order.
 
-Clawdbot may temporarily skip a profile if it’s in a short **cooldown** (rate limits/timeouts/auth failures) or a longer **disabled** state (billing/insufficient credits). To inspect this, run `clawdbot models status --json` and check `auth.unusableProfiles`. Tuning: `auth.cooldowns.billingBackoffHours*`.
+Surprisebot may temporarily skip a profile if it’s in a short **cooldown** (rate limits/timeouts/auth failures) or a longer **disabled** state (billing/insufficient credits). To inspect this, run `surprisebot models status --json` and check `auth.unusableProfiles`. Tuning: `auth.cooldowns.billingBackoffHours*`.
 
 You can also set a **per-agent** order override (stored in that agent’s `auth-profiles.json`) via the CLI:
 
 ```bash
 # Defaults to the configured default agent (omit --agent)
-clawdbot models auth order get --provider anthropic
+surprisebot models auth order get --provider anthropic
 
 # Lock rotation to a single profile (only try this one)
-clawdbot models auth order set --provider anthropic anthropic:claude-cli
+surprisebot models auth order set --provider anthropic anthropic:claude-cli
 
 # Or set an explicit order (fallback within provider)
-clawdbot models auth order set --provider anthropic anthropic:claude-cli anthropic:default
+surprisebot models auth order set --provider anthropic anthropic:claude-cli anthropic:default
 
 # Clear override (fall back to config auth.order / round-robin)
-clawdbot models auth order clear --provider anthropic
+surprisebot models auth order clear --provider anthropic
 ```
 
 To target a specific agent:
 
 ```bash
-clawdbot models auth order set --provider anthropic --agent main anthropic:claude-cli
+surprisebot models auth order set --provider anthropic --agent main anthropic:claude-cli
 ```
 
 ### OAuth vs API key: what’s the difference?
 
-Clawdbot supports both:
+Surprisebot supports both:
 
 - **OAuth** often leverages subscription access (where applicable).
 - **API keys** use pay‑per‑token billing.
@@ -1200,35 +1200,35 @@ The wizard explicitly supports Anthropic OAuth and OpenAI Codex OAuth and can st
 Precedence:
 
 ```
---port > CLAWDBOT_GATEWAY_PORT > gateway.port > default 18789
+--port > SURPRISEBOT_GATEWAY_PORT > gateway.port > default 18789
 ```
 
-### Why does `clawdbot daemon status` say `Runtime: running` but `RPC probe: failed`?
+### Why does `surprisebot daemon status` say `Runtime: running` but `RPC probe: failed`?
 
 Because “running” is the **supervisor’s** view (launchd/systemd/schtasks). The RPC probe is the CLI actually connecting to the gateway WebSocket and calling `status`.
 
-Use `clawdbot daemon status` and trust these lines:
+Use `surprisebot daemon status` and trust these lines:
 - `Probe target:` (the URL the probe actually used)
 - `Listening:` (what’s actually bound on the port)
 - `Last gateway error:` (common root cause when the process is alive but the port isn’t listening)
 
-### Why does `clawdbot daemon status` show `Config (cli)` and `Config (daemon)` different?
+### Why does `surprisebot daemon status` show `Config (cli)` and `Config (daemon)` different?
 
-You’re editing one config file while the daemon is running another (often a `--profile` / `CLAWDBOT_STATE_DIR` mismatch).
+You’re editing one config file while the daemon is running another (often a `--profile` / `SURPRISEBOT_STATE_DIR` mismatch).
 
 Fix:
 ```bash
-clawdbot daemon install --force
+surprisebot daemon install --force
 ```
 Run that from the same `--profile` / environment you want the daemon to use.
 
 ### What does “another gateway instance is already listening” mean?
 
-Clawdbot enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` indicating another instance is already listening.
+Surprisebot enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` indicating another instance is already listening.
 
-Fix: stop the other instance, free the port, or run with `clawdbot gateway --port <port>`.
+Fix: stop the other instance, free the port, or run with `surprisebot gateway --port <port>`.
 
-### How do I run Clawdbot in remote mode (client connects to a Gateway elsewhere)?
+### How do I run Surprisebot in remote mode (client connects to a Gateway elsewhere)?
 
 Set `gateway.mode: "remote"` and point to a remote WebSocket URL, optionally with a token/password:
 
@@ -1246,7 +1246,7 @@ Set `gateway.mode: "remote"` and point to a remote WebSocket URL, optionally wit
 ```
 
 Notes:
-- `clawdbot gateway` only starts when `gateway.mode` is `local` (or you pass the override flag).
+- `surprisebot gateway` only starts when `gateway.mode` is `local` (or you pass the override flag).
 - The macOS app watches the config file and switches modes live when these values change.
 
 ### The Control UI says “unauthorized” (or keeps reconnecting). What now?
@@ -1254,13 +1254,13 @@ Notes:
 Your gateway is running with auth enabled (`gateway.auth.*`), but the UI is not sending the matching token/password.
 
 Facts (from code):
-- The Control UI stores the token in browser localStorage key `clawdbot.control.settings.v1`.
+- The Control UI stores the token in browser localStorage key `surprisebot.control.settings.v1`.
 - The UI can import `?token=...` (and/or `?password=...`) once, then strips it from the URL.
 
 Fix:
-- Fastest: `clawdbot dashboard` (prints + copies tokenized link, tries to open; shows SSH hint if headless).
+- Fastest: `surprisebot dashboard` (prints + copies tokenized link, tries to open; shows SSH hint if headless).
 - If remote, tunnel first: `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/?token=...`.
-- Set `gateway.auth.token` (or `CLAWDBOT_GATEWAY_TOKEN`) on the gateway host.
+- Set `gateway.auth.token` (or `SURPRISEBOT_GATEWAY_TOKEN`) on the gateway host.
 - In the Control UI settings, paste the same token (or refresh with a one-time `?token=...` link).
 
 ### I set `gateway.bind: "tailnet"` but it can’t bind / nothing listens
@@ -1279,17 +1279,17 @@ Usually no — one Gateway can run multiple messaging channels and agents. Use m
 
 Yes, but you must isolate:
 
-- `CLAWDBOT_CONFIG_PATH` (per‑instance config)
-- `CLAWDBOT_STATE_DIR` (per‑instance state)
+- `SURPRISEBOT_CONFIG_PATH` (per‑instance config)
+- `SURPRISEBOT_STATE_DIR` (per‑instance state)
 - `agents.defaults.workspace` (workspace isolation)
 - `gateway.port` (unique ports)
 
 Quick setup (recommended):
-- Use `clawdbot --profile <name> …` per instance (auto-creates `~/.clawdbot-<name>`).
+- Use `surprisebot --profile <name> …` per instance (auto-creates `~/.surprisebot-<name>`).
 - Set a unique `gateway.port` in each profile config (or pass `--port` for manual runs).
-- Install a per-profile daemon: `clawdbot --profile <name> daemon install`.
+- Install a per-profile daemon: `surprisebot --profile <name> daemon install`.
 
-Profiles also suffix service names (`com.clawdbot.<profile>`, `clawdbot-gateway-<profile>.service`, `Clawdbot Gateway (<profile>)`).
+Profiles also suffix service names (`com.surprisebot.<profile>`, `surprisebot-gateway-<profile>.service`, `Surprisebot Gateway (<profile>)`).
 Full guide: [Multiple gateways](/gateway/multiple-gateways).
 
 ### What does “invalid handshake” / code 1008 mean?
@@ -1310,7 +1310,7 @@ Quick fixes:
 
 If you’re using the CLI or TUI, the URL should look like:
 ```
-clawdbot tui --url ws://<host>:18789 --token <token>
+surprisebot tui --url ws://<host>:18789 --token <token>
 ```
 
 Protocol details: [Gateway protocol](/gateway/protocol).
@@ -1322,7 +1322,7 @@ Protocol details: [Gateway protocol](/gateway/protocol).
 File logs (structured):
 
 ```
-/tmp/clawdbot/clawdbot-YYYY-MM-DD.log
+/tmp/surprisebot/surprisebot-YYYY-MM-DD.log
 ```
 
 You can set a stable path via `logging.file`. File log level is controlled by `logging.level`. Console verbosity is controlled by `--verbose` and `logging.consoleLevel`.
@@ -1330,13 +1330,13 @@ You can set a stable path via `logging.file`. File log level is controlled by `l
 Fastest log tail:
 
 ```bash
-clawdbot logs --follow
+surprisebot logs --follow
 ```
 
 Service/supervisor logs (when the gateway runs via launchd/systemd):
-- macOS: `$CLAWDBOT_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.clawdbot/logs/...`; profiles use `~/.clawdbot-<profile>/logs/...`)
-- Linux: `journalctl --user -u clawdbot-gateway[-<profile>].service -n 200 --no-pager`
-- Windows: `schtasks /Query /TN "Clawdbot Gateway (<profile>)" /V /FO LIST`
+- macOS: `$SURPRISEBOT_STATE_DIR/logs/gateway.log` and `gateway.err.log` (default: `~/.surprisebot/logs/...`; profiles use `~/.surprisebot-<profile>/logs/...`)
+- Linux: `journalctl --user -u surprisebot-gateway[-<profile>].service -n 200 --no-pager`
+- Windows: `schtasks /Query /TN "Surprisebot Gateway (<profile>)" /V /FO LIST`
 
 See [Troubleshooting](/gateway/troubleshooting#log-locations) for more.
 
@@ -1345,11 +1345,11 @@ See [Troubleshooting](/gateway/troubleshooting#log-locations) for more.
 Use the daemon helpers:
 
 ```bash
-clawdbot daemon status
-clawdbot daemon restart
+surprisebot daemon status
+surprisebot daemon restart
 ```
 
-If you run the gateway manually, `clawdbot gateway --force` can reclaim the port. See [Gateway](/gateway).
+If you run the gateway manually, `surprisebot gateway --force` can reclaim the port. See [Gateway](/gateway).
 
 ### What’s the fastest way to get more details when something fails?
 
@@ -1359,44 +1359,44 @@ Start the Gateway with `--verbose` to get more console detail. Then inspect the 
 
 ### My skill generated an image/PDF, but nothing was sent
 
-Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [Clawdbot assistant setup](/start/clawd) and [Agent send](/tools/agent-send).
+Outbound attachments from the agent must include a `MEDIA:<path-or-url>` line (on its own line). See [Surprisebot assistant setup](/start/surprisebot) and [Agent send](/tools/agent-send).
 
 CLI sending:
 
 ```bash
-clawdbot message send --to +15555550123 --message "Here you go" --media /path/to/file.png
+surprisebot message send --to +15555550123 --message "Here you go" --media /path/to/file.png
 ```
 
 Note: images are resized/recompressed (max side 2048px) to hit size limits. See [Images](/nodes/images).
 
 ## Security and access control
 
-### Is it safe to expose Clawdbot to inbound DMs?
+### Is it safe to expose Surprisebot to inbound DMs?
 
 Treat inbound DMs as untrusted input. Defaults are designed to reduce risk:
 
 - Default behavior on DM‑capable channels is **pairing**:
   - Unknown senders receive a pairing code; the bot does not process their message.
-  - Approve with: `clawdbot pairing approve <channel> <code>`
-  - Pending requests are capped at **3 per channel**; check `clawdbot pairing list <channel>` if a code didn’t arrive.
+  - Approve with: `surprisebot pairing approve <channel> <code>`
+  - Pending requests are capped at **3 per channel**; check `surprisebot pairing list <channel>` if a code didn’t arrive.
 - Opening DMs publicly requires explicit opt‑in (`dmPolicy: "open"` and allowlist `"*"`).
 
-Run `clawdbot doctor` to surface risky DM policies.
+Run `surprisebot doctor` to surface risky DM policies.
 
 ### WhatsApp: will it message my contacts? How does pairing work?
 
-No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code and their message is **not processed**. Clawdbot only replies to chats it receives or to explicit sends you trigger.
+No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code and their message is **not processed**. Surprisebot only replies to chats it receives or to explicit sends you trigger.
 
 Approve pairing with:
 
 ```bash
-clawdbot pairing approve whatsapp <code>
+surprisebot pairing approve whatsapp <code>
 ```
 
 List pending requests:
 
 ```bash
-clawdbot pairing list whatsapp
+surprisebot pairing list whatsapp
 ```
 
 Wizard phone number prompt: it’s used to set your **allowlist/owner** so your own DMs are permitted. It’s not used for auto-sending. If you run on your personal WhatsApp number, use that number and enable `channels.whatsapp.selfChatMode`.
@@ -1446,7 +1446,7 @@ You can add options like `debounce:2s cap:25 drop:summarize` for followup modes.
 
 - **Credentials** present for the provider(s) being tried (auth profiles + env vars).
 - **Model routing**: confirm `agents.defaults.model.primary` and fallbacks are models you can access.
-- **Gateway logs** in `/tmp/clawdbot/…` for the exact provider error.
+- **Gateway logs** in `/tmp/surprisebot/…` for the exact provider error.
 - **`/model status`** to see current configured models + shorthands.
 
 ### I’m running on my personal WhatsApp number — why is self-chat weird?
@@ -1472,13 +1472,13 @@ See [WhatsApp setup](/channels/whatsapp).
 Run the login command again and scan the QR code:
 
 ```bash
-clawdbot channels login
+surprisebot channels login
 ```
 
 ### Build errors on `main` — what’s the standard fix path?
 
 1) `git pull origin main && pnpm install`
-2) `pnpm clawdbot doctor`
+2) `pnpm surprisebot doctor`
 3) Check GitHub issues or Discord
 4) Temporary workaround: check out an older commit
 
@@ -1492,8 +1492,8 @@ Typical recovery:
 git status   # ensure you’re in the repo root
 pnpm install
 pnpm build
-pnpm clawdbot doctor
-clawdbot daemon restart
+pnpm surprisebot doctor
+surprisebot daemon restart
 ```
 
 Why: pnpm is the configured package manager for this repo, and the dependency
@@ -1506,20 +1506,20 @@ upgrades in place and rewrites the gateway service to point at the new install.
 
 Switch **to git install**:
 ```bash
-curl -fsSL https://clawd.bot/install.sh | bash -s -- --install-method git --no-onboard
+curl -fsSL https://surprisebot.bot/install.sh | bash -s -- --install-method git --no-onboard
 ```
 
 Switch **to npm global**:
 ```bash
-curl -fsSL https://clawd.bot/install.sh | bash
+curl -fsSL https://surprisebot.bot/install.sh | bash
 ```
 
 Notes:
 - The git flow only rebases if the repo is clean. Commit or stash changes first.
 - After switching, run:
   ```bash
-  clawdbot doctor
-  clawdbot daemon restart
+  surprisebot doctor
+  surprisebot daemon restart
   ```
 
 ### Telegram block streaming isn’t splitting text between tool calls. Why?
@@ -1550,19 +1550,19 @@ Fix checklist:
 3) Put `requireMention: false` **under** `channels.discord.guilds` (global or per‑channel).
    Top‑level `channels.discord.requireMention` is not a supported key.
 4) Ensure the bot has **Message Content Intent** and channel permissions.
-5) Run `clawdbot channels status --probe` for audit hints.
+5) Run `surprisebot channels status --probe` for audit hints.
 
 Docs: [Discord](/channels/discord), [Channels troubleshooting](/channels/troubleshooting).
 
 ### Cloud Code Assist API error: invalid tool schema (400). What now?
 
 This is almost always a **tool schema compatibility** issue. The Cloud Code Assist
-endpoint accepts a strict subset of JSON Schema. Clawdbot scrubs/normalizes tool
+endpoint accepts a strict subset of JSON Schema. Surprisebot scrubs/normalizes tool
 schemas in current `main`, but the fix is not in the last release yet (as of
 January 13, 2026).
 
 Fix checklist:
-1) **Update Clawdbot**:
+1) **Update Surprisebot**:
    - If you can run from source, pull `main` and restart the gateway.
    - Otherwise, wait for the next release that includes the schema scrubber.
 2) Avoid unsupported keywords like `anyOf/oneOf/allOf`, `patternProperties`,
@@ -1576,7 +1576,7 @@ See [Tools](/tools) and [TypeBox schemas](/concepts/typebox).
 
 **Q: “What’s the default model for Anthropic with an API key?”**
 
-**A:** In Clawdbot, credentials and model selection are separate. Setting `ANTHROPIC_API_KEY` (or storing an Anthropic API key in auth profiles) enables authentication, but the actual default model is whatever you configure in `agents.defaults.model.primary` (for example, `anthropic/claude-sonnet-4-5` or `anthropic/claude-opus-4-5`). If you see `No credentials found for profile "anthropic:default"`, it means the Gateway couldn’t find Anthropic credentials in the expected `auth-profiles.json` for the agent that’s running.
+**A:** In Surprisebot, credentials and model selection are separate. Setting `ANTHROPIC_API_KEY` (or storing an Anthropic API key in auth profiles) enables authentication, but the actual default model is whatever you configure in `agents.defaults.model.primary` (for example, `anthropic/claude-sonnet-4-5` or `anthropic/claude-opus-4-5`). If you see `No credentials found for profile "anthropic:default"`, it means the Gateway couldn’t find Anthropic credentials in the expected `auth-profiles.json` for the agent that’s running.
 
 ---
 

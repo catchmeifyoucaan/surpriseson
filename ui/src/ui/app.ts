@@ -20,6 +20,7 @@ import type {
   SessionsListResult,
   SkillStatusReport,
   StatusSummary,
+  MissionControlSnapshot,
 } from "./types";
 import {
   defaultDiscordActions,
@@ -75,15 +76,19 @@ import {
   handleWhatsAppStart as handleWhatsAppStartInternal,
   handleWhatsAppWait as handleWhatsAppWaitInternal,
 } from "./app-connections";
+import {
+  loadMissionControlFilters,
+  saveMissionControlFilters,
+} from "./controllers/mission-control";
 
 declare global {
   interface Window {
-    __CLAWDBOT_CONTROL_UI_BASE_PATH__?: string;
+    __SURPRISEBOT_CONTROL_UI_BASE_PATH__?: string;
   }
 }
 
-@customElement("clawdbot-app")
-export class ClawdbotApp extends LitElement {
+@customElement("surprisebot-app")
+export class SurprisebotApp extends LitElement {
   @state() settings: UiSettings = loadSettings();
   @state() password = "";
   @state() tab: Tab = "chat";
@@ -285,6 +290,20 @@ export class ClawdbotApp extends LitElement {
   @state() logsMaxBytes = 250_000;
   @state() logsAtBottom = true;
 
+  @state() missionControlLoading = false;
+  @state() missionControlError: string | null = null;
+  @state() missionControlSnapshot: MissionControlSnapshot | null = null;
+  @state() missionControlSelectedTaskId: string | null = null;
+  @state() missionControlFilters = loadMissionControlFilters();
+  @state() missionControlPaging = {
+    tasks: { limit: 50, offset: 0 },
+    activities: { limit: 25, offset: 0 },
+    ledger: { limit: 50 },
+    incidents: { limit: 25 },
+  };
+  @state() missionControlDenseMode = false;
+  @state() missionControlQuickOpen = false;
+
   client: GatewayBrowserClient | null = null;
   private chatScrollFrame: number | null = null;
   private chatScrollTimeout: number | null = null;
@@ -303,6 +322,7 @@ export class ClawdbotApp extends LitElement {
   private themeMedia: MediaQueryList | null = null;
   private themeMediaHandler: ((event: MediaQueryListEvent) => void) | null = null;
   private topbarObserver: ResizeObserver | null = null;
+  private missionControlKeyHandler: ((event: KeyboardEvent) => void) | null = null;
 
   createRenderRoot() {
     return this;
@@ -315,10 +335,34 @@ export class ClawdbotApp extends LitElement {
 
   protected firstUpdated() {
     handleFirstUpdated(this as unknown as Parameters<typeof handleFirstUpdated>[0]);
+    this.missionControlDenseMode = localStorage.getItem("surprisebot.control.mission-control.dense.v1") === "true";
+    this.missionControlKeyHandler = (event: KeyboardEvent) => {
+      if (this.tab !== "mission-control") return;
+      const target = event.target as HTMLElement | null;
+      const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        this.missionControlQuickOpen = true;
+        return;
+      }
+      if (!isInput && event.key === "/") {
+        event.preventDefault();
+        this.missionControlQuickOpen = true;
+        return;
+      }
+      if (event.key === "Escape" && this.missionControlQuickOpen) {
+        this.missionControlQuickOpen = false;
+      }
+    };
+    window.addEventListener("keydown", this.missionControlKeyHandler);
   }
 
   disconnectedCallback() {
     handleDisconnected(this as unknown as Parameters<typeof handleDisconnected>[0]);
+    if (this.missionControlKeyHandler) {
+      window.removeEventListener("keydown", this.missionControlKeyHandler);
+      this.missionControlKeyHandler = null;
+    }
     super.disconnectedCallback();
   }
 
@@ -488,6 +532,60 @@ export class ClawdbotApp extends LitElement {
     const newRatio = Math.max(0.4, Math.min(0.7, ratio));
     this.splitRatio = newRatio;
     this.applySettings({ ...this.settings, splitRatio: newRatio });
+  }
+
+  async handleLoadMissionControl() {
+    await loadMissionControl(this as any, { paging: this.missionControlPaging });
+  }
+
+  handleMissionControlSelectTask(taskId: string | null) {
+    this.missionControlSelectedTaskId = taskId;
+  }
+
+  handleMissionControlFiltersUpdate(next: { query: string; status: string; severity: string; trustTier: string }) {
+    this.missionControlFilters = next;
+    saveMissionControlFilters(next);
+  }
+
+  handleMissionControlToggleDense() {
+    this.missionControlDenseMode = !this.missionControlDenseMode;
+    localStorage.setItem("surprisebot.control.mission-control.dense.v1", String(this.missionControlDenseMode));
+  }
+
+  handleMissionControlQuickToggle(force?: boolean) {
+    this.missionControlQuickOpen = typeof force === "boolean" ? force : !this.missionControlQuickOpen;
+  }
+
+  async handleMissionControlPageChange(section: "tasks" | "activities", direction: -1 | 1) {
+    const paging = this.missionControlPaging;
+    const entry = paging[section];
+    const nextOffset = Math.max(0, entry.offset + direction * entry.limit);
+    if (nextOffset === entry.offset) return;
+    this.missionControlPaging = {
+      ...paging,
+      [section]: { ...entry, offset: nextOffset },
+    } as any;
+    await this.handleLoadMissionControl();
+  }
+
+  async handleMissionControlTaskUpdate(taskId: string, patch: Record<string, unknown>) {
+    await updateMissionControlTask(this as any, taskId, patch);
+  }
+
+  async handleMissionControlQa(taskId: string, action: "approve" | "deny") {
+    await qaMissionControlTask(this as any, taskId, action);
+  }
+
+  async handleMissionControlRequeue(taskId: string) {
+    await requeueMissionControlTask(this as any, taskId);
+  }
+
+  async handleMissionControlKillSwitch(enabled: boolean) {
+    await toggleMissionControlKillSwitch(this as any, enabled);
+  }
+
+  async handleMissionControlBudgetMode(mode: "soft" | "hard") {
+    await setBudgetEnforcementMode(this as any, mode);
   }
 
   render() {

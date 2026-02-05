@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { TelegramAccountConfig } from "../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 import { resolveTelegramToken } from "./token.js";
@@ -12,26 +12,26 @@ export type ResolvedTelegramAccount = {
   config: TelegramAccountConfig;
 };
 
-function listConfiguredAccountIds(cfg: ClawdbotConfig): string[] {
+function listConfiguredAccountIds(cfg: SurprisebotConfig): string[] {
   const accounts = cfg.channels?.telegram?.accounts;
   if (!accounts || typeof accounts !== "object") return [];
   return Object.keys(accounts).filter(Boolean);
 }
 
-export function listTelegramAccountIds(cfg: ClawdbotConfig): string[] {
+export function listTelegramAccountIds(cfg: SurprisebotConfig): string[] {
   const ids = listConfiguredAccountIds(cfg);
   if (ids.length === 0) return [DEFAULT_ACCOUNT_ID];
   return ids.sort((a, b) => a.localeCompare(b));
 }
 
-export function resolveDefaultTelegramAccountId(cfg: ClawdbotConfig): string {
+export function resolveDefaultTelegramAccountId(cfg: SurprisebotConfig): string {
   const ids = listTelegramAccountIds(cfg);
   if (ids.includes(DEFAULT_ACCOUNT_ID)) return DEFAULT_ACCOUNT_ID;
   return ids[0] ?? DEFAULT_ACCOUNT_ID;
 }
 
 function resolveAccountConfig(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   accountId: string,
 ): TelegramAccountConfig | undefined {
   const accounts = cfg.channels?.telegram?.accounts;
@@ -39,7 +39,7 @@ function resolveAccountConfig(
   return accounts[accountId] as TelegramAccountConfig | undefined;
 }
 
-function mergeTelegramAccountConfig(cfg: ClawdbotConfig, accountId: string): TelegramAccountConfig {
+function mergeTelegramAccountConfig(cfg: SurprisebotConfig, accountId: string): TelegramAccountConfig {
   const { accounts: _ignored, ...base } = (cfg.channels?.telegram ??
     {}) as TelegramAccountConfig & { accounts?: unknown };
   const account = resolveAccountConfig(cfg, accountId) ?? {};
@@ -47,7 +47,7 @@ function mergeTelegramAccountConfig(cfg: ClawdbotConfig, accountId: string): Tel
 }
 
 export function resolveTelegramAccount(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   accountId?: string | null;
 }): ResolvedTelegramAccount {
   const hasExplicitAccountId = Boolean(params.accountId?.trim());
@@ -83,7 +83,7 @@ export function resolveTelegramAccount(params: {
   return fallback;
 }
 
-export function listEnabledTelegramAccounts(cfg: ClawdbotConfig): ResolvedTelegramAccount[] {
+export function listEnabledTelegramAccounts(cfg: SurprisebotConfig): ResolvedTelegramAccount[] {
   return listTelegramAccountIds(cfg)
     .map((accountId) => resolveTelegramAccount({ cfg, accountId }))
     .filter((account) => account.enabled);

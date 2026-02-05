@@ -2,10 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE_NAME="${CLAWDBOT_IMAGE:-clawdbot:local}"
-CONFIG_DIR="${CLAWDBOT_CONFIG_DIR:-$HOME/.clawdbot}"
-WORKSPACE_DIR="${CLAWDBOT_WORKSPACE_DIR:-$HOME/clawd}"
-PROFILE_FILE="${CLAWDBOT_PROFILE_FILE:-$HOME/.profile}"
+IMAGE_NAME="${SURPRISEBOT_IMAGE:-surprisebot:local}"
+CONFIG_DIR="${SURPRISEBOT_CONFIG_DIR:-$HOME/.surprisebot}"
+WORKSPACE_DIR="${SURPRISEBOT_WORKSPACE_DIR:-$HOME/surprisebot}"
+PROFILE_FILE="${SURPRISEBOT_PROFILE_FILE:-$HOME/.profile}"
 
 PROFILE_MOUNT=()
 if [[ -f "$PROFILE_FILE" ]]; then
@@ -21,13 +21,13 @@ docker run --rm -t \
   -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
   -e HOME=/home/node \
   -e NODE_OPTIONS=--disable-warning=ExperimentalWarning \
-  -e CLAWDBOT_LIVE_TEST=1 \
-  -e CLAWDBOT_LIVE_MODELS="${CLAWDBOT_LIVE_MODELS:-all}" \
-  -e CLAWDBOT_LIVE_PROVIDERS="${CLAWDBOT_LIVE_PROVIDERS:-}" \
-  -e CLAWDBOT_LIVE_MODEL_TIMEOUT_MS="${CLAWDBOT_LIVE_MODEL_TIMEOUT_MS:-}" \
-  -e CLAWDBOT_LIVE_REQUIRE_PROFILE_KEYS="${CLAWDBOT_LIVE_REQUIRE_PROFILE_KEYS:-}" \
-  -v "$CONFIG_DIR":/home/node/.clawdbot \
-  -v "$WORKSPACE_DIR":/home/node/clawd \
+  -e SURPRISEBOT_LIVE_TEST=1 \
+  -e SURPRISEBOT_LIVE_MODELS="${SURPRISEBOT_LIVE_MODELS:-all}" \
+  -e SURPRISEBOT_LIVE_PROVIDERS="${SURPRISEBOT_LIVE_PROVIDERS:-}" \
+  -e SURPRISEBOT_LIVE_MODEL_TIMEOUT_MS="${SURPRISEBOT_LIVE_MODEL_TIMEOUT_MS:-}" \
+  -e SURPRISEBOT_LIVE_REQUIRE_PROFILE_KEYS="${SURPRISEBOT_LIVE_REQUIRE_PROFILE_KEYS:-}" \
+  -v "$CONFIG_DIR":/home/node/.surprisebot \
+  -v "$WORKSPACE_DIR":/home/node/surprisebot \
   "${PROFILE_MOUNT[@]}" \
   "$IMAGE_NAME" \
   -lc "set -euo pipefail; [ -f \"$HOME/.profile\" ] && source \"$HOME/.profile\" || true; cd /app && pnpm test:live"

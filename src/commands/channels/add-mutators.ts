@@ -1,16 +1,16 @@
 import { getChannelPlugin } from "../../channels/plugins/index.js";
 import type { ChannelId, ChannelSetupInput } from "../../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { normalizeAccountId } from "../../routing/session-key.js";
 
 type ChatChannel = ChannelId;
 
 export function applyAccountName(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: ChatChannel;
   accountId: string;
   name?: string;
-}): ClawdbotConfig {
+}): SurprisebotConfig {
   const accountId = normalizeAccountId(params.accountId);
   const plugin = getChannelPlugin(params.channel);
   const apply = plugin?.setup?.applyAccountName;
@@ -18,7 +18,7 @@ export function applyAccountName(params: {
 }
 
 export function applyChannelAccountConfig(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: ChatChannel;
   accountId: string;
   name?: string;
@@ -42,7 +42,7 @@ export function applyChannelAccountConfig(params: {
   password?: string;
   deviceName?: string;
   initialSyncLimit?: number;
-}): ClawdbotConfig {
+}): SurprisebotConfig {
   const accountId = normalizeAccountId(params.accountId);
   const plugin = getChannelPlugin(params.channel);
   const apply = plugin?.setup?.applyAccountConfig;

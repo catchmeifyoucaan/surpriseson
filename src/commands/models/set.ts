@@ -1,4 +1,4 @@
-import { CONFIG_PATH_CLAWDBOT } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { resolveModelTarget, updateConfig } from "./shared.js";
 
@@ -27,6 +27,6 @@ export async function modelsSetCommand(modelRaw: string, runtime: RuntimeEnv) {
     };
   });
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Default model: ${updated.agents?.defaults?.model?.primary ?? modelRaw}`);
 }

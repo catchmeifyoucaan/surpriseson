@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { logVerbose, shouldLogVerbose } from "../globals.js";
 import { runExec } from "../process/exec.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -15,13 +15,13 @@ export function isAudio(mediaType?: string | null) {
   return Boolean(mediaType?.startsWith("audio"));
 }
 
-export function hasAudioTranscriptionConfig(cfg: ClawdbotConfig): boolean {
+export function hasAudioTranscriptionConfig(cfg: SurprisebotConfig): boolean {
   if (cfg.tools?.audio?.transcription?.args?.length) return true;
   return Boolean(cfg.audio?.transcription?.command?.length);
 }
 
 export async function transcribeInboundAudio(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   ctx: MsgContext,
   runtime: RuntimeEnv,
 ): Promise<{ text: string } | undefined> {
@@ -44,7 +44,7 @@ export async function transcribeInboundAudio(
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const arrayBuf = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuf);
-      tmpPath = path.join(os.tmpdir(), `clawdbot-audio-${crypto.randomUUID()}.ogg`);
+      tmpPath = path.join(os.tmpdir(), `surprisebot-audio-${crypto.randomUUID()}.ogg`);
       await fs.writeFile(tmpPath, buffer);
       mediaPath = tmpPath;
       if (shouldLogVerbose()) {

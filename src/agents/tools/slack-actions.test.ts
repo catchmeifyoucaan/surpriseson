@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { handleSlackAction } from "./slack-actions.js";
 
 const deleteSlackMessage = vi.fn(async () => ({}));
@@ -35,7 +35,7 @@ vi.mock("../../slack/actions.js", () => ({
 
 describe("handleSlackAction", () => {
   it("adds reactions", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     await handleSlackAction(
       {
         action: "react",
@@ -49,7 +49,7 @@ describe("handleSlackAction", () => {
   });
 
   it("removes reactions on empty emoji", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     await handleSlackAction(
       {
         action: "react",
@@ -63,7 +63,7 @@ describe("handleSlackAction", () => {
   });
 
   it("removes reactions when remove flag set", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     await handleSlackAction(
       {
         action: "react",
@@ -78,7 +78,7 @@ describe("handleSlackAction", () => {
   });
 
   it("rejects removes without emoji", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     await expect(
       handleSlackAction(
         {
@@ -96,7 +96,7 @@ describe("handleSlackAction", () => {
   it("respects reaction gating", async () => {
     const cfg = {
       channels: { slack: { botToken: "tok", actions: { reactions: false } } },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
     await expect(
       handleSlackAction(
         {
@@ -111,7 +111,7 @@ describe("handleSlackAction", () => {
   });
 
   it("passes threadTs to sendSlackMessage for thread replies", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     await handleSlackAction(
       {
         action: "sendMessage",
@@ -128,7 +128,7 @@ describe("handleSlackAction", () => {
   });
 
   it("auto-injects threadTs from context when replyToMode=all", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction(
       {
@@ -150,7 +150,7 @@ describe("handleSlackAction", () => {
   });
 
   it("replyToMode=first threads first message then stops", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     const hasRepliedRef = { value: false };
     const context = {
@@ -185,7 +185,7 @@ describe("handleSlackAction", () => {
   });
 
   it("replyToMode=first marks hasRepliedRef even when threadTs is explicit", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     const hasRepliedRef = { value: false };
     const context = {
@@ -223,7 +223,7 @@ describe("handleSlackAction", () => {
   });
 
   it("replyToMode=first without hasRepliedRef does not thread", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction({ action: "sendMessage", to: "channel:C123", content: "No ref" }, cfg, {
       currentChannelId: "C123",
@@ -238,7 +238,7 @@ describe("handleSlackAction", () => {
   });
 
   it("does not auto-inject threadTs when replyToMode=off", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction(
       {
@@ -260,7 +260,7 @@ describe("handleSlackAction", () => {
   });
 
   it("does not auto-inject threadTs when sending to different channel", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction(
       {
@@ -282,7 +282,7 @@ describe("handleSlackAction", () => {
   });
 
   it("explicit threadTs overrides context threadTs", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction(
       {
@@ -305,7 +305,7 @@ describe("handleSlackAction", () => {
   });
 
   it("handles channel target without prefix when replyToMode=all", async () => {
-    const cfg = { channels: { slack: { botToken: "tok" } } } as ClawdbotConfig;
+    const cfg = { channels: { slack: { botToken: "tok" } } } as SurprisebotConfig;
     sendSlackMessage.mockClear();
     await handleSlackAction(
       {

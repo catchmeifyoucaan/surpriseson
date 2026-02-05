@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import type { ThinkLevel } from "../../auto-reply/thinking.js";
 import { enqueueCommandInLane } from "../../process/command-queue.js";
 import { resolveUserPath } from "../../utils.js";
-import { resolveClawdbotAgentDir } from "../agent-paths.js";
+import { resolveSurprisebotAgentDir } from "../agent-paths.js";
 import {
   markAuthProfileFailure,
   markAuthProfileGood,
@@ -21,7 +21,7 @@ import {
   getApiKeyForModel,
   resolveAuthProfileOrder,
 } from "../model-auth.js";
-import { ensureClawdbotModelsJson } from "../models-config.js";
+import { ensureSurprisebotModelsJson } from "../models-config.js";
 import {
   classifyFailoverReason,
   formatAssistantErrorText,
@@ -67,8 +67,8 @@ export async function runEmbeddedPiAgent(
 
       const provider = (params.provider ?? DEFAULT_PROVIDER).trim() || DEFAULT_PROVIDER;
       const modelId = (params.model ?? DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-      const agentDir = params.agentDir ?? resolveClawdbotAgentDir();
-      await ensureClawdbotModelsJson(params.config, agentDir);
+      const agentDir = params.agentDir ?? resolveSurprisebotAgentDir();
+      await ensureSurprisebotModelsJson(params.config, agentDir);
 
       const { model, error, authStorage, modelRegistry } = resolveModel(
         provider,
@@ -212,6 +212,7 @@ export async function runEmbeddedPiAgent(
             timeoutMs: params.timeoutMs,
             runId: params.runId,
             abortSignal: params.abortSignal,
+            toolResultPolicy: params.toolResultPolicy,
             shouldEmitToolResult: params.shouldEmitToolResult,
             onPartialReply: params.onPartialReply,
             onAssistantMessageStart: params.onAssistantMessageStart,
@@ -385,6 +386,21 @@ export async function runEmbeddedPiAgent(
             reasoningLevel: params.reasoningLevel,
             inlineToolResultsAllowed: !params.onPartialReply && !params.onToolResult,
           });
+          const toolCallCounts = attempt.toolCallCounts ?? {
+            started: attempt.pendingToolCalls.length,
+            ended: 0,
+            pending: attempt.pendingToolCalls.length,
+            timedOut: attempt.pendingToolCalls.filter((call) => call.timedOut).length,
+          };
+          const toolResultsMeta =
+            toolCallCounts.started > 0 || attempt.pendingToolCalls.length > 0
+              ? {
+                  started: toolCallCounts.started,
+                  ended: toolCallCounts.ended,
+                  pending: attempt.pendingToolCalls,
+                  timedOut: attempt.pendingToolCalls.filter((call) => call.timedOut),
+                }
+              : undefined;
 
           log.debug(
             `embedded run done: runId=${params.runId} sessionId=${params.sessionId} durationMs=${Date.now() - started} aborted=${aborted}`,
@@ -407,6 +423,7 @@ export async function runEmbeddedPiAgent(
               agentMeta,
               aborted,
               systemPromptReport: attempt.systemPromptReport,
+              toolResults: toolResultsMeta,
             },
             didSendViaMessagingTool: attempt.didSendViaMessagingTool,
             messagingToolSentTexts: attempt.messagingToolSentTexts,

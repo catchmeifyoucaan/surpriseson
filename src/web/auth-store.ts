@@ -176,7 +176,7 @@ export async function pickWebChannel(
   const hasWeb = await webAuthExists(authDir);
   if (!hasWeb) {
     throw new Error(
-      "No WhatsApp Web session found. Run `clawdbot channels login --channel whatsapp --verbose` to link.",
+      "No WhatsApp Web session found. Run `surprisebot channels login --channel whatsapp --verbose` to link.",
     );
   }
   return choice;

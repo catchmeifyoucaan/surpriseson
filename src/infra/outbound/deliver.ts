@@ -3,7 +3,7 @@ import type { ReplyPayload } from "../../auto-reply/types.js";
 import { resolveChannelMediaMaxBytes } from "../../channels/plugins/media-limits.js";
 import { loadChannelOutboundAdapter } from "../../channels/plugins/outbound/load.js";
 import type { ChannelOutboundAdapter } from "../../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { sendMessageDiscord } from "../../discord/send.js";
 import type { sendMessageIMessage } from "../../imessage/send.js";
 import { markdownToSignalTextChunks, type SignalTextStyleRange } from "../../signal/format.js";
@@ -11,6 +11,10 @@ import { sendMessageSignal } from "../../signal/send.js";
 import type { sendMessageSlack } from "../../slack/send.js";
 import type { sendMessageTelegram } from "../../telegram/send.js";
 import type { sendMessageWhatsApp } from "../../web/outbound.js";
+import { formatAlertPayloads, isCriticalAlertTarget } from "../alerts.js";
+import { scoreSignal } from "../signal-score.js";
+import { appendMissionControlRecord } from "../mission-control/ledger.js";
+import { applyReconStatusGate } from "../recon-status.js";
 import type { NormalizedOutboundPayload } from "./payloads.js";
 import { normalizeOutboundPayloads } from "./payloads.js";
 import type { OutboundChannel } from "./targets.js";
@@ -70,7 +74,7 @@ function throwIfAborted(abortSignal?: AbortSignal): void {
 
 // Channel docking: outbound delivery delegates to plugin.outbound adapters.
 async function createChannelHandler(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: Exclude<OutboundChannel, "none">;
   to: string;
   accountId?: string;
@@ -102,7 +106,7 @@ async function createChannelHandler(params: {
 
 function createPluginHandler(params: {
   outbound?: ChannelOutboundAdapter;
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: Exclude<OutboundChannel, "none">;
   to: string;
   accountId?: string;
@@ -145,8 +149,58 @@ function createPluginHandler(params: {
   };
 }
 
+async function applyHighSignalGate(params: {
+  cfg: SurprisebotConfig;
+  channel: Exclude<OutboundChannel, "none">;
+  to: string;
+  payloads: ReplyPayload[];
+}): Promise<ReplyPayload[]> {
+  const alerts = params.cfg.missionControl?.alerts;
+  if (!alerts?.highSignalOnly) return params.payloads;
+  if (!isCriticalAlertTarget({ cfg: params.cfg, channel: params.channel, to: params.to })) {
+    return params.payloads;
+  }
+  const minScore = alerts.minSignalScore ?? 60;
+  const minEvidence = alerts.minEvidenceCount ?? 1;
+  const suppressMissing = alerts.suppressIfMissingEvidence ?? true;
+  const allowed: ReplyPayload[] = [];
+  for (const payload of params.payloads) {
+    const text = payload.text?.trim() ?? "";
+    const allowBypass = /HEARTBEAT|DAILY STANDUP|WEEKLY DEEP REPORT|HEALTH DASHBOARD|I'M BACK UP/i.test(text);
+    if (allowBypass) {
+      allowed.push(payload);
+      continue;
+    }
+    if (!text) {
+      if (!suppressMissing) allowed.push(payload);
+      continue;
+    }
+    const scored = scoreSignal(text);
+    const ok = scored.score >= minScore && (scored.evidenceCount >= minEvidence || !suppressMissing);
+    if (ok) {
+      allowed.push(payload);
+    } else {
+      appendMissionControlRecord({
+        cfg: params.cfg,
+        kind: "activities",
+        record: {
+          id: `activity-${Date.now()}-${Math.random().toString(16).slice(2, 8)}` ,
+          ts: new Date().toISOString(),
+          source: "system",
+          version: 1,
+          type: "alert_suppressed",
+          message: `Suppressed alert (score ${scored.score})`,
+          meta: { score: scored.score, evidenceCount: scored.evidenceCount, reasons: scored.reasons },
+        } as any,
+      }).catch(() => {});
+    }
+  }
+  return allowed;
+}
+
+
 export async function deliverOutboundPayloads(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: Exclude<OutboundChannel, "none">;
   to: string;
   accountId?: string;
@@ -249,7 +303,11 @@ export async function deliverOutboundPayloads(params: {
       })),
     };
   };
-  const normalizedPayloads = normalizeOutboundPayloads(payloads);
+  const gatedPayloads = await applyReconStatusGate({ cfg, payloads });
+  const highSignalPayloads = await applyHighSignalGate({ cfg, channel, to, payloads: gatedPayloads });
+  const alertPayloads =
+    isCriticalAlertTarget({ cfg, channel, to }) ? formatAlertPayloads(highSignalPayloads) : highSignalPayloads;
+  const normalizedPayloads = normalizeOutboundPayloads(alertPayloads);
   for (const payload of normalizedPayloads) {
     try {
       throwIfAborted(abortSignal);

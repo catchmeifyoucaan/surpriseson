@@ -4,13 +4,13 @@ import {
   readStringParam,
 } from "../../../agents/tools/common.js";
 import { handleTelegramAction } from "../../../agents/tools/telegram-actions.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import { listEnabledTelegramAccounts } from "../../../telegram/accounts.js";
 import type { ChannelMessageActionAdapter, ChannelMessageActionName } from "../types.js";
 
 const providerId = "telegram";
 
-function hasTelegramInlineButtons(cfg: ClawdbotConfig): boolean {
+function hasTelegramInlineButtons(cfg: SurprisebotConfig): boolean {
   const caps = new Set<string>();
   for (const entry of cfg.channels?.telegram?.capabilities ?? []) {
     const trimmed = String(entry).trim();

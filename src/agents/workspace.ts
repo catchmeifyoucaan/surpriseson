@@ -218,6 +218,11 @@ const TEMPLATE_DIR = path.resolve(
   "../../docs/templates",
 );
 
+const WORKSPACE_TEMPLATE_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../workspace.template",
+);
+
 function stripFrontMatter(content: string): string {
   if (!content.startsWith("---")) return content;
   const endIndex = content.indexOf("\n---", 3);
@@ -238,6 +243,35 @@ async function loadTemplate(name: string, fallback: string): Promise<string> {
   }
 }
 
+
+async function dirExists(p: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(p);
+    return stat.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+async function isDirEmpty(p: string): Promise<boolean> {
+  try {
+    const entries = await fs.readdir(p);
+    return entries.length == 0;
+  } catch {
+    return true;
+  }
+}
+
+async function seedWorkspaceFromTemplate(targetDir: string): Promise<boolean> {
+  if (!(await dirExists(WORKSPACE_TEMPLATE_DIR))) return false;
+  if (!(await isDirEmpty(targetDir))) return false;
+  try {
+    await fs.cp(WORKSPACE_TEMPLATE_DIR, targetDir, { recursive: true, force: false });
+    return true;
+  } catch {
+    return false;
+  }
+}
 export type WorkspaceBootstrapFileName =
   | typeof DEFAULT_AGENTS_FILENAME
   | typeof DEFAULT_SOUL_FILENAME
@@ -289,6 +323,7 @@ export async function ensureAgentWorkspace(params?: {
   const rawDir = params?.dir?.trim() ? params.dir.trim() : DEFAULT_AGENT_WORKSPACE_DIR;
   const dir = resolveUserPath(rawDir);
   await fs.mkdir(dir, { recursive: true });
+  await seedWorkspaceFromTemplate(dir);
 
   if (!params?.ensureBootstrapFiles) return { dir };
 

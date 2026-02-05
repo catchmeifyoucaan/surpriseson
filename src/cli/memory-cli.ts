@@ -11,12 +11,25 @@ import { theme } from "../terminal/theme.js";
 type MemoryCommandOptions = {
   agent?: string;
   json?: boolean;
+  watch?: boolean;
+  interval?: boolean;
+  watchInterval?: boolean;
 };
 
 function resolveAgent(cfg: ReturnType<typeof loadConfig>, agent?: string) {
   const trimmed = agent?.trim();
   if (trimmed) return trimmed;
   return resolveDefaultAgentId(cfg);
+}
+
+function resolveSyncOverrides(opts: MemoryCommandOptions) {
+  const disableWatch = opts.watch === false || opts.watchInterval === false;
+  const disableInterval = opts.interval === false || opts.watchInterval === false;
+  if (!disableWatch && !disableInterval) return undefined;
+  return {
+    ...(disableWatch ? { watch: false } : {}),
+    ...(disableInterval ? { intervalMinutes: 0 } : {}),
+  };
 }
 
 export function registerMemoryCli(program: Command) {
@@ -26,57 +39,73 @@ export function registerMemoryCli(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/memory", "docs.clawd.bot/cli/memory")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/cli/memory", "docs.surprisebot.bot/cli/memory")}\n`,
     );
 
   memory
     .command("status")
     .description("Show memory search index status")
     .option("--agent <id>", "Agent id (default: default agent)")
+    .option("--no-watch", "Disable file watcher sync for this command")
+    .option("--no-interval", "Disable interval sync for this command")
+    .option("--no-watch-interval", "Disable watcher + interval sync for this command")
     .option("--json", "Print JSON")
     .action(async (opts: MemoryCommandOptions) => {
       const cfg = loadConfig();
       const agentId = resolveAgent(cfg, opts.agent);
-      const { manager, error } = await getMemorySearchManager({ cfg, agentId });
+      const syncOverrides = resolveSyncOverrides(opts);
+      const { manager, error } = await getMemorySearchManager({ cfg, agentId, syncOverrides });
       if (!manager) {
         defaultRuntime.log(error ?? "Memory search disabled.");
         return;
       }
-      const status = manager.status();
-      if (opts.json) {
-        defaultRuntime.log(JSON.stringify(status, null, 2));
-        return;
+      try {
+        const status = manager.status();
+        if (opts.json) {
+          defaultRuntime.log(JSON.stringify(status, null, 2));
+          return;
+        }
+        const lines = [
+          `${chalk.bold.cyan("Memory Search")} (${agentId})`,
+          `Provider: ${status.provider} (requested: ${status.requestedProvider})`,
+          status.fallback ? chalk.yellow(`Fallback: ${status.fallback.from}`) : null,
+          `Files: ${status.files}`,
+          `Chunks: ${status.chunks}`,
+          `Dirty: ${status.dirty ? "yes" : "no"}`,
+          `Index: ${status.dbPath}`,
+        ].filter(Boolean) as string[];
+        if (status.fallback?.reason) {
+          lines.push(chalk.gray(status.fallback.reason));
+        }
+        defaultRuntime.log(lines.join("\n"));
+      } finally {
+        await manager.close();
       }
-      const lines = [
-        `${chalk.bold.cyan("Memory Search")} (${agentId})`,
-        `Provider: ${status.provider} (requested: ${status.requestedProvider})`,
-        status.fallback ? chalk.yellow(`Fallback: ${status.fallback.from}`) : null,
-        `Files: ${status.files}`,
-        `Chunks: ${status.chunks}`,
-        `Dirty: ${status.dirty ? "yes" : "no"}`,
-        `Index: ${status.dbPath}`,
-      ].filter(Boolean) as string[];
-      if (status.fallback?.reason) {
-        lines.push(chalk.gray(status.fallback.reason));
-      }
-      defaultRuntime.log(lines.join("\n"));
     });
 
   memory
     .command("index")
     .description("Reindex memory files")
     .option("--agent <id>", "Agent id (default: default agent)")
+    .option("--no-watch", "Disable file watcher sync for this command")
+    .option("--no-interval", "Disable interval sync for this command")
+    .option("--no-watch-interval", "Disable watcher + interval sync for this command")
     .option("--force", "Force full reindex", false)
     .action(async (opts: MemoryCommandOptions & { force?: boolean }) => {
       const cfg = loadConfig();
       const agentId = resolveAgent(cfg, opts.agent);
-      const { manager, error } = await getMemorySearchManager({ cfg, agentId });
+      const syncOverrides = resolveSyncOverrides(opts);
+      const { manager, error } = await getMemorySearchManager({ cfg, agentId, syncOverrides });
       if (!manager) {
         defaultRuntime.log(error ?? "Memory search disabled.");
         return;
       }
-      await manager.sync({ reason: "cli", force: opts.force });
-      defaultRuntime.log("Memory index updated.");
+      try {
+        await manager.sync({ reason: "cli", force: opts.force });
+        defaultRuntime.log("Memory index updated.");
+      } finally {
+        await manager.close();
+      }
     });
 
   memory
@@ -84,6 +113,9 @@ export function registerMemoryCli(program: Command) {
     .description("Search memory files")
     .argument("<query>", "Search query")
     .option("--agent <id>", "Agent id (default: default agent)")
+    .option("--no-watch", "Disable file watcher sync for this command")
+    .option("--no-interval", "Disable interval sync for this command")
+    .option("--no-watch-interval", "Disable watcher + interval sync for this command")
     .option("--max-results <n>", "Max results", (v) => Number(v))
     .option("--min-score <n>", "Minimum score", (v) => Number(v))
     .option("--json", "Print JSON")
@@ -100,32 +132,37 @@ export function registerMemoryCli(program: Command) {
         const { manager, error } = await getMemorySearchManager({
           cfg,
           agentId,
+          syncOverrides: resolveSyncOverrides(opts),
         });
         if (!manager) {
           defaultRuntime.log(error ?? "Memory search disabled.");
           return;
         }
-        const results = await manager.search(query, {
-          maxResults: opts.maxResults,
-          minScore: opts.minScore,
-        });
-        if (opts.json) {
-          defaultRuntime.log(JSON.stringify({ results }, null, 2));
-          return;
+        try {
+          const results = await manager.search(query, {
+            maxResults: opts.maxResults,
+            minScore: opts.minScore,
+          });
+          if (opts.json) {
+            defaultRuntime.log(JSON.stringify({ results }, null, 2));
+            return;
+          }
+          if (results.length === 0) {
+            defaultRuntime.log("No matches.");
+            return;
+          }
+          const lines: string[] = [];
+          for (const result of results) {
+            lines.push(
+              `${chalk.green(result.score.toFixed(3))} ${result.path}:${result.startLine}-${result.endLine}`,
+            );
+            lines.push(chalk.gray(result.snippet));
+            lines.push("");
+          }
+          defaultRuntime.log(lines.join("\n").trim());
+        } finally {
+          await manager.close();
         }
-        if (results.length === 0) {
-          defaultRuntime.log("No matches.");
-          return;
-        }
-        const lines: string[] = [];
-        for (const result of results) {
-          lines.push(
-            `${chalk.green(result.score.toFixed(3))} ${result.path}:${result.startLine}-${result.endLine}`,
-          );
-          lines.push(chalk.gray(result.snippet));
-          lines.push("");
-        }
-        defaultRuntime.log(lines.join("\n").trim());
       },
     );
 }

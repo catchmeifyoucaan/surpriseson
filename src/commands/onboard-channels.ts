@@ -2,7 +2,7 @@ import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent
 import { listChannelPluginCatalogEntries } from "../channels/plugins/catalog.js";
 import { listChannelPlugins, getChannelPlugin } from "../channels/plugins/index.js";
 import { formatChannelPrimerLine, formatChannelSelectionLine } from "../channels/registry.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { DmPolicy } from "../config/types.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { formatDocsLink } from "../terminal/links.js";
@@ -34,7 +34,7 @@ async function noteChannelPrimer(
   await prompter.note(
     [
       "DM security: default is pairing; unknown DMs get a pairing code.",
-      "Approve with: clawdbot pairing approve <channel> <code>",
+      "Approve with: surprisebot pairing approve <channel> <code>",
       'Public DMs require dmPolicy="open" + allowFrom=["*"].',
       `Docs: ${formatDocsLink("/start/pairing", "start/pairing")}`,
       "",
@@ -58,10 +58,10 @@ function resolveQuickstartDefault(
 }
 
 async function maybeConfigureDmPolicies(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   selection: ChannelChoice[];
   prompter: WizardPrompter;
-}): Promise<ClawdbotConfig> {
+}): Promise<SurprisebotConfig> {
   const { selection, prompter } = params;
   const dmPolicies = selection
     .map((channel) => getChannelOnboardingAdapter(channel)?.dmPolicy)
@@ -79,7 +79,7 @@ async function maybeConfigureDmPolicies(params: {
     await prompter.note(
       [
         "Default: pairing (unknown DMs get a pairing code).",
-        `Approve: clawdbot pairing approve ${policy.channel} <code>`,
+        `Approve: surprisebot pairing approve ${policy.channel} <code>`,
         `Public DMs: ${policy.policyKey}="open" + ${policy.allowFromKey} includes "*".`,
         `Docs: ${formatDocsLink("/start/pairing", "start/pairing")}`,
       ].join("\n"),
@@ -109,11 +109,11 @@ async function maybeConfigureDmPolicies(params: {
 // Channel-specific prompts moved into onboarding adapters.
 
 export async function setupChannels(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   runtime: RuntimeEnv,
   prompter: WizardPrompter,
   options?: SetupChannelsOptions,
-): Promise<ClawdbotConfig> {
+): Promise<SurprisebotConfig> {
   let next = cfg;
   const forceAllowFromChannels = new Set(options?.forceAllowFromChannels ?? []);
   const accountOverrides: Partial<Record<ChannelChoice, string>> = {
@@ -199,7 +199,7 @@ export async function setupChannels(
         {
           value: "__skip__",
           label: "Skip for now",
-          hint: "You can add channels later via `clawdbot channels add`",
+          hint: "You can add channels later via `surprisebot channels add`",
         },
       ],
       initialValue: quickstartDefault,

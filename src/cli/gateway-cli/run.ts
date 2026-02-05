@@ -3,7 +3,7 @@ import fs from "node:fs";
 import type { Command } from "commander";
 import type { GatewayAuthMode } from "../../config/config.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   loadConfig,
   readConfigFileSnapshot,
   resolveGatewayPort,
@@ -14,6 +14,7 @@ import type { GatewayWsLogStyle } from "../../gateway/ws-logging.js";
 import { setGatewayWsLogStyle } from "../../gateway/ws-logging.js";
 import { setVerbose } from "../../globals.js";
 import { GatewayLockError } from "../../infra/gateway-lock.js";
+import { checkSystemHealth, formatSystemHealthSummary } from "../../commands/system-health.js";
 import { formatPortDiagnostics, inspectPortUsage } from "../../infra/ports.js";
 import { createSubsystemLogger, setConsoleSubsystemFilter } from "../../logging.js";
 import { defaultRuntime } from "../../runtime.js";
@@ -37,6 +38,7 @@ type GatewayRunOpts = {
   tailscale?: unknown;
   tailscaleResetOnExit?: boolean;
   allowUnconfigured?: boolean;
+  allowUnsafeWorkspace?: boolean;
   force?: boolean;
   verbose?: boolean;
   claudeCliLogs?: boolean;
@@ -51,7 +53,7 @@ type GatewayRunOpts = {
 const gatewayLog = createSubsystemLogger("gateway");
 
 async function runGatewayCommand(opts: GatewayRunOpts) {
-  const isDevProfile = process.env.CLAWDBOT_PROFILE?.trim().toLowerCase() === "dev";
+  const isDevProfile = process.env.SURPRISEBOT_PROFILE?.trim().toLowerCase() === "dev";
   const devMode = Boolean(opts.dev) || isDevProfile;
   if (opts.reset && !devMode) {
     defaultRuntime.error("Use --reset with --dev.");
@@ -62,7 +64,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   setVerbose(Boolean(opts.verbose));
   if (opts.claudeCliLogs) {
     setConsoleSubsystemFilter(["agent/claude-cli"]);
-    process.env.CLAWDBOT_CLAUDE_CLI_LOG_OUTPUT = "1";
+    process.env.SURPRISEBOT_CLAUDE_CLI_LOG_OUTPUT = "1";
   }
   const wsLogRaw = (opts.compact ? "compact" : opts.wsLog) as string | undefined;
   const wsLogStyle: GatewayWsLogStyle =
@@ -77,13 +79,31 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
     defaultRuntime.exit(1);
   }
   setGatewayWsLogStyle(wsLogStyle);
+  try {
+    const health = await checkSystemHealth({ paths: [process.cwd()] });
+    if (!health.ok || health.warnings.length > 0) {
+      for (const line of formatSystemHealthSummary(health)) {
+        gatewayLog.warn(line);
+      }
+      if (health.warnings.length > 0) {
+        gatewayLog.warn(`Warnings: ${health.warnings.join(" ")}`);
+      }
+    }
+  } catch (err) {
+    gatewayLog.warn(`System health check failed: ${String(err)}`);
+  }
+
+
+  if (opts.allowUnsafeWorkspace) {
+    process.env.SURPRISEBOT_ALLOW_UNSAFE_WORKSPACE = "1";
+  }
 
   if (opts.rawStream) {
-    process.env.CLAWDBOT_RAW_STREAM = "1";
+    process.env.SURPRISEBOT_RAW_STREAM = "1";
   }
   const rawStreamPath = toOptionString(opts.rawStreamPath);
   if (rawStreamPath) {
-    process.env.CLAWDBOT_RAW_STREAM_PATH = rawStreamPath;
+    process.env.SURPRISEBOT_RAW_STREAM_PATH = rawStreamPath;
   }
 
   if (devMode) {
@@ -131,7 +151,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   }
   if (opts.token) {
     const token = toOptionString(opts.token);
-    if (token) process.env.CLAWDBOT_GATEWAY_TOKEN = token;
+    if (token) process.env.SURPRISEBOT_GATEWAY_TOKEN = token;
   }
   const authModeRaw = toOptionString(opts.auth);
   const authMode: GatewayAuthMode | null =
@@ -154,12 +174,12 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
   const passwordRaw = toOptionString(opts.password);
   const tokenRaw = toOptionString(opts.token);
 
-  const configExists = fs.existsSync(CONFIG_PATH_CLAWDBOT);
+  const configExists = fs.existsSync(CONFIG_PATH_SURPRISEBOT);
   const mode = cfg.gateway?.mode;
   if (!opts.allowUnconfigured && mode !== "local") {
     if (!configExists) {
       defaultRuntime.error(
-        "Missing config. Run `clawdbot setup` or set gateway.mode=local (or pass --allow-unconfigured).",
+        "Missing config. Run `surprisebot setup` or set gateway.mode=local (or pass --allow-unconfigured).",
       );
     } else {
       defaultRuntime.error(
@@ -209,7 +229,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
     defaultRuntime.error(
       [
         "Gateway auth is set to token, but no token is configured.",
-        "Set gateway.auth.token (or CLAWDBOT_GATEWAY_TOKEN), or pass --token.",
+        "Set gateway.auth.token (or SURPRISEBOT_GATEWAY_TOKEN), or pass --token.",
         ...authHints,
       ]
         .filter(Boolean)
@@ -222,7 +242,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
     defaultRuntime.error(
       [
         "Gateway auth is set to password, but no password is configured.",
-        "Set gateway.auth.password (or CLAWDBOT_GATEWAY_PASSWORD), or pass --password.",
+        "Set gateway.auth.password (or SURPRISEBOT_GATEWAY_PASSWORD), or pass --password.",
         ...authHints,
       ]
         .filter(Boolean)
@@ -235,7 +255,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
     defaultRuntime.error(
       [
         `Refusing to bind gateway to ${bind} without auth.`,
-        "Set gateway.auth.token (or CLAWDBOT_GATEWAY_TOKEN) or pass --token.",
+        "Set gateway.auth.token (or SURPRISEBOT_GATEWAY_TOKEN) or pass --token.",
         ...authHints,
       ]
         .filter(Boolean)
@@ -275,7 +295,7 @@ async function runGatewayCommand(opts: GatewayRunOpts) {
     ) {
       const errMessage = describeUnknownError(err);
       defaultRuntime.error(
-        `Gateway failed to start: ${errMessage}\nIf the gateway is supervised, stop it with: clawdbot daemon stop`,
+        `Gateway failed to start: ${errMessage}\nIf the gateway is supervised, stop it with: surprisebot daemon stop`,
       );
       try {
         const diagnostics = await inspectPortUsage(port);
@@ -305,7 +325,7 @@ export function addGatewayRunCommand(cmd: Command): Command {
     )
     .option(
       "--token <token>",
-      "Shared token required in connect.params.auth.token (default: CLAWDBOT_GATEWAY_TOKEN env if set)",
+      "Shared token required in connect.params.auth.token (default: SURPRISEBOT_GATEWAY_TOKEN env if set)",
     )
     .option("--auth <mode>", 'Gateway auth mode ("token"|"password")')
     .option("--password <password>", "Password for auth mode=password")
@@ -320,6 +340,7 @@ export function addGatewayRunCommand(cmd: Command): Command {
       "Allow gateway start without gateway.mode=local in config",
       false,
     )
+    .option("--allow-unsafe-workspace", "Allow workspace inside state dir (unsafe)", false)
     .option("--dev", "Create a dev config + workspace if missing (no BOOTSTRAP.md)", false)
     .option(
       "--reset",

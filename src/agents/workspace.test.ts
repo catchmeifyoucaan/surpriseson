@@ -8,6 +8,11 @@ import {
   DEFAULT_BOOTSTRAP_FILENAME,
   DEFAULT_HEARTBEAT_FILENAME,
   DEFAULT_IDENTITY_FILENAME,
+  DEFAULT_MEMORY_ACTIVE_FILENAME,
+  DEFAULT_MEMORY_DECISIONS_FILENAME,
+  DEFAULT_MEMORY_FILENAME,
+  DEFAULT_MEMORY_PREFERENCES_FILENAME,
+  DEFAULT_MEMORY_PROFILE_FILENAME,
   DEFAULT_SOUL_FILENAME,
   DEFAULT_TOOLS_FILENAME,
   DEFAULT_USER_FILENAME,
@@ -17,7 +22,7 @@ import {
 
 describe("ensureAgentWorkspace", () => {
   it("creates directory and bootstrap files when missing", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-ws-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-ws-"));
     const nested = path.join(dir, "nested");
     const result = await ensureAgentWorkspace({
       dir: nested,
@@ -34,14 +39,24 @@ describe("ensureAgentWorkspace", () => {
     const user = path.join(path.resolve(nested), "USER.md");
     const heartbeat = path.join(path.resolve(nested), "HEARTBEAT.md");
     const bootstrap = path.join(path.resolve(nested), "BOOTSTRAP.md");
+    const memoryFile = path.join(path.resolve(nested), "MEMORY.md");
+    const memoryProfile = path.join(path.resolve(nested), "memory", "profile.md");
+    const memoryPreferences = path.join(path.resolve(nested), "memory", "preferences.md");
+    const memoryDecisions = path.join(path.resolve(nested), "memory", "decisions.md");
+    const memoryActive = path.join(path.resolve(nested), "memory", "active.md");
     await expect(fs.stat(identity)).resolves.toBeDefined();
     await expect(fs.stat(user)).resolves.toBeDefined();
     await expect(fs.stat(heartbeat)).resolves.toBeDefined();
     await expect(fs.stat(bootstrap)).resolves.toBeDefined();
+    await expect(fs.stat(memoryFile)).resolves.toBeDefined();
+    await expect(fs.stat(memoryProfile)).resolves.toBeDefined();
+    await expect(fs.stat(memoryPreferences)).resolves.toBeDefined();
+    await expect(fs.stat(memoryDecisions)).resolves.toBeDefined();
+    await expect(fs.stat(memoryActive)).resolves.toBeDefined();
   });
 
   it("does not overwrite existing AGENTS.md", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-ws-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-ws-"));
     const agentsPath = path.join(dir, "AGENTS.md");
     await fs.writeFile(agentsPath, "custom", "utf-8");
     await ensureAgentWorkspace({ dir, ensureBootstrapFiles: true });
@@ -49,7 +64,7 @@ describe("ensureAgentWorkspace", () => {
   });
 
   it("does not recreate BOOTSTRAP.md once workspace exists", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-ws-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-ws-"));
     const agentsPath = path.join(dir, "AGENTS.md");
     const bootstrapPath = path.join(dir, "BOOTSTRAP.md");
 
@@ -104,6 +119,36 @@ describe("filterBootstrapFilesForSession", () => {
       name: DEFAULT_BOOTSTRAP_FILENAME,
       path: "/tmp/BOOTSTRAP.md",
       content: "bootstrap",
+      missing: false,
+    },
+    {
+      name: DEFAULT_MEMORY_FILENAME,
+      path: "/tmp/MEMORY.md",
+      content: "memory",
+      missing: false,
+    },
+    {
+      name: DEFAULT_MEMORY_PROFILE_FILENAME,
+      path: "/tmp/memory/profile.md",
+      content: "profile",
+      missing: false,
+    },
+    {
+      name: DEFAULT_MEMORY_PREFERENCES_FILENAME,
+      path: "/tmp/memory/preferences.md",
+      content: "preferences",
+      missing: false,
+    },
+    {
+      name: DEFAULT_MEMORY_DECISIONS_FILENAME,
+      path: "/tmp/memory/decisions.md",
+      content: "decisions",
+      missing: false,
+    },
+    {
+      name: DEFAULT_MEMORY_ACTIVE_FILENAME,
+      path: "/tmp/memory/active.md",
+      content: "active",
       missing: false,
     },
   ];

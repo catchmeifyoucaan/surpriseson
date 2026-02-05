@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import * as replyModule from "../auto-reply/reply.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { runHeartbeatOnce } from "./heartbeat-runner.js";
 
 // Avoid pulling optional runtime deps during isolated runs.
@@ -11,7 +11,7 @@ vi.mock("jiti", () => ({ createJiti: () => () => ({}) }));
 
 describe("resolveHeartbeatIntervalMs", () => {
   it("respects ackMaxChars for heartbeat acks", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
@@ -31,7 +31,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: {
@@ -71,7 +71,7 @@ describe("resolveHeartbeatIntervalMs", () => {
   });
 
   it("skips delivery for markup-wrapped HEARTBEAT_OK", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
@@ -91,7 +91,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: {
@@ -130,7 +130,7 @@ describe("resolveHeartbeatIntervalMs", () => {
   });
 
   it("does not regress updatedAt when restoring heartbeat sessions", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
@@ -152,7 +152,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: {
@@ -197,7 +197,7 @@ describe("resolveHeartbeatIntervalMs", () => {
   });
 
   it("skips WhatsApp delivery when not linked or running", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     try {
@@ -217,7 +217,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: { every: "5m", target: "whatsapp", to: "+1555" },
@@ -254,7 +254,7 @@ describe("resolveHeartbeatIntervalMs", () => {
   });
 
   it("passes through accountId for telegram heartbeats", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     const prevTelegramToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -276,7 +276,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: { every: "5m", target: "telegram", to: "123456" },
@@ -319,7 +319,7 @@ describe("resolveHeartbeatIntervalMs", () => {
   });
 
   it("does not pre-resolve telegram accountId (allows config-only account tokens)", async () => {
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-hb-"));
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-hb-"));
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.spyOn(replyModule, "getReplyFromConfig");
     const prevTelegramToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -341,7 +341,7 @@ describe("resolveHeartbeatIntervalMs", () => {
         ),
       );
 
-      const cfg: ClawdbotConfig = {
+      const cfg: SurprisebotConfig = {
         agents: {
           defaults: {
             heartbeat: { every: "5m", target: "telegram", to: "123456" },

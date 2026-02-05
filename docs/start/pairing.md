@@ -3,12 +3,12 @@ summary: "Pairing overview: approve who can DM you + which nodes can join"
 read_when:
   - Setting up DM access control
   - Pairing a new iOS/Android node
-  - Reviewing Clawdbot security posture
+  - Reviewing Surprisebot security posture
 ---
 
 # Pairing
 
-“Pairing” is Clawdbot’s explicit **owner approval** step.
+“Pairing” is Surprisebot’s explicit **owner approval** step.
 It is used in two places:
 
 1) **DM pairing** (who is allowed to talk to the bot)
@@ -30,15 +30,15 @@ Pairing codes:
 ### Approve a sender
 
 ```bash
-clawdbot pairing list telegram
-clawdbot pairing approve telegram <CODE>
+surprisebot pairing list telegram
+surprisebot pairing approve telegram <CODE>
 ```
 
 Supported channels: `telegram`, `whatsapp`, `signal`, `imessage`, `discord`, `slack`.
 
 ### Where the state lives
 
-Stored under `~/.clawdbot/credentials/`:
+Stored under `~/.surprisebot/credentials/`:
 - Pending requests: `<channel>-pairing.json`
 - Approved allowlist store: `<channel>-allowFrom.json`
 
@@ -53,13 +53,13 @@ The Gateway keeps an authoritative allowlist; new nodes require explicit approve
 ### Approve a node
 
 ```bash
-clawdbot nodes pending
-clawdbot nodes approve <requestId>
+surprisebot nodes pending
+surprisebot nodes approve <requestId>
 ```
 
 ### Where the state lives
 
-Stored under `~/.clawdbot/nodes/`:
+Stored under `~/.surprisebot/nodes/`:
 - `pending.json` (short-lived; pending requests expire)
 - `paired.json` (paired nodes + tokens)
 

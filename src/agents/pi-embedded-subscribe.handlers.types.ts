@@ -17,8 +17,14 @@ export type EmbeddedSubscribeLogger = {
 export type EmbeddedPiSubscribeState = {
   assistantTexts: string[];
   toolMetas: Array<{ toolName?: string; meta?: string }>;
-  toolMetaById: Map<string, string | undefined>;
+  toolMetaById: Map<string, { name: string; meta?: string; startedAt?: number; timedOut?: boolean }>;
   toolSummaryById: Set<string>;
+  toolCallsStarted: number;
+  toolCallsEnded: number;
+  toolHeartbeatMs?: number;
+  toolTimeoutMs?: number;
+  toolHeartbeats: Map<string, NodeJS.Timeout>;
+  toolTimeouts: Map<string, NodeJS.Timeout>;
 
   blockReplyBreak: "text_end" | "message_end";
   reasoningMode: ReasoningLevel;

@@ -1,6 +1,15 @@
 export type ReplyMode = "text" | "command";
 export type TypingMode = "never" | "instant" | "thinking" | "message";
 export type SessionScope = "per-sender" | "global";
+export type SessionBridgeMode = "off" | "explicit" | "owner";
+export type SessionBridgeConfig = {
+  /** How to map sessions into a shared bridge context. */
+  mode?: SessionBridgeMode;
+  /** Optional shared bridge key label (default: "owner"). */
+  key?: string;
+  /** When true, group chats can be bridged (default: false). */
+  includeGroups?: boolean;
+};
 export type ReplyToMode = "off" | "first" | "all";
 export type GroupPolicy = "open" | "disabled" | "allowlist";
 export type DmPolicy = "pairing" | "allowlist" | "open" | "disabled";
@@ -54,6 +63,7 @@ export type SessionSendPolicyConfig = {
 
 export type SessionConfig = {
   scope?: SessionScope;
+  bridge?: SessionBridgeConfig;
   resetTriggers?: string[];
   idleMinutes?: number;
   heartbeatIdleMinutes?: number;

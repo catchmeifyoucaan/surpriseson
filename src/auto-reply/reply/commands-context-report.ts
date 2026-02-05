@@ -2,7 +2,7 @@ import {
   buildBootstrapContextFiles,
   resolveBootstrapMaxChars,
 } from "../../agents/pi-embedded-helpers.js";
-import { createClawdbotCodingTools } from "../../agents/pi-tools.js";
+import { createSurprisebotCodingTools } from "../../agents/pi-tools.js";
 import { resolveSandboxRuntimeStatus } from "../../agents/sandbox.js";
 import { buildWorkspaceSkillSnapshot } from "../../agents/skills.js";
 import { buildAgentSystemPrompt } from "../../agents/system-prompt.js";
@@ -74,7 +74,7 @@ async function resolveContextReport(
   });
   const tools = (() => {
     try {
-      return createClawdbotCodingTools({
+      return createSurprisebotCodingTools({
         config: params.cfg,
         workspaceDir,
         sessionKey: params.sessionKey,

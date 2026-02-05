@@ -1,11 +1,11 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { normalizeProviderId } from "../model-selection.js";
 import { listProfilesForProvider } from "./profiles.js";
 import { suggestOAuthProfileIdForLegacyDefault } from "./repair.js";
 import type { AuthProfileStore } from "./types.js";
 
 export function formatAuthDoctorHint(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   store: AuthProfileStore;
   provider: string;
   profileId?: string;
@@ -37,6 +37,6 @@ export function formatAuthDoctorHint(params: {
     }`,
     `- auth store oauth profiles: ${storeOauthProfiles || "(none)"}`,
     `- suggested profile: ${suggested}`,
-    'Fix: run "clawdbot doctor --yes"',
+    'Fix: run "surprisebot doctor --yes"',
   ].join("\n");
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { enqueueSystemEvent, resetSystemEventsForTest } from "../../infra/system-events.js";
 import { prependSystemEvents } from "./session-updates.js";
 
@@ -13,7 +13,7 @@ describe("prependSystemEvents", () => {
     enqueueSystemEvent("Model switched.", { sessionKey: "agent:main:main" });
 
     const result = await prependSystemEvents({
-      cfg: {} as ClawdbotConfig,
+      cfg: {} as SurprisebotConfig,
       sessionKey: "agent:main:main",
       isMainSession: false,
       isNewSession: false,

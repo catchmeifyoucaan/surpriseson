@@ -12,7 +12,9 @@ Goal: go from **zero** → **first working chat** (with sane defaults) as quickl
 
 If you want a lighter install (no Docker/Neo4j/QMD), see [Minimal mode](/start/minimal).
 
-Recommended path: use **`surprisebot init`** (bootstrap + onboarding). It sets up:
+Recommended path: use **`surprisebot init`** (bootstrap + onboarding).
+
+New? See [Start Here](/start/start-here) to choose Minimal/Standard/Full. It sets up:
 - model/auth (OAuth recommended)
 - gateway settings
 - channels (WhatsApp/Telegram/Discord/…)
@@ -81,6 +83,15 @@ surprisebot init --quickstart --install-daemon
 # or (legacy)
 surprisebot onboard --install-daemon
 ```
+
+Optional: preseed the bug-hunter roster:
+
+```bash
+surprisebot init --profile-template bug-hunter
+```
+
+See [Profiles](/start/profiles) for details.
+
 
 What you’ll choose:
 - **Local vs Remote** gateway
@@ -152,6 +163,17 @@ surprisebot pairing approve whatsapp <code>
 ```
 
 Pairing doc: [Pairing](/start/pairing)
+
+### Advanced features (optional)
+
+- Mission Control ledger + reports: [/mission-control](/mission-control)
+- Budget enforcement: [/gateway/budgets](/gateway/budgets)
+- Research pipeline: [/research/pipeline](/research/pipeline)
+- QMD local search: [/tools/qmd](/tools/qmd)
+- Memory graph (Neo4j): [/concepts/memory](/concepts/memory)
+- ARTEMIS integration (advanced): [/advanced/artemis](/advanced/artemis)
+- Bug Hunter Stack (end‑to‑end): [/advanced/bug-hunter-stack](/advanced/bug-hunter-stack)
+
 
 ## From source (development)
 

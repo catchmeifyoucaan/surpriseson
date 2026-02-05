@@ -1,12 +1,12 @@
 ---
-summary: "Use Amazon Bedrock (Converse API) models with Clawdbot"
+summary: "Use Amazon Bedrock (Converse API) models with Surprisebot"
 read_when:
-  - You want to use Amazon Bedrock models with Clawdbot
+  - You want to use Amazon Bedrock models with Surprisebot
   - You need AWS credential/region setup for model calls
 ---
 # Amazon Bedrock
 
-Clawdbot can use **Amazon Bedrock** models via pi‑ai’s **Bedrock Converse**
+Surprisebot can use **Amazon Bedrock** models via pi‑ai’s **Bedrock Converse**
 streaming provider. Bedrock auth uses the **AWS SDK default credential chain**,
 not an API key.
 

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import { CHAT_COMMANDS, getNativeCommandSurfaces } from "./commands-registry.data.js";
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "../agents/defaults.js";
 import { resolveConfiguredModelRef } from "../agents/model-selection.js";
@@ -65,14 +65,24 @@ export function listChatCommands(): ChatCommandDefinition[] {
   return [...CHAT_COMMANDS];
 }
 
-export function isCommandEnabled(cfg: ClawdbotConfig, commandKey: string): boolean {
+export function isCommandEnabled(cfg: SurprisebotConfig, commandKey: string): boolean {
   if (commandKey === "config") return cfg.commands?.config === true;
   if (commandKey === "debug") return cfg.commands?.debug === true;
   if (commandKey === "bash") return cfg.commands?.bash === true;
+  if (
+    commandKey === "remember" ||
+    commandKey === "forget" ||
+    commandKey === "prefer" ||
+    commandKey === "deprecate" ||
+    commandKey === "decide" ||
+    commandKey === "active"
+  ) {
+    return cfg.commands?.memory === true;
+  }
   return true;
 }
 
-export function listChatCommandsForConfig(cfg: ClawdbotConfig): ChatCommandDefinition[] {
+export function listChatCommandsForConfig(cfg: SurprisebotConfig): ChatCommandDefinition[] {
   return CHAT_COMMANDS.filter((command) => isCommandEnabled(cfg, command.key));
 }
 
@@ -87,7 +97,7 @@ export function listNativeCommandSpecs(): NativeCommandSpec[] {
   );
 }
 
-export function listNativeCommandSpecsForConfig(cfg: ClawdbotConfig): NativeCommandSpec[] {
+export function listNativeCommandSpecsForConfig(cfg: SurprisebotConfig): NativeCommandSpec[] {
   return listChatCommandsForConfig(cfg)
     .filter((command) => command.scope !== "text" && command.nativeName)
     .map((command) => ({
@@ -180,12 +190,12 @@ export function buildCommandTextFromArgs(
   return buildCommandText(commandName, serializeCommandArgs(command, args));
 }
 
-function resolveDefaultCommandContext(cfg?: ClawdbotConfig): {
+function resolveDefaultCommandContext(cfg?: SurprisebotConfig): {
   provider: string;
   model: string;
 } {
   const resolved = resolveConfiguredModelRef({
-    cfg: cfg ?? ({} as ClawdbotConfig),
+    cfg: cfg ?? ({} as SurprisebotConfig),
     defaultProvider: DEFAULT_PROVIDER,
     defaultModel: DEFAULT_MODEL,
   });
@@ -198,7 +208,7 @@ function resolveDefaultCommandContext(cfg?: ClawdbotConfig): {
 export function resolveCommandArgChoices(params: {
   command: ChatCommandDefinition;
   arg: CommandArgDefinition;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   provider?: string;
   model?: string;
 }): string[] {
@@ -220,7 +230,7 @@ export function resolveCommandArgChoices(params: {
 export function resolveCommandArgMenu(params: {
   command: ChatCommandDefinition;
   args?: CommandArgs;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
 }): { arg: CommandArgDefinition; choices: string[]; title?: string } | null {
   const { command, args, cfg } = params;
   if (!command.args || !command.argsMenu) return null;
@@ -286,7 +296,7 @@ export function isCommandMessage(raw: string): boolean {
   return trimmed.startsWith("/");
 }
 
-export function getCommandDetection(_cfg?: ClawdbotConfig): CommandDetection {
+export function getCommandDetection(_cfg?: SurprisebotConfig): CommandDetection {
   if (cachedDetection) return cachedDetection;
   const exact = new Set<string>();
   const patterns: string[] = [];
@@ -311,7 +321,7 @@ export function getCommandDetection(_cfg?: ClawdbotConfig): CommandDetection {
   return cachedDetection;
 }
 
-export function maybeResolveTextAlias(raw: string, cfg?: ClawdbotConfig) {
+export function maybeResolveTextAlias(raw: string, cfg?: SurprisebotConfig) {
   const trimmed = normalizeCommandBody(raw).trim();
   if (!trimmed.startsWith("/")) return null;
   const detection = getCommandDetection(cfg);
@@ -326,7 +336,7 @@ export function maybeResolveTextAlias(raw: string, cfg?: ClawdbotConfig) {
 
 export function resolveTextCommand(
   raw: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
 ): {
   command: ChatCommandDefinition;
   args?: string;

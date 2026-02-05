@@ -28,6 +28,20 @@ async function readConfigFileRaw(): Promise<{
   }
 }
 
+
+function mergeDefaults<T extends Record<string, any>>(target: T, defaults: T): T {
+  const out: any = Array.isArray(target) ? [...target] : { ...target };
+  for (const [key, value] of Object.entries(defaults)) {
+    const existing = (out as any)[key];
+    if (existing === undefined) {
+      (out as any)[key] = value;
+    } else if (existing && value && typeof existing === "object" && typeof value === "object" && !Array.isArray(existing) && !Array.isArray(value)) {
+      (out as any)[key] = mergeDefaults(existing, value);
+    }
+  }
+  return out as T;
+}
+
 async function writeConfigFile(cfg: SurprisebotConfig) {
   const configPath = resolveConfigPath();
   await fs.mkdir(path.dirname(configPath), { recursive: true });
@@ -36,7 +50,7 @@ async function writeConfigFile(cfg: SurprisebotConfig) {
 }
 
 export async function setupCommand(
-  opts?: { workspace?: string },
+  opts?: { workspace?: string; overrides?: SurprisebotConfig; profileTemplate?: SurprisebotConfig },
   runtime: RuntimeEnv = defaultRuntime,
 ) {
   const desiredWorkspace =
@@ -50,7 +64,7 @@ export async function setupCommand(
 
   const workspace = desiredWorkspace ?? defaults.workspace ?? resolveDefaultAgentWorkspaceDir();
 
-  const next: SurprisebotConfig = {
+  const nextBase: SurprisebotConfig = {
     ...cfg,
     agents: {
       ...cfg.agents,
@@ -61,7 +75,10 @@ export async function setupCommand(
     },
   };
 
-  if (!existingRaw.exists || defaults.workspace !== workspace) {
+  const templated = opts?.profileTemplate ? mergeDefaults(nextBase, opts.profileTemplate) : nextBase;
+  const next = opts?.overrides ? mergeDefaults(templated, opts.overrides) : templated;
+
+  if (!existingRaw.exists || defaults.workspace !== workspace || opts?.overrides) {
     await writeConfigFile(next);
     const configPath = resolveConfigPath();
     runtime.log(

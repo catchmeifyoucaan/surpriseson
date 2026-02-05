@@ -14,6 +14,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "ClawdbotNodeAndroid"
+rootProject.name = "SurprisebotNodeAndroid"
 include(":app")
 

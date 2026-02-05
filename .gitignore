@@ -18,14 +18,14 @@ ui/test-results/
 # Bun build artifacts
 *.bun-build
 apps/macos/.build/
-apps/shared/ClawdbotKit/.build/
+apps/shared/SurprisebotKit/.build/
 **/ModuleCache/
 bin/
-bin/clawdbot-mac
+bin/surprisebot-mac
 bin/docs-list
 apps/macos/.build-local/
 apps/macos/.swiftpm/
-apps/shared/ClawdbotKit/.swiftpm/
+apps/shared/SurprisebotKit/.swiftpm/
 Core/
 apps/ios/*.xcodeproj/
 apps/ios/*.xcworkspace/
@@ -55,3 +55,12 @@ apps/ios/*.mobileprovision
 # Local untracked files
 .local/
 .vscode/
+.agents/
+.codex/
+.cursor/
+.gemini/
+.github/skills/
+data/
+logs/
+skills/
+package-lock.json

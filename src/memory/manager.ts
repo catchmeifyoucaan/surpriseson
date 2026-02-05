@@ -7,7 +7,7 @@ import chokidar, { type FSWatcher } from "chokidar";
 import { resolveAgentDir, resolveAgentWorkspaceDir } from "../agents/agent-scope.js";
 import type { ResolvedMemorySearchConfig } from "../agents/memory-search.js";
 import { resolveMemorySearchConfig } from "../agents/memory-search.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveUserPath, truncateUtf16Safe } from "../utils.js";
 import {
   createEmbeddingProvider,
@@ -26,7 +26,7 @@ import {
   normalizeRelPath,
   parseEmbedding,
 } from "./internal.js";
-import { requireNodeSqlite } from "./sqlite.js";
+import { applySqlitePragmas, requireNodeSqlite } from "./sqlite.js";
 
 export type MemorySearchResult = {
   path: string;
@@ -48,14 +48,25 @@ const SNIPPET_MAX_CHARS = 700;
 
 const INDEX_CACHE = new Map<string, MemoryIndexManager>();
 
+function applySyncOverrides(
+  settings: ResolvedMemorySearchConfig,
+  overrides?: Partial<ResolvedMemorySearchConfig["sync"]>,
+): ResolvedMemorySearchConfig {
+  if (!overrides) return settings;
+  return {
+    ...settings,
+    sync: { ...settings.sync, ...overrides },
+  };
+}
+
 export class MemoryIndexManager {
   private readonly cacheKey: string;
-  private readonly cfg: ClawdbotConfig;
+  private readonly cfg: SurprisebotConfig;
   private readonly agentId: string;
   private readonly workspaceDir: string;
   private readonly settings: ResolvedMemorySearchConfig;
   private readonly provider: EmbeddingProvider;
-  private readonly requestedProvider: "openai" | "local";
+  private readonly requestedProvider: "openai" | "local" | "google";
   private readonly fallbackReason?: string;
   private readonly db: DatabaseSync;
   private watcher: FSWatcher | null = null;
@@ -67,14 +78,16 @@ export class MemoryIndexManager {
   private syncing: Promise<void> | null = null;
 
   static async get(params: {
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     agentId: string;
+    syncOverrides?: Partial<ResolvedMemorySearchConfig["sync"]>;
   }): Promise<MemoryIndexManager | null> {
     const { cfg, agentId } = params;
     const settings = resolveMemorySearchConfig(cfg, agentId);
     if (!settings) return null;
     const workspaceDir = resolveAgentWorkspaceDir(cfg, agentId);
-    const key = `${agentId}:${workspaceDir}:${JSON.stringify(settings)}`;
+    const effectiveSettings = applySyncOverrides(settings, params.syncOverrides);
+    const key = `${agentId}:${workspaceDir}:${JSON.stringify(effectiveSettings)}`;
     const existing = INDEX_CACHE.get(key);
     if (existing) return existing;
     const providerResult = await createEmbeddingProvider({
@@ -91,7 +104,7 @@ export class MemoryIndexManager {
       cfg,
       agentId,
       workspaceDir,
-      settings,
+      settings: effectiveSettings,
       providerResult,
     });
     INDEX_CACHE.set(key, manager);
@@ -100,7 +113,7 @@ export class MemoryIndexManager {
 
   private constructor(params: {
     cacheKey: string;
-    cfg: ClawdbotConfig;
+    cfg: SurprisebotConfig;
     agentId: string;
     workspaceDir: string;
     settings: ResolvedMemorySearchConfig;
@@ -253,7 +266,9 @@ export class MemoryIndexManager {
     const dir = path.dirname(dbPath);
     ensureDir(dir);
     const { DatabaseSync } = requireNodeSqlite();
-    return new DatabaseSync(dbPath);
+    const db = new DatabaseSync(dbPath);
+    applySqlitePragmas(db);
+    return db;
   }
 
   private ensureSchema() {
@@ -428,43 +443,55 @@ export class MemoryIndexManager {
   private async indexFile(entry: MemoryFileEntry) {
     const content = await fs.readFile(entry.absPath, "utf-8");
     const chunks = chunkMarkdown(content, this.settings.chunking);
-    const embeddings = await this.provider.embedBatch(chunks.map((chunk) => chunk.text));
+    const usable = chunks
+      .map((chunk) => ({ chunk, text: chunk.text.trim() }))
+      .filter((entry) => entry.text.length > 0);
+    const embeddings = usable.length > 0
+      ? await this.provider.embedBatch(usable.map((entry) => entry.chunk.text))
+      : [];
     const now = Date.now();
-    this.db.prepare(`DELETE FROM chunks WHERE path = ?`).run(entry.path);
-    for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
-      const embedding = embeddings[i] ?? [];
-      const id = hashText(
-        `${entry.path}:${chunk.startLine}:${chunk.endLine}:${chunk.hash}:${this.provider.model}`,
-      );
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      this.db.prepare(`DELETE FROM chunks WHERE path = ?`).run(entry.path);
+      for (let i = 0; i < usable.length; i++) {
+        const chunk = usable[i].chunk;
+        const embedding = embeddings[i] ?? [];
+        const id = hashText(
+          `${entry.path}:${chunk.startLine}:${chunk.endLine}:${chunk.hash}:${this.provider.model}`,
+        );
+        this.db
+          .prepare(
+            `INSERT INTO chunks (id, path, start_line, end_line, hash, model, text, embedding, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(id) DO UPDATE SET
+               hash=excluded.hash,
+               model=excluded.model,
+               text=excluded.text,
+               embedding=excluded.embedding,
+               updated_at=excluded.updated_at`,
+          )
+          .run(
+            id,
+            entry.path,
+            chunk.startLine,
+            chunk.endLine,
+            chunk.hash,
+            this.provider.model,
+            chunk.text,
+            JSON.stringify(embedding),
+            now,
+          );
+      }
       this.db
         .prepare(
-          `INSERT INTO chunks (id, path, start_line, end_line, hash, model, text, embedding, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET
-             hash=excluded.hash,
-             model=excluded.model,
-             text=excluded.text,
-             embedding=excluded.embedding,
-             updated_at=excluded.updated_at`,
+          `INSERT INTO files (path, hash, mtime, size) VALUES (?, ?, ?, ?)
+           ON CONFLICT(path) DO UPDATE SET hash=excluded.hash, mtime=excluded.mtime, size=excluded.size`,
         )
-        .run(
-          id,
-          entry.path,
-          chunk.startLine,
-          chunk.endLine,
-          chunk.hash,
-          this.provider.model,
-          chunk.text,
-          JSON.stringify(embedding),
-          now,
-        );
+        .run(entry.path, entry.hash, entry.mtimeMs, entry.size);
+      this.db.exec("COMMIT");
+    } catch (err) {
+      this.db.exec("ROLLBACK");
+      throw err;
     }
-    this.db
-      .prepare(
-        `INSERT INTO files (path, hash, mtime, size) VALUES (?, ?, ?, ?)
-         ON CONFLICT(path) DO UPDATE SET hash=excluded.hash, mtime=excluded.mtime, size=excluded.size`,
-      )
-      .run(entry.path, entry.hash, entry.mtimeMs, entry.size);
   }
 }

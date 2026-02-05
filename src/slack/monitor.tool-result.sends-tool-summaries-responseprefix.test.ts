@@ -43,7 +43,7 @@ vi.mock("../pairing/pairing-store.js", () => ({
 }));
 
 vi.mock("../config/sessions.js", () => ({
-  resolveStorePath: vi.fn(() => "/tmp/clawdbot-sessions.json"),
+  resolveStorePath: vi.fn(() => "/tmp/surprisebot-sessions.json"),
   updateLastRoute: (...args: unknown[]) => updateLastRouteMock(...args),
   resolveSessionKey: vi.fn(),
 }));
@@ -457,7 +457,7 @@ describe("monitorSlackProvider tool results", () => {
     config = {
       messages: {
         responsePrefix: "PFX",
-        groupChat: { mentionPatterns: ["\\bclawd\\b"] },
+        groupChat: { mentionPatterns: ["\\bsurprisebot\\b"] },
       },
       channels: {
         slack: {
@@ -483,7 +483,7 @@ describe("monitorSlackProvider tool results", () => {
       event: {
         type: "message",
         user: "U1",
-        text: "clawd: hello",
+        text: "surprisebot: hello",
         ts: "123",
         channel: "C1",
         channel_type: "channel",

@@ -10,7 +10,7 @@ import {
 } from "../../agents/auth-profiles.js";
 import { getCustomProviderApiKey, resolveEnvApiKey } from "../../agents/model-auth.js";
 import { normalizeProviderId } from "../../agents/model-selection.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { SessionEntry, SessionScope } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
 import {
@@ -36,7 +36,7 @@ function formatApiKeySnippet(apiKey: string): string {
 
 function resolveModelAuthLabel(
   provider?: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
   sessionEntry?: SessionEntry,
   agentDir?: string,
 ): string | undefined {
@@ -90,7 +90,7 @@ function resolveModelAuthLabel(
 }
 
 export async function buildStatusReply(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   command: CommandContext;
   sessionEntry?: SessionEntry;
   sessionKey: string;

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ClawdbotConfig } from "../config/config.js";
-import { createClawdbotCodingTools } from "./pi-tools.js";
+import type { SurprisebotConfig } from "../config/config.js";
+import { createSurprisebotCodingTools } from "./pi-tools.js";
 import type { SandboxDockerConfig } from "./sandbox.js";
 
 describe("Agent-specific tool filtering", () => {
   it("should apply global tool policy when no agent-specific policy exists", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         allow: ["read", "write"],
         deny: ["bash"],
@@ -14,13 +14,13 @@ describe("Agent-specific tool filtering", () => {
         list: [
           {
             id: "main",
-            workspace: "~/clawd",
+            workspace: "~/surprisebot",
           },
         ],
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test",
@@ -35,7 +35,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should keep global tool policy when agent only sets tools.elevated", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         deny: ["write"],
       },
@@ -43,7 +43,7 @@ describe("Agent-specific tool filtering", () => {
         list: [
           {
             id: "main",
-            workspace: "~/clawd",
+            workspace: "~/surprisebot",
             tools: {
               elevated: {
                 enabled: true,
@@ -55,7 +55,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test",
@@ -70,7 +70,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should allow apply_patch when exec is allow-listed and applyPatch is enabled", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         allow: ["read", "exec"],
         exec: {
@@ -79,7 +79,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test",
@@ -95,7 +95,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should apply agent-specific tool policy", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         allow: ["read", "write", "exec"],
         deny: [],
@@ -104,7 +104,7 @@ describe("Agent-specific tool filtering", () => {
         list: [
           {
             id: "restricted",
-            workspace: "~/clawd-restricted",
+            workspace: "~/surprisebot-restricted",
             tools: {
               allow: ["read"], // Agent override: only read
               deny: ["exec", "write", "edit"],
@@ -114,7 +114,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:restricted:main",
       workspaceDir: "/tmp/test-restricted",
@@ -130,7 +130,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should apply provider-specific tool policy", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         allow: ["read", "write", "exec"],
         byProvider: {
@@ -141,7 +141,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test-provider",
@@ -158,7 +158,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should apply provider-specific tool profile overrides", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         profile: "coding",
         byProvider: {
@@ -169,7 +169,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test-provider-profile",
@@ -183,17 +183,17 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should allow different tool policies for different agents", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
         list: [
           {
             id: "main",
-            workspace: "~/clawd",
+            workspace: "~/surprisebot",
             // No tools restriction - all tools available
           },
           {
             id: "family",
-            workspace: "~/clawd-family",
+            workspace: "~/surprisebot-family",
             tools: {
               allow: ["read"],
               deny: ["exec", "write", "edit", "process"],
@@ -204,7 +204,7 @@ describe("Agent-specific tool filtering", () => {
     };
 
     // main agent: all tools
-    const mainTools = createClawdbotCodingTools({
+    const mainTools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test-main",
@@ -217,7 +217,7 @@ describe("Agent-specific tool filtering", () => {
     expect(mainToolNames).not.toContain("apply_patch");
 
     // family agent: restricted
-    const familyTools = createClawdbotCodingTools({
+    const familyTools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:family:whatsapp:group:123",
       workspaceDir: "/tmp/test-family",
@@ -232,7 +232,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should apply global tool policy before agent-specific policy", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         deny: ["browser"], // Global deny
       },
@@ -240,7 +240,7 @@ describe("Agent-specific tool filtering", () => {
         list: [
           {
             id: "work",
-            workspace: "~/clawd-work",
+            workspace: "~/surprisebot-work",
             tools: {
               deny: ["exec", "process"], // Agent deny (override)
             },
@@ -249,7 +249,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:work:slack:dm:user123",
       workspaceDir: "/tmp/test-work",
@@ -265,7 +265,7 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should work with sandbox tools filtering", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
         defaults: {
           sandbox: {
@@ -276,7 +276,7 @@ describe("Agent-specific tool filtering", () => {
         list: [
           {
             id: "restricted",
-            workspace: "~/clawd-restricted",
+            workspace: "~/surprisebot-restricted",
             sandbox: {
               mode: "all",
               scope: "agent",
@@ -298,7 +298,7 @@ describe("Agent-specific tool filtering", () => {
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:restricted:main",
       workspaceDir: "/tmp/test-restricted",
@@ -338,13 +338,13 @@ describe("Agent-specific tool filtering", () => {
   });
 
   it("should run exec synchronously when process is denied", async () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       tools: {
         deny: ["process"],
       },
     };
 
-    const tools = createClawdbotCodingTools({
+    const tools = createSurprisebotCodingTools({
       config: cfg,
       sessionKey: "agent:main:main",
       workspaceDir: "/tmp/test-main",

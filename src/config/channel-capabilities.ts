@@ -1,6 +1,6 @@
 import { normalizeChannelId } from "../channels/plugins/index.js";
 import { normalizeAccountId } from "../routing/session-key.js";
-import type { ClawdbotConfig } from "./config.js";
+import type { SurprisebotConfig } from "./config.js";
 
 function normalizeCapabilities(capabilities: string[] | undefined): string[] | undefined {
   if (!capabilities) return undefined;
@@ -37,7 +37,7 @@ function resolveAccountCapabilities(params: {
 }
 
 export function resolveChannelCapabilities(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   channel?: string | null;
   accountId?: string | null;
 }): string[] | undefined {

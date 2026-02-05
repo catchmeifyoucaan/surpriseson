@@ -1,15 +1,15 @@
 import type { AnyAgentTool } from "../agents/tools/common.js";
 import { createSubsystemLogger } from "../logging.js";
-import { loadClawdbotPlugins } from "./loader.js";
-import type { ClawdbotPluginToolContext } from "./types.js";
+import { loadSurprisebotPlugins } from "./loader.js";
+import type { SurprisebotPluginToolContext } from "./types.js";
 
 const log = createSubsystemLogger("plugins");
 
 export function resolvePluginTools(params: {
-  context: ClawdbotPluginToolContext;
+  context: SurprisebotPluginToolContext;
   existingToolNames?: Set<string>;
 }): AnyAgentTool[] {
-  const registry = loadClawdbotPlugins({
+  const registry = loadSurprisebotPlugins({
     config: params.context.config,
     workspaceDir: params.context.workspaceDir,
     logger: {

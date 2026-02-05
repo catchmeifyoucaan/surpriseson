@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import type { TemplateContext } from "../templating.js";
 import { buildThreadingToolContext } from "./agent-runner-utils.js";
 
 describe("buildThreadingToolContext", () => {
-  const cfg = {} as ClawdbotConfig;
+  const cfg = {} as SurprisebotConfig;
 
   it("uses conversation id for WhatsApp", () => {
     const sessionCtx = {

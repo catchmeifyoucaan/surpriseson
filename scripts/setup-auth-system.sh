@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup Clawdbot Auth Management System
+# Setup Surprisebot Auth Management System
 # Run this once to set up:
 # 1. Long-lived Claude Code token
 # 2. Auth monitoring with notifications
@@ -9,7 +9,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "=== Clawdbot Auth System Setup ==="
+echo "=== Surprisebot Auth System Setup ==="
 echo ""
 
 # Step 1: Check current auth status
@@ -49,19 +49,19 @@ echo ""
 # Check for ntfy
 echo "  ntfy.sh: Free push notifications to your phone"
 echo "  1. Install ntfy app on your phone"
-echo "  2. Subscribe to a topic (e.g., 'clawdbot-alerts')"
+echo "  2. Subscribe to a topic (e.g., 'surprisebot-alerts')"
 echo ""
 echo "Enter ntfy.sh topic (or leave blank to skip):"
 read -r NTFY_TOPIC
 
 # Phone notification
 echo ""
-echo "  Clawdbot message: Send warning via Clawdbot itself"
+echo "  Surprisebot message: Send warning via Surprisebot itself"
 echo "Enter your phone number for alerts (or leave blank to skip):"
 read -r PHONE_NUMBER
 
 # Update service file
-SERVICE_FILE="$SCRIPT_DIR/systemd/clawdbot-auth-monitor.service"
+SERVICE_FILE="$SCRIPT_DIR/systemd/surprisebot-auth-monitor.service"
 if [ -n "$NTFY_TOPIC" ]; then
     sed -i "s|# Environment=NOTIFY_NTFY=.*|Environment=NOTIFY_NTFY=$NTFY_TOPIC|" "$SERVICE_FILE"
 fi
@@ -73,10 +73,10 @@ fi
 echo ""
 echo "Installing systemd timer..."
 mkdir -p ~/.config/systemd/user
-cp "$SCRIPT_DIR/systemd/clawdbot-auth-monitor.service" ~/.config/systemd/user/
-cp "$SCRIPT_DIR/systemd/clawdbot-auth-monitor.timer" ~/.config/systemd/user/
+cp "$SCRIPT_DIR/systemd/surprisebot-auth-monitor.service" ~/.config/systemd/user/
+cp "$SCRIPT_DIR/systemd/surprisebot-auth-monitor.timer" ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now clawdbot-auth-monitor.timer
+systemctl --user enable --now surprisebot-auth-monitor.timer
 
 echo "Auth monitor installed and running."
 echo ""
@@ -91,17 +91,17 @@ echo "2. Create ~/.shortcuts/ directory in Termux:"
 echo "   mkdir -p ~/.shortcuts"
 echo ""
 echo "3. Copy the widget scripts:"
-echo "   scp $SCRIPT_DIR/termux-quick-auth.sh phone:~/.shortcuts/ClawdAuth"
-echo "   scp $SCRIPT_DIR/termux-auth-widget.sh phone:~/.shortcuts/ClawdAuth-Full"
+echo "   scp $SCRIPT_DIR/termux-quick-auth.sh phone:~/.shortcuts/SurprisebotAuth"
+echo "   scp $SCRIPT_DIR/termux-auth-widget.sh phone:~/.shortcuts/SurprisebotAuth-Full"
 echo ""
 echo "4. Make them executable on phone:"
-echo "   ssh phone 'chmod +x ~/.shortcuts/Clawd*'"
+echo "   ssh phone 'chmod +x ~/.shortcuts/Surprisebot*'"
 echo ""
 echo "5. Add Termux:Widget to your home screen"
 echo "6. Tap the widget to see your auth scripts"
 echo ""
-echo "The quick widget (ClawdAuth) shows status and opens auth URL if needed."
-echo "The full widget (ClawdAuth-Full) provides guided re-auth flow."
+echo "The quick widget (SurprisebotAuth) shows status and opens auth URL if needed."
+echo "The full widget (SurprisebotAuth-Full) provides guided re-auth flow."
 echo ""
 
 # Summary
@@ -110,7 +110,7 @@ echo ""
 echo "What's configured:"
 echo "  - Auth status: $SCRIPT_DIR/claude-auth-status.sh"
 echo "  - Mobile re-auth: $SCRIPT_DIR/mobile-reauth.sh"
-echo "  - Auth monitor: systemctl --user status clawdbot-auth-monitor.timer"
+echo "  - Auth monitor: systemctl --user status surprisebot-auth-monitor.timer"
 echo ""
 echo "Quick commands:"
 echo "  Check auth:  $SCRIPT_DIR/claude-auth-status.sh"

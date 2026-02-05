@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { DEFAULT_ACCOUNT_ID } from "../../routing/session-key.js";
 
 type ChannelSection = {
@@ -7,12 +7,12 @@ type ChannelSection = {
 };
 
 export function setAccountEnabledInConfigSection(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sectionKey: string;
   accountId: string;
   enabled: boolean;
   allowTopLevel?: boolean;
-}): ClawdbotConfig {
+}): SurprisebotConfig {
   const accountKey = params.accountId || DEFAULT_ACCOUNT_ID;
   const channels = params.cfg.channels as Record<string, unknown> | undefined;
   const base = channels?.[params.sectionKey] as ChannelSection | undefined;
@@ -27,7 +27,7 @@ export function setAccountEnabledInConfigSection(params: {
           enabled: params.enabled,
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
   }
 
   const baseAccounts = (base?.accounts ?? {}) as Record<string, Record<string, unknown>>;
@@ -47,15 +47,15 @@ export function setAccountEnabledInConfigSection(params: {
         },
       },
     },
-  } as ClawdbotConfig;
+  } as SurprisebotConfig;
 }
 
 export function deleteAccountFromConfigSection(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   sectionKey: string;
   accountId: string;
   clearBaseFields?: string[];
-}): ClawdbotConfig {
+}): SurprisebotConfig {
   const accountKey = params.accountId || DEFAULT_ACCOUNT_ID;
   const channels = params.cfg.channels as Record<string, unknown> | undefined;
   const base = channels?.[params.sectionKey] as ChannelSection | undefined;
@@ -76,7 +76,7 @@ export function deleteAccountFromConfigSection(params: {
           accounts: Object.keys(accounts).length ? accounts : undefined,
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
   }
 
   if (baseAccounts && Object.keys(baseAccounts).length > 0) {
@@ -94,14 +94,14 @@ export function deleteAccountFromConfigSection(params: {
           accounts: Object.keys(baseAccounts).length ? baseAccounts : undefined,
         },
       },
-    } as ClawdbotConfig;
+    } as SurprisebotConfig;
   }
 
   const nextChannels = { ...params.cfg.channels } as Record<string, unknown>;
   delete nextChannels[params.sectionKey];
-  const nextCfg = { ...params.cfg } as ClawdbotConfig;
+  const nextCfg = { ...params.cfg } as SurprisebotConfig;
   if (Object.keys(nextChannels).length > 0) {
-    nextCfg.channels = nextChannels as ClawdbotConfig["channels"];
+    nextCfg.channels = nextChannels as SurprisebotConfig["channels"];
   } else {
     delete nextCfg.channels;
   }

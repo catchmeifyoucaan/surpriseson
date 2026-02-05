@@ -15,7 +15,7 @@ installGatewayTestHooks();
 
 describe("gateway server cron", () => {
   test("supports cron.add and cron.list", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -50,7 +50,7 @@ describe("gateway server cron", () => {
   });
 
   test("enqueues main cron system events to the resolved main session key", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     testState.sessionConfig = { mainKey: "primary" };
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
@@ -87,7 +87,7 @@ describe("gateway server cron", () => {
   });
 
   test("normalizes wrapped cron.add payloads", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -118,7 +118,7 @@ describe("gateway server cron", () => {
   });
 
   test("normalizes cron.update patch payloads", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -161,7 +161,7 @@ describe("gateway server cron", () => {
   });
 
   test("accepts jobId for cron.update", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -199,7 +199,7 @@ describe("gateway server cron", () => {
   });
 
   test("disables cron jobs via enabled:false patches", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -235,7 +235,7 @@ describe("gateway server cron", () => {
   });
 
   test("writes cron run history to runs/<jobId>.jsonl", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-log-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-log-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     await fs.mkdir(path.dirname(testState.cronStorePath), { recursive: true });
     await fs.writeFile(testState.cronStorePath, JSON.stringify({ version: 1, jobs: [] }));
@@ -301,7 +301,7 @@ describe("gateway server cron", () => {
   });
 
   test("writes cron run history to per-job runs/ when store is jobs.json", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-log-jobs-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-log-jobs-"));
     const cronDir = path.join(dir, "cron");
     testState.cronStorePath = path.join(cronDir, "jobs.json");
     await fs.mkdir(cronDir, { recursive: true });
@@ -367,7 +367,7 @@ describe("gateway server cron", () => {
   });
 
   test("enables cron scheduler by default and runs due jobs automatically", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-cron-default-on-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-cron-default-on-"));
     testState.cronStorePath = path.join(dir, "cron", "jobs.json");
     testState.cronEnabled = undefined;
 

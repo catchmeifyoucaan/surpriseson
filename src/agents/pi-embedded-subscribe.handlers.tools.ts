@@ -37,12 +37,61 @@ export function handleToolExecutionStart(
   }
 
   const meta = inferToolMetaFromArgs(toolName, args);
-  ctx.state.toolMetaById.set(toolCallId, meta);
+  const startedAt = Date.now();
+  ctx.state.toolCallsStarted += 1;
+  ctx.state.toolMetaById.set(toolCallId, { name: toolName, meta, startedAt });
+  const timeoutMs = ctx.state.toolTimeoutMs;
+  const heartbeatMs = ctx.state.toolHeartbeatMs;
+  const shouldEmitToolEvents = ctx.shouldEmitToolResult();
+  const onToolResult = ctx.params.onToolResult;
+  if (heartbeatMs && heartbeatMs > 0 && shouldEmitToolEvents && onToolResult) {
+    const heartbeatTimer = setInterval(() => {
+      const entry = ctx.state.toolMetaById.get(toolCallId);
+      if (!entry) {
+        clearInterval(heartbeatTimer);
+        ctx.state.toolHeartbeats.delete(toolCallId);
+        return;
+      }
+      const elapsedMs = Date.now() - (entry.startedAt ?? startedAt);
+      const elapsedSec = Math.max(1, Math.floor(elapsedMs / 1000));
+      const metaPreview =
+        entry.meta && entry.meta.length > 80 ? `${entry.meta.slice(0, 77)}...` : entry.meta;
+      const metaLabel = metaPreview ? ` ${metaPreview}` : "";
+      try {
+        void onToolResult({
+          text: `⏳ Still running: ${toolName} (${toolCallId}${metaLabel}) — ${elapsedSec}s elapsed.`,
+        });
+      } catch {
+        // ignore tool result delivery failures
+      }
+    }, heartbeatMs);
+    ctx.state.toolHeartbeats.set(toolCallId, heartbeatTimer);
+  }
+  if (timeoutMs && timeoutMs > 0) {
+    const timer = setTimeout(() => {
+      const entry = ctx.state.toolMetaById.get(toolCallId);
+      if (!entry) return;
+      entry.timedOut = true;
+      ctx.state.toolMetaById.set(toolCallId, entry);
+      ctx.log.warn(
+        `tool timeout: runId=${ctx.params.runId} tool=${toolName} toolCallId=${toolCallId} timeoutMs=${timeoutMs}`,
+      );
+      if (ctx.params.toolResultPolicy?.warnOnTimeout && ctx.params.onToolResult) {
+        try {
+          void ctx.params.onToolResult({
+            text: `⚠️ Tool timeout: ${toolName} (${toolCallId}) exceeded ${timeoutMs}ms.`,
+          });
+        } catch {
+          // ignore tool result delivery failures
+        }
+      }
+    }, timeoutMs);
+    ctx.state.toolTimeouts.set(toolCallId, timer);
+  }
   ctx.log.debug(
     `embedded run tool start: runId=${ctx.params.runId} tool=${toolName} toolCallId=${toolCallId}`,
   );
 
-  const shouldEmitToolEvents = ctx.shouldEmitToolResult();
   emitAgentEvent({
     runId: ctx.params.runId,
     stream: "tool",
@@ -133,10 +182,22 @@ export function handleToolExecutionEnd(
   const result = evt.result;
   const isToolError = isError || isToolResultError(result);
   const sanitizedResult = sanitizeToolResult(result);
-  const meta = ctx.state.toolMetaById.get(toolCallId);
+  const metaEntry = ctx.state.toolMetaById.get(toolCallId);
+  const meta = metaEntry?.meta;
   ctx.state.toolMetas.push({ toolName, meta });
   ctx.state.toolMetaById.delete(toolCallId);
   ctx.state.toolSummaryById.delete(toolCallId);
+  ctx.state.toolCallsEnded += 1;
+  const timer = ctx.state.toolTimeouts.get(toolCallId);
+  if (timer) {
+    clearTimeout(timer);
+    ctx.state.toolTimeouts.delete(toolCallId);
+  }
+  const heartbeatTimer = ctx.state.toolHeartbeats.get(toolCallId);
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    ctx.state.toolHeartbeats.delete(toolCallId);
+  }
 
   // Commit messaging tool text on success, discard on error.
   const pendingText = ctx.state.pendingMessagingTexts.get(toolCallId);

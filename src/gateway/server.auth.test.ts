@@ -28,7 +28,7 @@ describe("gateway server auth/connect", () => {
   });
 
   test("connect (req) handshake returns hello-ok payload", async () => {
-    const { CONFIG_PATH_CLAWDBOT, STATE_DIR_CLAWDBOT } = await import("../config/config.js");
+    const { CONFIG_PATH_SURPRISEBOT, STATE_DIR_SURPRISEBOT } = await import("../config/config.js");
     const port = await getFreePort();
     const server = await startGatewayServer(port);
     const ws = new WebSocket(`ws://127.0.0.1:${port}`);
@@ -43,8 +43,8 @@ describe("gateway server auth/connect", () => {
         }
       | undefined;
     expect(payload?.type).toBe("hello-ok");
-    expect(payload?.snapshot?.configPath).toBe(CONFIG_PATH_CLAWDBOT);
-    expect(payload?.snapshot?.stateDir).toBe(STATE_DIR_CLAWDBOT);
+    expect(payload?.snapshot?.configPath).toBe(CONFIG_PATH_SURPRISEBOT);
+    expect(payload?.snapshot?.stateDir).toBe(STATE_DIR_SURPRISEBOT);
 
     ws.close();
     await server.close();
@@ -73,9 +73,9 @@ describe("gateway server auth/connect", () => {
     ws.close();
     await server.close();
     if (prevToken === undefined) {
-      delete process.env.CLAWDBOT_GATEWAY_TOKEN;
+      delete process.env.SURPRISEBOT_GATEWAY_TOKEN;
     } else {
-      process.env.CLAWDBOT_GATEWAY_TOKEN = prevToken;
+      process.env.SURPRISEBOT_GATEWAY_TOKEN = prevToken;
     }
   });
 

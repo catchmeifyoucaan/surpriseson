@@ -1,6 +1,6 @@
 import { detectBinary } from "../../../commands/onboard-helpers.js";
 import { installSignalCli } from "../../../commands/signal-install.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { DmPolicy } from "../../../config/types.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../../routing/session-key.js";
 import {
@@ -14,7 +14,7 @@ import { addWildcardAllowFrom, promptAccountId } from "./helpers.js";
 
 const channel = "signal" as const;
 
-function setSignalDmPolicy(cfg: ClawdbotConfig, dmPolicy: DmPolicy) {
+function setSignalDmPolicy(cfg: SurprisebotConfig, dmPolicy: DmPolicy) {
   const allowFrom =
     dmPolicy === "open" ? addWildcardAllowFrom(cfg.channels?.signal?.allowFrom) : undefined;
   return {
@@ -177,9 +177,9 @@ export const signalOnboardingAdapter: ChannelOnboardingAdapter = {
 
     await prompter.note(
       [
-        'Link device with: signal-cli link -n "Clawdbot"',
+        'Link device with: signal-cli link -n "Surprisebot"',
         "Scan QR in Signal → Linked Devices",
-        "Then run: clawdbot gateway call channels.status --params '{\"probe\":true}'",
+        "Then run: surprisebot gateway call channels.status --params '{\"probe\":true}'",
         `Docs: ${formatDocsLink("/signal", "signal")}`,
       ].join("\n"),
       "Signal next steps",

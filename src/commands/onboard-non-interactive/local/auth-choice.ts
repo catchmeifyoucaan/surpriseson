@@ -6,7 +6,7 @@ import {
 } from "../../../agents/auth-profiles.js";
 import { normalizeProviderId } from "../../../agents/model-selection.js";
 import { parseDurationMs } from "../../../cli/parse-duration.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import { upsertSharedEnvVar } from "../../../infra/env-file.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { buildTokenProfileId, validateAnthropicSetupToken } from "../../auth-token.js";
@@ -34,12 +34,12 @@ import { applyOpenAICodexModelDefault } from "../../openai-codex-model-default.j
 import { resolveNonInteractiveApiKey } from "../api-keys.js";
 
 export async function applyNonInteractiveAuthChoice(params: {
-  nextConfig: ClawdbotConfig;
+  nextConfig: SurprisebotConfig;
   authChoice: AuthChoice;
   opts: OnboardOptions;
   runtime: RuntimeEnv;
-  baseConfig: ClawdbotConfig;
-}): Promise<ClawdbotConfig | null> {
+  baseConfig: SurprisebotConfig;
+}): Promise<SurprisebotConfig | null> {
   const { authChoice, opts, runtime, baseConfig } = params;
   let nextConfig = params.nextConfig;
 

@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 
 import { webhookCallback } from "grammy";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { formatErrorMessage } from "../infra/errors.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -10,7 +10,7 @@ import { createTelegramBot } from "./bot.js";
 export async function startTelegramWebhook(opts: {
   token: string;
   accountId?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   path?: string;
   port?: number;
   host?: string;

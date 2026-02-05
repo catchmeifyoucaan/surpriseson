@@ -4,7 +4,7 @@ import type { Command } from "commander";
 import type { AnyAgentTool } from "../agents/tools/common.js";
 import type { ChannelDock } from "../channels/dock.js";
 import type { ChannelPlugin } from "../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { GatewayRequestHandler } from "../gateway/server-methods/types.js";
 
 export type PluginLogger = {
@@ -26,7 +26,7 @@ export type PluginConfigValidation =
   | { ok: true; value?: unknown }
   | { ok: false; errors: string[] };
 
-export type ClawdbotPluginConfigSchema = {
+export type SurprisebotPluginConfigSchema = {
   safeParse?: (value: unknown) => {
     success: boolean;
     data?: unknown;
@@ -39,8 +39,8 @@ export type ClawdbotPluginConfigSchema = {
   uiHints?: Record<string, PluginConfigUiHint>;
 };
 
-export type ClawdbotPluginToolContext = {
-  config?: ClawdbotConfig;
+export type SurprisebotPluginToolContext = {
+  config?: SurprisebotConfig;
   workspaceDir?: string;
   agentDir?: string;
   agentId?: string;
@@ -50,79 +50,79 @@ export type ClawdbotPluginToolContext = {
   sandboxed?: boolean;
 };
 
-export type ClawdbotPluginToolFactory = (
-  ctx: ClawdbotPluginToolContext,
+export type SurprisebotPluginToolFactory = (
+  ctx: SurprisebotPluginToolContext,
 ) => AnyAgentTool | AnyAgentTool[] | null | undefined;
 
-export type ClawdbotPluginGatewayMethod = {
+export type SurprisebotPluginGatewayMethod = {
   method: string;
   handler: GatewayRequestHandler;
 };
 
-export type ClawdbotPluginHttpHandler = (
+export type SurprisebotPluginHttpHandler = (
   req: IncomingMessage,
   res: ServerResponse,
 ) => Promise<boolean> | boolean;
 
-export type ClawdbotPluginCliContext = {
+export type SurprisebotPluginCliContext = {
   program: Command;
-  config: ClawdbotConfig;
+  config: SurprisebotConfig;
   workspaceDir?: string;
   logger: PluginLogger;
 };
 
-export type ClawdbotPluginCliRegistrar = (ctx: ClawdbotPluginCliContext) => void | Promise<void>;
+export type SurprisebotPluginCliRegistrar = (ctx: SurprisebotPluginCliContext) => void | Promise<void>;
 
-export type ClawdbotPluginServiceContext = {
-  config: ClawdbotConfig;
+export type SurprisebotPluginServiceContext = {
+  config: SurprisebotConfig;
   workspaceDir?: string;
   stateDir: string;
   logger: PluginLogger;
 };
 
-export type ClawdbotPluginService = {
+export type SurprisebotPluginService = {
   id: string;
-  start: (ctx: ClawdbotPluginServiceContext) => void | Promise<void>;
-  stop?: (ctx: ClawdbotPluginServiceContext) => void | Promise<void>;
+  start: (ctx: SurprisebotPluginServiceContext) => void | Promise<void>;
+  stop?: (ctx: SurprisebotPluginServiceContext) => void | Promise<void>;
 };
 
-export type ClawdbotPluginChannelRegistration = {
+export type SurprisebotPluginChannelRegistration = {
   plugin: ChannelPlugin;
   dock?: ChannelDock;
 };
 
-export type ClawdbotPluginDefinition = {
+export type SurprisebotPluginDefinition = {
   id?: string;
   name?: string;
   description?: string;
   version?: string;
-  configSchema?: ClawdbotPluginConfigSchema;
-  register?: (api: ClawdbotPluginApi) => void | Promise<void>;
-  activate?: (api: ClawdbotPluginApi) => void | Promise<void>;
+  configSchema?: SurprisebotPluginConfigSchema;
+  register?: (api: SurprisebotPluginApi) => void | Promise<void>;
+  activate?: (api: SurprisebotPluginApi) => void | Promise<void>;
 };
 
-export type ClawdbotPluginModule =
-  | ClawdbotPluginDefinition
-  | ((api: ClawdbotPluginApi) => void | Promise<void>);
+export type SurprisebotPluginModule =
+  | SurprisebotPluginDefinition
+  | ((api: SurprisebotPluginApi) => void | Promise<void>);
 
-export type ClawdbotPluginApi = {
+export type SurprisebotPluginApi = {
   id: string;
   name: string;
   version?: string;
   description?: string;
   source: string;
-  config: ClawdbotConfig;
+  config: SurprisebotConfig;
   pluginConfig?: Record<string, unknown>;
   logger: PluginLogger;
   registerTool: (
-    tool: AnyAgentTool | ClawdbotPluginToolFactory,
+    tool: AnyAgentTool | SurprisebotPluginToolFactory,
     opts?: { name?: string; names?: string[] },
   ) => void;
-  registerHttpHandler: (handler: ClawdbotPluginHttpHandler) => void;
-  registerChannel: (registration: ClawdbotPluginChannelRegistration | ChannelPlugin) => void;
+  registerHttpHandler: (handler: SurprisebotPluginHttpHandler) => void;
+  registerChannel: (registration: SurprisebotPluginChannelRegistration | ChannelPlugin) => void;
   registerGatewayMethod: (method: string, handler: GatewayRequestHandler) => void;
-  registerCli: (registrar: ClawdbotPluginCliRegistrar, opts?: { commands?: string[] }) => void;
-  registerService: (service: ClawdbotPluginService) => void;
+  registerCli: (registrar: SurprisebotPluginCliRegistrar, opts?: { commands?: string[] }) => void;
+  registerService: (service: SurprisebotPluginService) => void;
   resolvePath: (input: string) => string;
 };
 

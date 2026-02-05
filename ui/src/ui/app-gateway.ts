@@ -15,7 +15,7 @@ import {
   setLastActiveSessionKey,
 } from "./app-settings";
 import { handleChatEvent, type ChatEventPayload } from "./controllers/chat";
-import type { ClawdbotApp } from "./app";
+import type { SurprisebotApp } from "./app";
 
 type GatewayHost = {
   settings: UiSettings;
@@ -99,13 +99,13 @@ export function connectGateway(host: GatewayHost) {
     url: host.settings.gatewayUrl,
     token: host.settings.token.trim() ? host.settings.token : undefined,
     password: host.password.trim() ? host.password : undefined,
-    clientName: "clawdbot-control-ui",
+    clientName: "surprisebot-control-ui",
     mode: "webchat",
     onHello: (hello) => {
       host.connected = true;
       host.hello = hello;
       applySnapshot(host, hello);
-      void loadNodes(host as unknown as ClawdbotApp, { quiet: true });
+      void loadNodes(host as unknown as SurprisebotApp, { quiet: true });
       void refreshActiveTab(host as unknown as Parameters<typeof refreshActiveTab>[0]);
     },
     onClose: ({ code, reason }) => {
@@ -145,14 +145,14 @@ export function handleGatewayEvent(host: GatewayHost, evt: GatewayEventFrame) {
         payload.sessionKey,
       );
     }
-    const state = handleChatEvent(host as unknown as ClawdbotApp, payload);
+    const state = handleChatEvent(host as unknown as SurprisebotApp, payload);
     if (state === "final" || state === "error" || state === "aborted") {
       resetToolStream(host as unknown as Parameters<typeof resetToolStream>[0]);
       void flushChatQueueForEvent(
         host as unknown as Parameters<typeof flushChatQueueForEvent>[0],
       );
     }
-    if (state === "final") void loadChatHistory(host as unknown as ClawdbotApp);
+    if (state === "final") void loadChatHistory(host as unknown as SurprisebotApp);
     return;
   }
 

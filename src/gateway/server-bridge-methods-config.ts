@@ -1,6 +1,6 @@
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../agents/agent-scope.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   loadConfig,
   parseConfigJson5,
   readConfigFileSnapshot,
@@ -11,7 +11,7 @@ import {
 import { applyLegacyMigrations } from "../config/legacy.js";
 import { applyMergePatch } from "../config/merge-patch.js";
 import { buildConfigSchema } from "../config/schema.js";
-import { loadClawdbotPlugins } from "../plugins/loader.js";
+import { loadSurprisebotPlugins } from "../plugins/loader.js";
 import {
   ErrorCodes,
   formatValidationErrors,
@@ -98,7 +98,7 @@ export const handleConfigBridgeMethods: BridgeMethodHandler = async (
       }
       const cfg = loadConfig();
       const workspaceDir = resolveAgentWorkspaceDir(cfg, resolveDefaultAgentId(cfg));
-      const pluginRegistry = loadClawdbotPlugins({
+      const pluginRegistry = loadSurprisebotPlugins({
         config: cfg,
         workspaceDir,
         logger: {
@@ -174,7 +174,7 @@ export const handleConfigBridgeMethods: BridgeMethodHandler = async (
         ok: true,
         payloadJSON: JSON.stringify({
           ok: true,
-          path: CONFIG_PATH_CLAWDBOT,
+          path: CONFIG_PATH_SURPRISEBOT,
           config: validated.config,
         }),
       };
@@ -255,7 +255,7 @@ export const handleConfigBridgeMethods: BridgeMethodHandler = async (
         ok: true,
         payloadJSON: JSON.stringify({
           ok: true,
-          path: CONFIG_PATH_CLAWDBOT,
+          path: CONFIG_PATH_SURPRISEBOT,
           config: validated.config,
         }),
       };

@@ -28,7 +28,7 @@ describe("gateway config.apply", () => {
         id,
         method: "config.apply",
         params: {
-          raw: '{ "agent": { "workspace": "~/clawd" } }',
+          raw: '{ "agent": { "workspace": "~/surprisebot" } }',
           sessionKey: "agent:main:whatsapp:dm:+15555550123",
           restartDelayMs: 0,
         },
@@ -43,7 +43,7 @@ describe("gateway config.apply", () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(sigusr1).toHaveBeenCalled();
 
-    const sentinelPath = path.join(os.homedir(), ".clawdbot", "restart-sentinel.json");
+    const sentinelPath = path.join(os.homedir(), ".surprisebot", "restart-sentinel.json");
     const raw = await fs.readFile(sentinelPath, "utf-8");
     const parsed = JSON.parse(raw) as { payload?: { kind?: string } };
     expect(parsed.payload?.kind).toBe("config-apply");

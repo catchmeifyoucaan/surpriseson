@@ -21,7 +21,7 @@ export type GatewayBonjourAdvertiseOpts = {
 };
 
 function isDisabledByEnv() {
-  if (process.env.CLAWDBOT_DISABLE_BONJOUR === "1") return true;
+  if (process.env.SURPRISEBOT_DISABLE_BONJOUR === "1") return true;
   if (process.env.NODE_ENV === "test") return true;
   if (process.env.VITEST) return true;
   return false;
@@ -29,12 +29,24 @@ function isDisabledByEnv() {
 
 function safeServiceName(name: string) {
   const trimmed = name.trim();
-  return trimmed.length > 0 ? trimmed : "Clawdbot";
+  return trimmed.length > 0 ? trimmed : "Surprisebot";
 }
 
 function prettifyInstanceName(name: string) {
   const normalized = name.trim().replace(/\s+/g, " ");
-  return normalized.replace(/\s+\(Clawdbot\)\s*$/i, "").trim() || normalized;
+  return normalized.replace(/\s+\(Surprisebot\)\s*$/i, "").trim() || normalized;
+}
+
+const MAX_SERVICE_TYPE_LENGTH = 15;
+
+function normalizeServiceType(type: string) {
+  const cleaned = type.trim().replace(/^_+/, "").replace(/\s+/g, "-");
+  const fallback = "sbot";
+  if (!cleaned) return fallback;
+  if (cleaned.length <= MAX_SERVICE_TYPE_LENGTH) return cleaned;
+  const truncated = cleaned.slice(0, MAX_SERVICE_TYPE_LENGTH);
+  logWarn(`bonjour: service type too long; truncating ${JSON.stringify(cleaned)} -> ${JSON.stringify(truncated)}`);
+  return truncated;
 }
 
 type BonjourService = {
@@ -88,11 +100,11 @@ export async function startGatewayBonjourAdvertiser(
       .hostname()
       .replace(/\.local$/i, "")
       .split(".")[0]
-      .trim() || "clawdbot";
+      .trim() || "surprisebot";
   const instanceName =
     typeof opts.instanceName === "string" && opts.instanceName.trim()
       ? opts.instanceName.trim()
-      : `${hostname} (Clawdbot)`;
+      : `${hostname} (Surprisebot)`;
   const displayName = prettifyInstanceName(instanceName);
 
   const txtBase: Record<string, string> = {
@@ -116,11 +128,13 @@ export async function startGatewayBonjourAdvertiser(
 
   const services: Array<{ label: string; svc: BonjourService }> = [];
 
+  const bridgeType = normalizeServiceType("sbot-bridge");
+
   // Bridge beacon (used by macOS/iOS/Android nodes and the mac app onboarding flow).
   if (typeof opts.bridgePort === "number" && opts.bridgePort > 0) {
     const bridge = responder.createService({
       name: safeServiceName(instanceName),
-      type: "clawdbot-bridge",
+      type: bridgeType,
       protocol: Protocol.TCP,
       port: opts.bridgePort,
       domain: "local",

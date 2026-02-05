@@ -4,7 +4,7 @@ import { buildAgentSystemPrompt } from "./system-prompt.js";
 describe("buildAgentSystemPrompt", () => {
   it("includes owner numbers when provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       ownerNumbers: ["+123", " +456 ", ""],
     });
 
@@ -16,7 +16,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("omits owner section when numbers are missing", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
     });
 
     expect(prompt).not.toContain("## User Identity");
@@ -25,7 +25,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("adds reasoning tag hint when enabled", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       reasoningTagHint: true,
     });
 
@@ -36,7 +36,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("lists available tools when provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       toolNames: ["exec", "sessions_list", "sessions_history", "sessions_send"],
     });
 
@@ -48,7 +48,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("preserves tool casing in the prompt", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       toolNames: ["Read", "Exec", "process"],
       skillsPrompt:
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
@@ -63,7 +63,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("includes user time when provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       userTimezone: "America/Chicago",
       userTime: "Monday 2026-01-05 15:26",
     });
@@ -75,7 +75,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("includes model alias guidance when aliases are provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       modelAliasLines: [
         "- Opus: anthropic/claude-opus-4-5",
         "- Sonnet: anthropic/claude-sonnet-4-5",
@@ -89,18 +89,18 @@ describe("buildAgentSystemPrompt", () => {
 
   it("adds ClaudeBot self-update guidance when gateway tool is available", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       toolNames: ["gateway", "exec"],
     });
 
-    expect(prompt).toContain("## Clawdbot Self-Update");
+    expect(prompt).toContain("## Surprisebot Self-Update");
     expect(prompt).toContain("config.apply");
     expect(prompt).toContain("update.run");
   });
 
   it("includes skills guidance when skills prompt is present", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       skillsPrompt:
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
     });
@@ -113,7 +113,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("appends available skills when provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       skillsPrompt:
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
     });
@@ -124,7 +124,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("omits skills section when no skills prompt is provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
     });
 
     expect(prompt).not.toContain("## Skills");
@@ -133,7 +133,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("renders project context files when provided", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       contextFiles: [
         { path: "AGENTS.md", content: "Alpha" },
         { path: "IDENTITY.md", content: "Bravo" },
@@ -149,7 +149,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("summarizes the message tool when available", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       toolNames: ["message"],
     });
 
@@ -159,7 +159,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("includes runtime provider capabilities when present", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       runtimeInfo: {
         channel: "telegram",
         capabilities: ["inlineButtons"],
@@ -172,7 +172,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("includes reasoning visibility hint", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       reasoningLevel: "off",
     });
 
@@ -183,7 +183,7 @@ describe("buildAgentSystemPrompt", () => {
 
   it("describes sandboxed runtime and elevated when allowed", () => {
     const prompt = buildAgentSystemPrompt({
-      workspaceDir: "/tmp/clawd",
+      workspaceDir: "/tmp/surprisebot",
       sandboxInfo: {
         enabled: true,
         workspaceDir: "/tmp/sandbox",

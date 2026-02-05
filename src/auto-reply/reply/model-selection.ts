@@ -9,7 +9,7 @@ import {
   resolveModelRefFromString,
   resolveThinkingDefault,
 } from "../../agents/model-selection.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { type SessionEntry, saveSessionStore } from "../../config/sessions.js";
 import type { ThinkLevel } from "./directives.js";
 
@@ -131,8 +131,8 @@ function scoreFuzzyMatch(params: {
 }
 
 export async function createModelSelectionState(params: {
-  cfg: ClawdbotConfig;
-  agentCfg: NonNullable<NonNullable<ClawdbotConfig["agents"]>["defaults"]> | undefined;
+  cfg: SurprisebotConfig;
+  agentCfg: NonNullable<NonNullable<SurprisebotConfig["agents"]>["defaults"]> | undefined;
   sessionEntry?: SessionEntry;
   sessionStore?: Record<string, SessionEntry>;
   sessionKey?: string;
@@ -397,7 +397,7 @@ export function resolveModelDirectiveSelection(params: {
 }
 
 export function resolveContextTokens(params: {
-  agentCfg: NonNullable<NonNullable<ClawdbotConfig["agents"]>["defaults"]> | undefined;
+  agentCfg: NonNullable<NonNullable<SurprisebotConfig["agents"]>["defaults"]> | undefined;
   model: string;
 }): number {
   return (

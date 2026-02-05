@@ -1,7 +1,7 @@
 import { normalizeChannelId } from "../../channels/plugins/index.js";
 import type { ChannelId } from "../../channels/plugins/types.js";
 import { DEFAULT_CHAT_CHANNEL } from "../../channels/registry.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import {
   loadSessionStore,
   resolveAgentMainSessionKey,
@@ -13,7 +13,7 @@ import { resolveOutboundTarget } from "../../infra/outbound/targets.js";
 import { INTERNAL_MESSAGE_CHANNEL, normalizeMessageChannel } from "../../utils/message-channel.js";
 
 export async function resolveDeliveryTarget(
-  cfg: ClawdbotConfig,
+  cfg: SurprisebotConfig,
   agentId: string,
   jobPayload: {
     channel?: "last" | ChannelId;

@@ -1,17 +1,17 @@
 ---
-summary: "How Clawdbot builds prompt context and reports token usage + costs"
+summary: "How Surprisebot builds prompt context and reports token usage + costs"
 read_when:
   - Explaining token usage, costs, or context windows
   - Debugging context growth or compaction behavior
 ---
 # Token use & costs
 
-Clawdbot tracks **tokens**, not characters. Tokens are model-specific, but most
+Surprisebot tracks **tokens**, not characters. Tokens are model-specific, but most
 OpenAI-style models average ~4 characters per token for English text.
 
 ## How the system prompt is built
 
-Clawdbot assembles its own system prompt on every run. It includes:
+Surprisebot assembles its own system prompt on every run. It includes:
 
 - Tool list + short descriptions
 - Skills list (only metadata; instructions are loaded on demand with `read`)
@@ -49,7 +49,7 @@ Use these in chat:
 Other surfaces:
 
 - **TUI/Web TUI:** `/status` + `/cost` are supported.
-- **CLI:** `clawdbot status --usage` and `clawdbot channels list` show
+- **CLI:** `surprisebot status --usage` and `surprisebot channels list` show
   provider quota windows (not per-response costs).
 
 ## Cost estimation (when shown)
@@ -61,7 +61,7 @@ models.providers.<provider>.models[].cost
 ```
 
 These are **USD per 1M tokens** for `input`, `output`, `cacheRead`, and
-`cacheWrite`. If pricing is missing, Clawdbot shows tokens only. OAuth tokens
+`cacheWrite`. If pricing is missing, Surprisebot shows tokens only. OAuth tokens
 never show dollar cost.
 
 ## Tips for reducing token pressure

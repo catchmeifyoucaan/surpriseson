@@ -28,7 +28,7 @@ function resolveLaunchAgentLabel(params?: {
   env?: Record<string, string | undefined>;
   profile?: string;
 }): string {
-  const envLabel = params?.env?.CLAWDBOT_LAUNCHD_LABEL?.trim();
+  const envLabel = params?.env?.SURPRISEBOT_LAUNCHD_LABEL?.trim();
   if (envLabel) return envLabel;
   return resolveGatewayLaunchAgentLabel(params?.profile);
 }
@@ -57,10 +57,10 @@ export function resolveGatewayLogPaths(env: Record<string, string | undefined>):
   stderrPath: string;
 } {
   const home = resolveHomeDir(env);
-  const stateOverride = env.CLAWDBOT_STATE_DIR?.trim();
-  const profile = env.CLAWDBOT_PROFILE?.trim();
+  const stateOverride = env.SURPRISEBOT_STATE_DIR?.trim();
+  const profile = env.SURPRISEBOT_PROFILE?.trim();
   const suffix = profile && profile.toLowerCase() !== "default" ? `-${profile}` : "";
-  const defaultStateDir = path.join(home, `.clawdbot${suffix}`);
+  const defaultStateDir = path.join(home, `.surprisebot${suffix}`);
   const stateDir = stateOverride ? resolveUserPathWithHome(stateOverride, home) : defaultStateDir;
   const logDir = path.join(stateDir, "logs");
   return {
@@ -391,8 +391,8 @@ export async function installLaunchAgent({
   await fs.mkdir(path.dirname(plistPath), { recursive: true });
 
   const description = formatGatewayServiceDescription({
-    profile: env.CLAWDBOT_PROFILE,
-    version: environment?.CLAWDBOT_SERVICE_VERSION ?? env.CLAWDBOT_SERVICE_VERSION,
+    profile: env.SURPRISEBOT_PROFILE,
+    version: environment?.SURPRISEBOT_SERVICE_VERSION ?? env.SURPRISEBOT_SERVICE_VERSION,
   });
   const plist = buildLaunchAgentPlist({
     label,

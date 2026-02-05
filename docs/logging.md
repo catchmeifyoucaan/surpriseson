@@ -8,7 +8,7 @@ read_when:
 
 # Logging
 
-Clawdbot logs in two places:
+Surprisebot logs in two places:
 
 - **File logs** (JSON lines) written by the Gateway.
 - **Console output** shown in terminals and the Control UI.
@@ -20,14 +20,14 @@ levels and formats.
 
 By default, the Gateway writes a rolling log file under:
 
-`/tmp/clawdbot/clawdbot-YYYY-MM-DD.log`
+`/tmp/surprisebot/surprisebot-YYYY-MM-DD.log`
 
-You can override this in `~/.clawdbot/clawdbot.json`:
+You can override this in `~/.surprisebot/surprisebot.json`:
 
 ```json
 {
   "logging": {
-    "file": "/path/to/clawdbot.log"
+    "file": "/path/to/surprisebot.log"
   }
 }
 ```
@@ -39,7 +39,7 @@ You can override this in `~/.clawdbot/clawdbot.json`:
 Use the CLI to tail the gateway log file via RPC:
 
 ```bash
-clawdbot logs --follow
+surprisebot logs --follow
 ```
 
 Output modes:
@@ -60,7 +60,7 @@ In JSON mode, the CLI emits `type`-tagged objects:
 If the Gateway is unreachable, the CLI prints a short hint to run:
 
 ```bash
-clawdbot doctor
+surprisebot doctor
 ```
 
 ### Control UI (web)
@@ -73,7 +73,7 @@ See [/web/control-ui](/web/control-ui) for how to open it.
 To filter channel activity (WhatsApp/Telegram/etc), use:
 
 ```bash
-clawdbot channels logs --channel whatsapp
+surprisebot channels logs --channel whatsapp
 ```
 
 ## Log formats
@@ -95,13 +95,13 @@ Console formatting is controlled by `logging.consoleStyle`.
 
 ## Configuring logging
 
-All logging configuration lives under `logging` in `~/.clawdbot/clawdbot.json`.
+All logging configuration lives under `logging` in `~/.surprisebot/surprisebot.json`.
 
 ```json
 {
   "logging": {
     "level": "info",
-    "file": "/tmp/clawdbot/clawdbot-YYYY-MM-DD.log",
+    "file": "/tmp/surprisebot/surprisebot-YYYY-MM-DD.log",
     "consoleLevel": "info",
     "consoleStyle": "pretty",
     "redactSensitive": "tools",
@@ -138,7 +138,7 @@ Redaction affects **console output only** and does not alter file logs.
 
 ## Troubleshooting tips
 
-- **Gateway not reachable?** Run `clawdbot doctor` first.
+- **Gateway not reachable?** Run `surprisebot doctor` first.
 - **Logs empty?** Check that the Gateway is running and writing to the file path
   in `logging.file`.
 - **Need more detail?** Set `logging.level` to `debug` or `trace` and retry.

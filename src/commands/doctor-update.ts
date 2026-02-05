@@ -4,7 +4,7 @@ import type { RuntimeEnv } from "../runtime.js";
 import { note } from "../terminal/note.js";
 import type { DoctorOptions } from "./doctor-prompter.js";
 
-async function detectClawdbotGitCheckout(root: string): Promise<"git" | "not-git" | "unknown"> {
+async function detectSurprisebotGitCheckout(root: string): Promise<"git" | "not-git" | "unknown"> {
   const res = await runCommandWithTimeout(["git", "-C", root, "rev-parse", "--show-toplevel"], {
     timeoutMs: 5000,
   }).catch(() => null);
@@ -27,7 +27,7 @@ export async function maybeOfferUpdateBeforeDoctor(params: {
   confirm: (p: { message: string; initialValue: boolean }) => Promise<boolean>;
   outro: (message: string) => void;
 }) {
-  const updateInProgress = process.env.CLAWDBOT_UPDATE_IN_PROGRESS === "1";
+  const updateInProgress = process.env.SURPRISEBOT_UPDATE_IN_PROGRESS === "1";
   const canOfferUpdate =
     !updateInProgress &&
     params.options.nonInteractive !== true &&
@@ -36,10 +36,10 @@ export async function maybeOfferUpdateBeforeDoctor(params: {
     Boolean(process.stdin.isTTY);
   if (!canOfferUpdate || !params.root) return { updated: false };
 
-  const git = await detectClawdbotGitCheckout(params.root);
+  const git = await detectSurprisebotGitCheckout(params.root);
   if (git === "git") {
     const shouldUpdate = await params.confirm({
-      message: "Update Clawdbot from git before running doctor?",
+      message: "Update Surprisebot from git before running doctor?",
       initialValue: true,
     });
     if (!shouldUpdate) return { updated: false };
@@ -71,9 +71,9 @@ export async function maybeOfferUpdateBeforeDoctor(params: {
       [
         "This install is not a git checkout.",
         "Update via your package manager, then rerun doctor:",
-        "- npm i -g clawdbot@latest",
-        "- pnpm add -g clawdbot@latest",
-        "- bun add -g clawdbot@latest",
+        "- npm i -g surprisebot@latest",
+        "- pnpm add -g surprisebot@latest",
+        "- bun add -g surprisebot@latest",
       ].join("\n"),
       "Update",
     );

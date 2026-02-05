@@ -28,7 +28,7 @@ ${body ?? `# ${name}\n`}
 
 describe("buildWorkspaceSkillSnapshot", () => {
   it("returns an empty snapshot when skills dirs are missing", async () => {
-    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-"));
+    const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-"));
 
     const snapshot = buildWorkspaceSkillSnapshot(workspaceDir, {
       managedSkillsDir: path.join(workspaceDir, ".managed"),

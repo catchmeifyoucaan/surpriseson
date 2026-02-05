@@ -409,7 +409,7 @@ export function renderConfig(props: ConfigProps) {
       </div>
 
       <div class="muted" style="margin-top: 10px;">
-        Writes to <span class="mono">~/.clawdbot/clawdbot.json</span>. Apply &
+        Writes to <span class="mono">~/.surprisebot/surprisebot.json</span>. Apply &
         Update restart the gateway and will ping the last active session when it
         comes back.
       </div>

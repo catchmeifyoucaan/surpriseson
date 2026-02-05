@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `clawdbot channels` (accounts, status, login/logout, logs)"
+summary: "CLI reference for `surprisebot channels` (accounts, status, login/logout, logs)"
 read_when:
   - You want to add/remove channel accounts (WhatsApp/Telegram/Discord/Slack/Signal/iMessage)
   - You want to check channel status or tail channel logs
 ---
 
-# `clawdbot channels`
+# `surprisebot channels`
 
 Manage chat channel accounts and their runtime status on the Gateway.
 
@@ -16,29 +16,29 @@ Related docs:
 ## Common commands
 
 ```bash
-clawdbot channels list
-clawdbot channels status
-clawdbot channels logs --channel all
+surprisebot channels list
+surprisebot channels status
+surprisebot channels logs --channel all
 ```
 
 ## Add / remove accounts
 
 ```bash
-clawdbot channels add --channel telegram --token <bot-token>
-clawdbot channels remove --channel telegram --delete
+surprisebot channels add --channel telegram --token <bot-token>
+surprisebot channels remove --channel telegram --delete
 ```
 
-Tip: `clawdbot channels add --help` shows per-channel flags (token, app token, signal-cli paths, etc).
+Tip: `surprisebot channels add --help` shows per-channel flags (token, app token, signal-cli paths, etc).
 
 ## Login / logout (interactive)
 
 ```bash
-clawdbot channels login --channel whatsapp
-clawdbot channels logout --channel whatsapp
+surprisebot channels login --channel whatsapp
+surprisebot channels logout --channel whatsapp
 ```
 
 ## Troubleshooting
 
-- Run `clawdbot status --deep` for a broad probe.
-- Use `clawdbot doctor` for guided fixes.
+- Run `surprisebot status --deep` for a broad probe.
+- Use `surprisebot doctor` for guided fixes.
 

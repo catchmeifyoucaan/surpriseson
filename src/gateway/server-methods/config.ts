@@ -1,6 +1,6 @@
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../../agents/agent-scope.js";
 import {
-  CONFIG_PATH_CLAWDBOT,
+  CONFIG_PATH_SURPRISEBOT,
   loadConfig,
   parseConfigJson5,
   readConfigFileSnapshot,
@@ -17,7 +17,7 @@ import {
   type RestartSentinelPayload,
   writeRestartSentinel,
 } from "../../infra/restart-sentinel.js";
-import { loadClawdbotPlugins } from "../../plugins/loader.js";
+import { loadSurprisebotPlugins } from "../../plugins/loader.js";
 import {
   ErrorCodes,
   errorShape,
@@ -111,7 +111,7 @@ export const configHandlers: GatewayRequestHandlers = {
     }
     const cfg = loadConfig();
     const workspaceDir = resolveAgentWorkspaceDir(cfg, resolveDefaultAgentId(cfg));
-    const pluginRegistry = loadClawdbotPlugins({
+    const pluginRegistry = loadSurprisebotPlugins({
       config: cfg,
       workspaceDir,
       logger: {
@@ -182,7 +182,7 @@ export const configHandlers: GatewayRequestHandlers = {
       true,
       {
         ok: true,
-        path: CONFIG_PATH_CLAWDBOT,
+        path: CONFIG_PATH_SURPRISEBOT,
         config: validated.config,
       },
       undefined,
@@ -260,7 +260,7 @@ export const configHandlers: GatewayRequestHandlers = {
       true,
       {
         ok: true,
-        path: CONFIG_PATH_CLAWDBOT,
+        path: CONFIG_PATH_SURPRISEBOT,
         config: validated.config,
       },
       undefined,
@@ -335,7 +335,7 @@ export const configHandlers: GatewayRequestHandlers = {
       doctorHint: DOCTOR_NONINTERACTIVE_HINT,
       stats: {
         mode: "config.apply",
-        root: CONFIG_PATH_CLAWDBOT,
+        root: CONFIG_PATH_SURPRISEBOT,
       },
     };
     let sentinelPath: string | null = null;
@@ -352,7 +352,7 @@ export const configHandlers: GatewayRequestHandlers = {
       true,
       {
         ok: true,
-        path: CONFIG_PATH_CLAWDBOT,
+        path: CONFIG_PATH_SURPRISEBOT,
         config: validated.config,
         restart,
         sentinel: {

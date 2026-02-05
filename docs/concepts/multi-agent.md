@@ -15,12 +15,12 @@ An **agent** is a fully scoped brain with its own:
 
 - **Workspace** (files, AGENTS.md/SOUL.md/USER.md, local notes, persona rules).
 - **State directory** (`agentDir`) for auth profiles, model registry, and per-agent config.
-- **Session store** (chat history + routing state) under `~/.clawdbot/agents/<agentId>/sessions`.
+- **Session store** (chat history + routing state) under `~/.surprisebot/agents/<agentId>/sessions`.
 
 Auth profiles are **per-agent**. Each agent reads from its own:
 
 ```
-~/.clawdbot/agents/<agentId>/agent/auth-profiles.json
+~/.surprisebot/agents/<agentId>/agent/auth-profiles.json
 ```
 
 Main agent credentials are **not** shared automatically. Never reuse `agentDir`
@@ -28,7 +28,7 @@ across agents (it causes auth/session collisions). If you want to share creds,
 copy `auth-profiles.json` into the other agent's `agentDir`.
 
 Skills are per-agent via each workspace’s `skills/` folder, with shared skills
-available from `~/.clawdbot/skills`. See [Skills: per-agent vs shared](/tools/skills#per-agent-vs-shared-skills).
+available from `~/.surprisebot/skills`. See [Skills: per-agent vs shared](/tools/skills#per-agent-vs-shared-skills).
 
 The Gateway can host **one agent** (default) or **many agents** side-by-side.
 
@@ -39,27 +39,27 @@ reach other host locations unless sandboxing is enabled. See
 
 ## Paths (quick map)
 
-- Config: `~/.clawdbot/clawdbot.json` (or `CLAWDBOT_CONFIG_PATH`)
-- State dir: `~/.clawdbot` (or `CLAWDBOT_STATE_DIR`)
-- Workspace: `~/clawd` (or `~/clawd-<agentId>`)
-- Agent dir: `~/.clawdbot/agents/<agentId>/agent` (or `agents.list[].agentDir`)
-- Sessions: `~/.clawdbot/agents/<agentId>/sessions`
+- Config: `~/.surprisebot/surprisebot.json` (or `SURPRISEBOT_CONFIG_PATH`)
+- State dir: `~/.surprisebot` (or `SURPRISEBOT_STATE_DIR`)
+- Workspace: `~/surprisebot` (or `~/surprisebot-<agentId>`)
+- Agent dir: `~/.surprisebot/agents/<agentId>/agent` (or `agents.list[].agentDir`)
+- Sessions: `~/.surprisebot/agents/<agentId>/sessions`
 
 ### Single-agent mode (default)
 
-If you do nothing, Clawdbot runs a single agent:
+If you do nothing, Surprisebot runs a single agent:
 
 - `agentId` defaults to **`main`**.
 - Sessions are keyed as `agent:main:<mainKey>`.
-- Workspace defaults to `~/clawd` (or `~/clawd-<profile>` when `CLAWDBOT_PROFILE` is set).
-- State defaults to `~/.clawdbot/agents/main/agent`.
+- Workspace defaults to `~/surprisebot` (or `~/surprisebot-<profile>` when `SURPRISEBOT_PROFILE` is set).
+- State defaults to `~/.surprisebot/agents/main/agent`.
 
 ## Agent helper
 
 Use the agent wizard to add a new isolated agent:
 
 ```bash
-clawdbot agents add work
+surprisebot agents add work
 ```
 
 Then add `bindings` (or let the wizard do it) to route inbound messages.
@@ -67,7 +67,7 @@ Then add `bindings` (or let the wizard do it) to route inbound messages.
 Verify with:
 
 ```bash
-clawdbot agents list --bindings
+surprisebot agents list --bindings
 ```
 
 ## Multiple agents = multiple people, multiple personalities
@@ -92,8 +92,8 @@ Example:
 {
   agents: {
     list: [
-      { id: "alex", workspace: "~/clawd-alex" },
-      { id: "mia", workspace: "~/clawd-mia" }
+      { id: "alex", workspace: "~/surprisebot-alex" },
+      { id: "mia", workspace: "~/surprisebot-mia" }
     ]
   },
   bindings: [
@@ -139,7 +139,7 @@ multiple phone numbers without mixing sessions.
 
 ## Example: two WhatsApps → two agents
 
-`~/.clawdbot/clawdbot.json` (JSON5):
+`~/.surprisebot/surprisebot.json` (JSON5):
 
 ```js
 {
@@ -149,14 +149,14 @@ multiple phone numbers without mixing sessions.
         id: "home",
         default: true,
         name: "Home",
-        workspace: "~/clawd-home",
-        agentDir: "~/.clawdbot/agents/home/agent",
+        workspace: "~/surprisebot-home",
+        agentDir: "~/.surprisebot/agents/home/agent",
       },
       {
         id: "work",
         name: "Work",
-        workspace: "~/clawd-work",
-        agentDir: "~/.clawdbot/agents/work/agent",
+        workspace: "~/surprisebot-work",
+        agentDir: "~/.surprisebot/agents/work/agent",
       },
     ],
   },
@@ -189,12 +189,12 @@ multiple phone numbers without mixing sessions.
     whatsapp: {
       accounts: {
         personal: {
-          // Optional override. Default: ~/.clawdbot/credentials/whatsapp/personal
-          // authDir: "~/.clawdbot/credentials/whatsapp/personal",
+          // Optional override. Default: ~/.surprisebot/credentials/whatsapp/personal
+          // authDir: "~/.surprisebot/credentials/whatsapp/personal",
         },
         biz: {
-          // Optional override. Default: ~/.clawdbot/credentials/whatsapp/biz
-          // authDir: "~/.clawdbot/credentials/whatsapp/biz",
+          // Optional override. Default: ~/.surprisebot/credentials/whatsapp/biz
+          // authDir: "~/.surprisebot/credentials/whatsapp/biz",
         },
       },
     },
@@ -213,13 +213,13 @@ Split by channel: route WhatsApp to a fast everyday agent and Telegram to an Opu
       {
         id: "chat",
         name: "Everyday",
-        workspace: "~/clawd-chat",
+        workspace: "~/surprisebot-chat",
         model: "anthropic/claude-sonnet-4-5"
       },
       {
         id: "opus",
         name: "Deep Work",
-        workspace: "~/clawd-opus",
+        workspace: "~/surprisebot-opus",
         model: "anthropic/claude-opus-4-5"
       }
     ]
@@ -243,8 +243,8 @@ Keep WhatsApp on the fast agent, but route one DM to Opus:
 {
   agents: {
     list: [
-      { id: "chat", name: "Everyday", workspace: "~/clawd-chat", model: "anthropic/claude-sonnet-4-5" },
-      { id: "opus", name: "Deep Work", workspace: "~/clawd-opus", model: "anthropic/claude-opus-4-5" }
+      { id: "chat", name: "Everyday", workspace: "~/surprisebot-chat", model: "anthropic/claude-sonnet-4-5" },
+      { id: "opus", name: "Deep Work", workspace: "~/surprisebot-opus", model: "anthropic/claude-opus-4-5" }
     ]
   },
   bindings: [
@@ -266,7 +266,7 @@ Starting with v2026.1.6, each agent can have its own sandbox and tool restrictio
     list: [
       {
         id: "personal",
-        workspace: "~/clawd-personal",
+        workspace: "~/surprisebot-personal",
         sandbox: {
           mode: "off",  // No sandbox for personal agent
         },
@@ -274,7 +274,7 @@ Starting with v2026.1.6, each agent can have its own sandbox and tool restrictio
       },
       {
         id: "family",
-        workspace: "~/clawd-family",
+        workspace: "~/surprisebot-family",
         sandbox: {
           mode: "all",     // Always sandboxed
           scope: "agent",  // One container per agent

@@ -21,7 +21,7 @@ export async function runDaemonUninstall() {
 
 export async function runDaemonStart() {
   const service = resolveGatewayService();
-  const profile = process.env.CLAWDBOT_PROFILE;
+  const profile = process.env.SURPRISEBOT_PROFILE;
   let loaded = false;
   try {
     loaded = await service.isLoaded({ profile });
@@ -50,7 +50,7 @@ export async function runDaemonStart() {
 
 export async function runDaemonStop() {
   const service = resolveGatewayService();
-  const profile = process.env.CLAWDBOT_PROFILE;
+  const profile = process.env.SURPRISEBOT_PROFILE;
   let loaded = false;
   try {
     loaded = await service.isLoaded({ profile });
@@ -78,7 +78,7 @@ export async function runDaemonStop() {
  */
 export async function runDaemonRestart(): Promise<boolean> {
   const service = resolveGatewayService();
-  const profile = process.env.CLAWDBOT_PROFILE;
+  const profile = process.env.SURPRISEBOT_PROFILE;
   let loaded = false;
   try {
     loaded = await service.isLoaded({ profile });

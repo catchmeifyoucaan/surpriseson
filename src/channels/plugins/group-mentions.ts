@@ -1,10 +1,10 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { resolveChannelGroupRequireMention } from "../../config/group-policy.js";
 import type { DiscordConfig } from "../../config/types.js";
 import { resolveSlackAccount } from "../../slack/accounts.js";
 
 type GroupMentionParams = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   groupId?: string | null;
   groupRoom?: string | null;
   groupSpace?: string | null;
@@ -49,7 +49,7 @@ function parseTelegramGroupId(value?: string | null) {
 }
 
 function resolveTelegramRequireMention(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   chatId?: string;
   topicId?: string;
 }): boolean | undefined {

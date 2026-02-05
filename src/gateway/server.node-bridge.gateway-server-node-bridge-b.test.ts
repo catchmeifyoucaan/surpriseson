@@ -42,7 +42,7 @@ installGatewayTestHooks();
 
 describe("gateway server node/bridge", () => {
   test("node.list includes connected unpaired nodes with capabilities + commands", async () => {
-    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-home-"));
+    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-home-"));
     const prevHome = process.env.HOME;
     process.env.HOME = homeDir;
 
@@ -146,7 +146,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("emits presence updates for bridge connect/disconnect", async () => {
-    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-home-"));
+    const homeDir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-home-"));
     const prevHome = process.env.HOME;
     process.env.HOME = homeDir;
     try {
@@ -215,7 +215,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge RPC chat.history returns session messages", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -272,7 +272,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge RPC sessions.list returns session rows", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -329,7 +329,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge chat events are pushed to subscribed nodes", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,
@@ -406,7 +406,7 @@ describe("gateway server node/bridge", () => {
   });
 
   test("bridge chat.send forwards image attachments to agentCommand", async () => {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-gw-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-gw-"));
     testState.sessionStorePath = path.join(dir, "sessions.json");
     await fs.writeFile(
       testState.sessionStorePath,

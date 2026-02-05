@@ -1,4 +1,5 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { ResolvedMemorySearchConfig } from "../agents/memory-search.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { MemoryIndexManager } from "./manager.js";
 
 export type MemorySearchManagerResult = {
@@ -7,8 +8,9 @@ export type MemorySearchManagerResult = {
 };
 
 export async function getMemorySearchManager(params: {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   agentId: string;
+  syncOverrides?: Partial<ResolvedMemorySearchConfig["sync"]>;
 }): Promise<MemorySearchManagerResult> {
   try {
     const manager = await MemoryIndexManager.get(params);

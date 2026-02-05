@@ -3,17 +3,17 @@ import path from "node:path";
 
 import { Logger as TsLogger } from "tslog";
 
-import { type ClawdbotConfig, loadConfig } from "../config/config.js";
+import { type SurprisebotConfig, loadConfig } from "../config/config.js";
 import type { ConsoleStyle } from "./console.js";
 import { type LogLevel, levelToMinLevel, normalizeLogLevel } from "./levels.js";
 import { loggingState } from "./state.js";
 
 // Pin to /tmp so mac Debug UI and docs match; os.tmpdir() can be a per-user
 // randomized path on macOS which made the “Open log” button a no-op.
-export const DEFAULT_LOG_DIR = "/tmp/clawdbot";
-export const DEFAULT_LOG_FILE = path.join(DEFAULT_LOG_DIR, "clawdbot.log"); // legacy single-file path
+export const DEFAULT_LOG_DIR = "/tmp/surprisebot";
+export const DEFAULT_LOG_FILE = path.join(DEFAULT_LOG_DIR, "surprisebot.log"); // legacy single-file path
 
-const LOG_PREFIX = "clawdbot";
+const LOG_PREFIX = "surprisebot";
 const LOG_SUFFIX = ".log";
 const MAX_LOG_AGE_MS = 24 * 60 * 60 * 1000; // 24h
 
@@ -33,7 +33,7 @@ type ResolvedSettings = {
 export type LoggerResolvedSettings = ResolvedSettings;
 
 function resolveSettings(): ResolvedSettings {
-  const cfg: ClawdbotConfig["logging"] | undefined =
+  const cfg: SurprisebotConfig["logging"] | undefined =
     (loggingState.overrideSettings as LoggerSettings | null) ?? loadConfig().logging;
   const level = normalizeLogLevel(cfg?.level, "info");
   const file = cfg?.file ?? defaultRollingPathForToday();
@@ -59,7 +59,7 @@ function buildLogger(settings: ResolvedSettings): TsLogger<LogObj> {
     pruneOldRollingLogs(path.dirname(settings.file));
   }
   const logger = new TsLogger<LogObj>({
-    name: "clawdbot",
+    name: "surprisebot",
     minLevel: levelToMinLevel(settings.level),
     type: "hidden", // no ansi formatting
   });

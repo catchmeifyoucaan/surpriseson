@@ -1,6 +1,6 @@
 import { getChannelPlugin, normalizeChannelId } from "../../channels/plugins/index.js";
 import type { ChannelId } from "../../channels/plugins/types.js";
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { loadConfig } from "../../config/config.js";
 import { callGateway, randomIdempotencyKey } from "../../gateway/call.js";
 import type { PollInput } from "../../polls.js";
@@ -39,7 +39,7 @@ type MessageSendParams = {
   dryRun?: boolean;
   bestEffort?: boolean;
   deps?: OutboundSendDeps;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   gateway?: MessageGatewayOptions;
   idempotencyKey?: string;
 };
@@ -61,7 +61,7 @@ type MessagePollParams = {
   durationHours?: number;
   channel?: string;
   dryRun?: boolean;
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   gateway?: MessageGatewayOptions;
   idempotencyKey?: string;
 };

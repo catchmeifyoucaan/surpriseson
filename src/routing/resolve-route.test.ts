@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { resolveAgentRoute } from "./resolve-route.js";
 
 describe("resolveAgentRoute", () => {
   test("defaults to main/default when no bindings exist", () => {
-    const cfg: ClawdbotConfig = {};
+    const cfg: SurprisebotConfig = {};
     const route = resolveAgentRoute({
       cfg,
       channel: "whatsapp",
@@ -19,7 +19,7 @@ describe("resolveAgentRoute", () => {
   });
 
   test("peer binding wins over account binding", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       bindings: [
         {
           agentId: "a",
@@ -47,7 +47,7 @@ describe("resolveAgentRoute", () => {
   });
 
   test("discord channel peer binding wins over guild binding", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       bindings: [
         {
           agentId: "chan",
@@ -80,7 +80,7 @@ describe("resolveAgentRoute", () => {
   });
 
   test("guild binding wins over account binding when peer not bound", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       bindings: [
         {
           agentId: "guild",
@@ -108,7 +108,7 @@ describe("resolveAgentRoute", () => {
   });
 
   test("missing accountId in binding matches default account only", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       bindings: [{ agentId: "defaultAcct", match: { channel: "whatsapp" } }],
     };
 
@@ -131,7 +131,7 @@ describe("resolveAgentRoute", () => {
   });
 
   test("accountId=* matches any account as a channel fallback", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       bindings: [
         {
           agentId: "any",
@@ -150,9 +150,9 @@ describe("resolveAgentRoute", () => {
   });
 
   test("defaultAgentId is used when no binding matches", () => {
-    const cfg: ClawdbotConfig = {
+    const cfg: SurprisebotConfig = {
       agents: {
-        list: [{ id: "home", default: true, workspace: "~/clawd-home" }],
+        list: [{ id: "home", default: true, workspace: "~/surprisebot-home" }],
       },
     };
     const route = resolveAgentRoute({

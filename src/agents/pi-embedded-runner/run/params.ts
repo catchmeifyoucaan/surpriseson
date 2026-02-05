@@ -1,9 +1,10 @@
 import type { ImageContent } from "@mariozechner/pi-ai";
 import type { ReasoningLevel, ThinkLevel, VerboseLevel } from "../../../auto-reply/thinking.js";
-import type { ClawdbotConfig } from "../../../config/config.js";
+import type { SurprisebotConfig } from "../../../config/config.js";
 import type { enqueueCommand } from "../../../process/command-queue.js";
 import type { ExecElevatedDefaults } from "../../bash-tools.js";
 import type { BlockReplyChunking } from "../../pi-embedded-subscribe.js";
+import type { ToolResultPolicy } from "../../pi-embedded-subscribe.types.js";
 import type { SkillSnapshot } from "../../skills.js";
 
 export type RunEmbeddedPiAgentParams = {
@@ -23,7 +24,7 @@ export type RunEmbeddedPiAgentParams = {
   sessionFile: string;
   workspaceDir: string;
   agentDir?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   skillsSnapshot?: SkillSnapshot;
   prompt: string;
   images?: ImageContent[];
@@ -37,6 +38,7 @@ export type RunEmbeddedPiAgentParams = {
   timeoutMs: number;
   runId: string;
   abortSignal?: AbortSignal;
+  toolResultPolicy?: ToolResultPolicy;
   shouldEmitToolResult?: () => boolean;
   onPartialReply?: (payload: { text?: string; mediaUrls?: string[] }) => void | Promise<void>;
   onAssistantMessageStart?: () => void | Promise<void>;

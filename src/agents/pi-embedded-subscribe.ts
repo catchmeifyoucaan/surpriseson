@@ -32,6 +32,12 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     toolMetas: [],
     toolMetaById: new Map(),
     toolSummaryById: new Set(),
+    toolCallsStarted: 0,
+    toolCallsEnded: 0,
+    toolHeartbeatMs: params.toolResultPolicy?.heartbeatMs,
+    toolTimeoutMs: params.toolResultPolicy?.timeoutMs,
+    toolHeartbeats: new Map(),
+    toolTimeouts: new Map(),
     blockReplyBreak: params.blockReplyBreak ?? "text_end",
     reasoningMode,
     includeReasoning: reasoningMode === "on",
@@ -348,6 +354,10 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     toolMetas.length = 0;
     toolMetaById.clear();
     toolSummaryById.clear();
+    state.toolCallsStarted = 0;
+    state.toolCallsEnded = 0;
+    state.toolTimeouts.forEach((timer) => clearTimeout(timer));
+    state.toolTimeouts.clear();
     messagingToolSentTexts.length = 0;
     messagingToolSentTextsNormalized.length = 0;
     messagingToolSentTargets.length = 0;
@@ -385,6 +395,20 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     toolMetas,
     unsubscribe,
     isCompacting: () => state.compactionInFlight || state.pendingCompactionRetry > 0,
+    getPendingToolCalls: () =>
+      Array.from(toolMetaById.entries()).map(([id, entry]) => ({
+        id,
+        name: entry.name,
+        meta: entry.meta,
+        startedAt: entry.startedAt,
+        timedOut: entry.timedOut,
+      })),
+    getToolCallCounts: () => ({
+      started: state.toolCallsStarted,
+      ended: state.toolCallsEnded,
+      pending: toolMetaById.size,
+      timedOut: Array.from(toolMetaById.values()).filter((entry) => entry.timedOut).length,
+    }),
     getMessagingToolSentTexts: () => messagingToolSentTexts.slice(),
     getMessagingToolSentTargets: () => messagingToolSentTargets.slice(),
     // Returns true if any messaging tool successfully sent a message.

@@ -54,7 +54,7 @@ export function buildAgentSystemPrompt(params: {
     ls: "List directory contents",
     exec: "Run shell commands",
     process: "Manage background exec sessions",
-    web_search: "Search the web (Brave API)",
+    web_search: "Search the web (Brave/Serper/SerpAPI/Hybrid)",
     web_fetch: "Fetch and extract readable content from a URL",
     // Channel docking: add login tools here when a channel needs interactive linking.
     browser: "Control web browser",
@@ -62,7 +62,7 @@ export function buildAgentSystemPrompt(params: {
     nodes: "List/describe/notify/camera/screen on paired nodes",
     cron: "Manage cron jobs and wake events (use for reminders)",
     message: "Send messages and channel actions",
-    gateway: "Restart, apply config, or run updates on the running Clawdbot process",
+    gateway: "Restart, apply config, or run updates on the running Surprisebot process",
     agents_list: "List agent ids allowed for sessions_spawn",
     sessions_list: "List other sessions (incl. sub-agents) with filters/last",
     sessions_history: "Fetch history for another session/sub-agent",
@@ -181,17 +181,26 @@ export function buildAgentSystemPrompt(params: {
         "",
       ]
     : [];
-  const memorySection =
-    availableTools.has("memory_search") || availableTools.has("memory_get")
-      ? [
-          "## Memory Recall",
-          "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md; then use memory_get to pull only the needed lines. If low confidence after search, say you checked.",
-          "",
-        ]
-      : [];
+  const hasMemorySearch = availableTools.has("memory_search") || availableTools.has("memory_get");
+  const hasMemoryGraph =
+    availableTools.has("memory_graph_query") || availableTools.has("memory_rag_query");
+  const memorySection = hasMemorySearch
+    ? [
+        "## Memory Recall",
+        "Before answering anything about prior work, decisions, dates, people, preferences, or todos: run memory_search on MEMORY.md + memory/*.md; then use memory_get to pull only the needed lines. If low confidence after search, say you checked.",
+        ...(hasMemoryGraph
+          ? [
+              "If relationship or drift context matters, follow with memory_graph_query (or memory_rag_query for combined snippets + graph context).",
+            ]
+          : []),
+        "",
+      ]
+    : [];
 
   const lines = [
-    "You are a personal assistant running inside Clawdbot.",
+    "You are Surprisebot 🧠⚡, the personal assistant running inside Surprisebot.",
+    "Always identify yourself as Surprisebot. Never identify as the base model/vendor (e.g., Codex/Claude/Gemini).",
+    "Use the identity defined in IDENTITY.md and SOUL.md to shape your voice and persona.",
     "",
     "## Tooling",
     "Tool availability (filtered by policy):",
@@ -206,7 +215,7 @@ export function buildAgentSystemPrompt(params: {
           "- apply_patch: apply multi-file patches",
           `- ${execToolName}: run shell commands (supports background via yieldMs/background)`,
           `- ${processToolName}: manage background exec sessions`,
-          "- browser: control clawd's dedicated browser",
+          "- browser: control surprisebot's dedicated browser",
           "- canvas: present/eval/snapshot the Canvas",
           "- nodes: list/describe/notify/camera/screen on paired nodes",
           "- cron: manage cron jobs and wake events (use for reminders)",
@@ -214,18 +223,23 @@ export function buildAgentSystemPrompt(params: {
           "- sessions_history: fetch session history",
           "- sessions_send: send to another session",
         ].join("\n"),
+    "## Tool Guarantees",
+    "- Never claim command output, file contents, or system state without a tool result.",
+    "- If a tool is unavailable or disabled, say so and do not claim results.",
+    "- If a tool call fails or times out, report it and stop instead of guessing.",
+    "If a tool description says it is unavailable or disabled, treat it as unavailable and do not call it.",
     "TOOLS.md does not control tool availability; it is user guidance for how to use external tools.",
     "If a task is more complex or takes longer, spawn a sub-agent. It will do the work for you and ping you when it's done. You can always check up on it.",
     "",
     ...skillsSection,
     ...memorySection,
-    hasGateway ? "## Clawdbot Self-Update" : "",
+    hasGateway ? "## Surprisebot Self-Update" : "",
     hasGateway
       ? [
           "Get Updates (self-update) is ONLY allowed when the user explicitly asks for it.",
           "Do not run config.apply or update.run unless the user explicitly requests an update or config change; if it's not explicit, ask first.",
           "Actions: config.get, config.schema, config.apply (validate + write full config, then restart), update.run (update deps or git, then restart).",
-          "After restart, Clawdbot pings the last active session automatically.",
+          "After restart, Surprisebot pings the last active session automatically.",
         ].join("\n")
       : "",
     hasGateway ? "" : "",
@@ -299,7 +313,7 @@ export function buildAgentSystemPrompt(params: {
     ownerLine ?? "",
     ownerLine ? "" : "",
     "## Workspace Files (injected)",
-    "These user-editable files are loaded by Clawdbot and included below in Project Context.",
+    "These user-editable files are loaded by Surprisebot and included below in Project Context.",
     "",
     userTimezone || userTime
       ? `Time: assume UTC unless stated. User time zone: ${
@@ -319,7 +333,7 @@ export function buildAgentSystemPrompt(params: {
     "## Messaging",
     "- Reply in current session → automatically routes to the source channel (Signal, Telegram, etc.)",
     "- Cross-session messaging → use sessions_send(sessionKey, message)",
-    "- Never use exec/curl for provider messaging; Clawdbot handles all routing internally.",
+    "- Never use exec/curl for provider messaging; Surprisebot handles all routing internally.",
     availableTools.has("message")
       ? [
           "",
@@ -376,7 +390,7 @@ export function buildAgentSystemPrompt(params: {
     heartbeatPromptLine,
     "If you receive a heartbeat poll (a user message matching the heartbeat prompt above), and there is nothing that needs attention, reply exactly:",
     "HEARTBEAT_OK",
-    'Clawdbot treats a leading/trailing "HEARTBEAT_OK" as a heartbeat ack (and may discard it).',
+    'Surprisebot treats a leading/trailing "HEARTBEAT_OK" as a heartbeat ack (and may discard it).',
     'If something needs attention, do NOT include "HEARTBEAT_OK"; reply with the alert text instead.',
     "",
     "## Runtime",

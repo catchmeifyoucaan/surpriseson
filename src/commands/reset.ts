@@ -38,7 +38,7 @@ const selectStyled = <T>(params: Parameters<typeof select<T>>[0]) =>
 async function stopGatewayIfRunning(runtime: RuntimeEnv) {
   if (isNixMode) return;
   const service = resolveGatewayService();
-  const profile = process.env.CLAWDBOT_PROFILE;
+  const profile = process.env.SURPRISEBOT_PROFILE;
   let loaded = false;
   try {
     loaded = await service.isLoaded({ profile });
@@ -75,7 +75,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
         {
           value: "config",
           label: "Config only",
-          hint: "clawdbot.json",
+          hint: "surprisebot.json",
         },
         {
           value: "config+creds+sessions",
@@ -144,7 +144,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
     for (const dir of sessionDirs) {
       await removePath(dir, runtime, { dryRun, label: dir });
     }
-    runtime.log("Next: clawdbot onboard --install-daemon");
+    runtime.log("Next: surprisebot onboard --install-daemon");
     return;
   }
 
@@ -159,7 +159,7 @@ export async function resetCommand(runtime: RuntimeEnv, opts: ResetOptions) {
     for (const workspace of workspaceDirs) {
       await removePath(workspace, runtime, { dryRun, label: workspace });
     }
-    runtime.log("Next: clawdbot onboard --install-daemon");
+    runtime.log("Next: surprisebot onboard --install-daemon");
     return;
   }
 }

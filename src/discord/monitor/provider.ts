@@ -8,7 +8,7 @@ import {
   isNativeCommandsExplicitlyDisabled,
   resolveNativeCommandsEnabled,
 } from "../../config/commands.js";
-import type { ClawdbotConfig, ReplyToMode } from "../../config/config.js";
+import type { SurprisebotConfig, ReplyToMode } from "../../config/config.js";
 import { loadConfig } from "../../config/config.js";
 import { danger, logVerbose, shouldLogVerbose } from "../../globals.js";
 import { getChildLogger } from "../../logging.js";
@@ -30,7 +30,7 @@ import { createDiscordNativeCommand } from "./native-command.js";
 export type MonitorDiscordOpts = {
   token?: string;
   accountId?: string;
-  config?: ClawdbotConfig;
+  config?: SurprisebotConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   mediaMaxMb?: number;

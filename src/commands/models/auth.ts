@@ -9,7 +9,7 @@ import {
 } from "../../agents/auth-profiles.js";
 import { normalizeProviderId } from "../../agents/model-selection.js";
 import { parseDurationMs } from "../../cli/parse-duration.js";
-import { CONFIG_PATH_CLAWDBOT } from "../../config/config.js";
+import { CONFIG_PATH_SURPRISEBOT } from "../../config/config.js";
 import type { RuntimeEnv } from "../../runtime.js";
 import { stylePromptHint, stylePromptMessage } from "../../terminal/prompt-style.js";
 import { applyAuthProfileConfig } from "../onboard-auth.js";
@@ -95,7 +95,7 @@ export async function modelsAuthSetupTokenCommand(
     }),
   );
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Auth profile: ${CLAUDE_CLI_PROFILE_ID} (anthropic/oauth)`);
 }
 
@@ -137,7 +137,7 @@ export async function modelsAuthPasteTokenCommand(
 
   await updateConfig((cfg) => applyAuthProfileConfig(cfg, { profileId, provider, mode: "token" }));
 
-  runtime.log(`Updated ${CONFIG_PATH_CLAWDBOT}`);
+  runtime.log(`Updated ${CONFIG_PATH_SURPRISEBOT}`);
   runtime.log(`Auth profile: ${profileId} (${provider}/token)`);
 }
 

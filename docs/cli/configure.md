@@ -1,10 +1,10 @@
 ---
-summary: "CLI reference for `clawdbot configure` / `clawdbot config` (interactive configuration prompts)"
+summary: "CLI reference for `surprisebot configure` / `surprisebot config` (interactive configuration prompts)"
 read_when:
   - You want to tweak credentials, devices, or agent defaults interactively
 ---
 
-# `clawdbot configure` (alias: `config`)
+# `surprisebot configure` (alias: `config`)
 
 Interactive prompt to set up credentials, devices, and agent defaults.
 
@@ -14,7 +14,7 @@ Related:
 ## Examples
 
 ```bash
-clawdbot configure
-clawdbot configure --section models --section channels
+surprisebot configure
+surprisebot configure --section models --section channels
 ```
 

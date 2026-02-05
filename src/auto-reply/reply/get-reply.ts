@@ -6,7 +6,8 @@ import {
 import { resolveModelRefFromString } from "../../agents/model-selection.js";
 import { resolveAgentTimeoutMs } from "../../agents/timeout.js";
 import { DEFAULT_AGENT_WORKSPACE_DIR, ensureAgentWorkspace } from "../../agents/workspace.js";
-import { type ClawdbotConfig, loadConfig } from "../../config/config.js";
+import { ensureSharedMemoryForWorkspace } from "../../agents/shared-memory.js";
+import { type SurprisebotConfig, loadConfig } from "../../config/config.js";
 import { logVerbose } from "../../globals.js";
 import { defaultRuntime } from "../../runtime.js";
 import { resolveCommandAuthorization } from "../command-auth.js";
@@ -25,7 +26,7 @@ import { createTypingController } from "./typing.js";
 export async function getReplyFromConfig(
   ctx: MsgContext,
   opts?: GetReplyOptions,
-  configOverride?: ClawdbotConfig,
+  configOverride?: SurprisebotConfig,
 ): Promise<ReplyPayload | ReplyPayload[] | undefined> {
   const cfg = configOverride ?? loadConfig();
   const agentId = resolveSessionAgentId({
@@ -61,6 +62,12 @@ export async function getReplyFromConfig(
     ensureBootstrapFiles: !agentCfg?.skipBootstrap,
   });
   const workspaceDir = workspace.dir;
+  try {
+    await ensureSharedMemoryForWorkspace({ cfg, agentId, workspaceDir });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logVerbose(`Shared memory init failed: ${message}`);
+  }
   const agentDir = resolveAgentDir(cfg, agentId);
   const timeoutMs = resolveAgentTimeoutMs({ cfg });
   const configuredTypingSeconds =

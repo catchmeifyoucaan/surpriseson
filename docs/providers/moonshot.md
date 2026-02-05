@@ -1,7 +1,7 @@
 ---
-summary: "Use Moonshot AI (Kimi K2) with Clawdbot"
+summary: "Use Moonshot AI (Kimi K2) with Surprisebot"
 read_when:
-  - You want to use Moonshot/Kimi models in Clawdbot
+  - You want to use Moonshot/Kimi models in Surprisebot
   - You need the Moonshot auth + config example
 ---
 # Moonshot AI (Kimi)
@@ -18,7 +18,7 @@ Current Kimi K2 model IDs:
 {/* moonshot-kimi-k2-ids:end */}
 
 ```bash
-clawdbot onboard --auth-choice moonshot-api-key
+surprisebot onboard --auth-choice moonshot-api-key
 ```
 
 ## Config snippet

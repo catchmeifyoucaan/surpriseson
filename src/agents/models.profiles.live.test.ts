@@ -3,7 +3,7 @@ import { discoverAuthStorage, discoverModels } from "@mariozechner/pi-coding-age
 import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
 import { loadConfig } from "../config/config.js";
-import { resolveClawdbotAgentDir } from "./agent-paths.js";
+import { resolveSurprisebotAgentDir } from "./agent-paths.js";
 import {
   collectAnthropicApiKeys,
   isAnthropicBillingError,
@@ -11,12 +11,12 @@ import {
 } from "./live-auth-keys.js";
 import { isModernModelRef } from "./live-model-filter.js";
 import { getApiKeyForModel } from "./model-auth.js";
-import { ensureClawdbotModelsJson } from "./models-config.js";
+import { ensureSurprisebotModelsJson } from "./models-config.js";
 import { isRateLimitErrorMessage } from "./pi-embedded-helpers/errors.js";
 
-const LIVE = process.env.LIVE === "1" || process.env.CLAWDBOT_LIVE_TEST === "1";
-const DIRECT_ENABLED = Boolean(process.env.CLAWDBOT_LIVE_MODELS?.trim());
-const REQUIRE_PROFILE_KEYS = process.env.CLAWDBOT_LIVE_REQUIRE_PROFILE_KEYS === "1";
+const LIVE = process.env.LIVE === "1" || process.env.SURPRISEBOT_LIVE_TEST === "1";
+const DIRECT_ENABLED = Boolean(process.env.SURPRISEBOT_LIVE_MODELS?.trim());
+const REQUIRE_PROFILE_KEYS = process.env.SURPRISEBOT_LIVE_REQUIRE_PROFILE_KEYS === "1";
 
 const describeLive = LIVE ? describe : describe.skip;
 
@@ -141,10 +141,10 @@ describeLive("live models (profile keys)", () => {
     "completes across selected models",
     async () => {
       const cfg = loadConfig();
-      await ensureClawdbotModelsJson(cfg);
+      await ensureSurprisebotModelsJson(cfg);
       if (!DIRECT_ENABLED) {
         logProgress(
-          "[live-models] skipping (set CLAWDBOT_LIVE_MODELS=modern|all|<list>; all=modern)",
+          "[live-models] skipping (set SURPRISEBOT_LIVE_MODELS=modern|all|<list>; all=modern)",
         );
         return;
       }
@@ -154,18 +154,18 @@ describeLive("live models (profile keys)", () => {
         logProgress(`[live-models] anthropic keys loaded: ${anthropicKeys.length}`);
       }
 
-      const agentDir = resolveClawdbotAgentDir();
+      const agentDir = resolveSurprisebotAgentDir();
       const authStorage = discoverAuthStorage(agentDir);
       const modelRegistry = discoverModels(authStorage, agentDir);
       const models = modelRegistry.getAll() as Array<Model<Api>>;
 
-      const rawModels = process.env.CLAWDBOT_LIVE_MODELS?.trim();
+      const rawModels = process.env.SURPRISEBOT_LIVE_MODELS?.trim();
       const useModern = rawModels === "modern" || rawModels === "all";
       const useExplicit = Boolean(rawModels) && !useModern;
       const filter = useExplicit ? parseModelFilter(rawModels) : null;
       const allowNotFoundSkip = useModern;
-      const providers = parseProviderFilter(process.env.CLAWDBOT_LIVE_PROVIDERS);
-      const perModelTimeoutMs = toInt(process.env.CLAWDBOT_LIVE_MODEL_TIMEOUT_MS, 30_000);
+      const providers = parseProviderFilter(process.env.SURPRISEBOT_LIVE_PROVIDERS);
+      const perModelTimeoutMs = toInt(process.env.SURPRISEBOT_LIVE_MODEL_TIMEOUT_MS, 30_000);
 
       const failures: Array<{ model: string; error: string }> = [];
       const skipped: Array<{ model: string; reason: string }> = [];

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 
 export {
   hasBinary,
@@ -14,7 +14,7 @@ export {
   applySkillEnvOverridesFromSnapshot,
 } from "./skills/env-overrides.js";
 export type {
-  ClawdbotSkillMetadata,
+  SurprisebotSkillMetadata,
   SkillEntry,
   SkillInstallSpec,
   SkillSnapshot,
@@ -29,7 +29,7 @@ export {
   syncSkillsToWorkspace,
 } from "./skills/workspace.js";
 
-export function resolveSkillsInstallPreferences(config?: ClawdbotConfig) {
+export function resolveSkillsInstallPreferences(config?: SurprisebotConfig) {
   const raw = config?.skills?.install;
   const preferBrew = raw?.preferBrew ?? true;
   const managerRaw = typeof raw?.nodeManager === "string" ? raw.nodeManager.trim() : "";

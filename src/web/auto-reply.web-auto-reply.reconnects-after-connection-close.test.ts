@@ -46,7 +46,7 @@ const rmDirWithRetries = async (dir: string): Promise<void> => {
 beforeEach(async () => {
   resetInboundDedupe();
   previousHome = process.env.HOME;
-  tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-web-home-"));
+  tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-web-home-"));
   process.env.HOME = tempHome;
 });
 
@@ -61,7 +61,7 @@ afterEach(async () => {
 const makeSessionStore = async (
   entries: Record<string, unknown> = {},
 ): Promise<{ storePath: string; cleanup: () => Promise<void> }> => {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "clawdbot-session-"));
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "surprisebot-session-"));
   const storePath = path.join(dir, "sessions.json");
   await fs.writeFile(storePath, JSON.stringify(entries));
   const cleanup = async () => {
@@ -328,9 +328,9 @@ describe("web auto-reply", () => {
       expect(resolver).toHaveBeenCalledTimes(2);
       const firstArgs = resolver.mock.calls[0][0];
       const secondArgs = resolver.mock.calls[1][0];
-      expect(firstArgs.Body).toContain("[WhatsApp +1 2025-01-01T00:00Z] [clawdbot] first");
+      expect(firstArgs.Body).toContain("[WhatsApp +1 2025-01-01T00:00Z] [surprisebot] first");
       expect(firstArgs.Body).not.toContain("second");
-      expect(secondArgs.Body).toContain("[WhatsApp +1 2025-01-01T01:00Z] [clawdbot] second");
+      expect(secondArgs.Body).toContain("[WhatsApp +1 2025-01-01T01:00Z] [surprisebot] second");
       expect(secondArgs.Body).not.toContain("first");
 
       // Max listeners bumped to avoid warnings in multi-instance test runs

@@ -1,5 +1,5 @@
 import { resolveDefaultAgentId } from "../agents/agent-scope.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import {
   buildAgentMainSessionKey,
   buildAgentPeerSessionKey,
@@ -16,7 +16,7 @@ export type RoutePeer = {
 };
 
 export type ResolveAgentRouteInput = {
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   channel: string;
   accountId?: string | null;
   peer?: RoutePeer | null;
@@ -80,17 +80,17 @@ export function buildAgentSessionKey(params: {
   });
 }
 
-function listBindings(cfg: ClawdbotConfig) {
+function listBindings(cfg: SurprisebotConfig) {
   const bindings = cfg.bindings;
   return Array.isArray(bindings) ? bindings : [];
 }
 
-function listAgents(cfg: ClawdbotConfig) {
+function listAgents(cfg: SurprisebotConfig) {
   const agents = cfg.agents?.list;
   return Array.isArray(agents) ? agents : [];
 }
 
-function pickFirstExistingAgentId(cfg: ClawdbotConfig, agentId: string): string {
+function pickFirstExistingAgentId(cfg: SurprisebotConfig, agentId: string): string {
   const normalized = normalizeAgentId(agentId);
   const agents = listAgents(cfg);
   if (agents.length === 0) return normalized;

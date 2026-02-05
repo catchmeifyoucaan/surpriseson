@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/types.js";
+import type { SurprisebotConfig } from "../config/types.js";
 import type { StoredConversationReference } from "./conversation-store.js";
 import { createMSTeamsConversationStoreFs } from "./conversation-store-fs.js";
 import {
@@ -16,7 +16,7 @@ import { resolveMSTeamsSendContext } from "./send-context.js";
 
 export type SendMSTeamsMessageParams = {
   /** Full config (for credentials) */
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   /** Conversation ID or user ID to send to */
   to: string;
   /** Message text */
@@ -32,7 +32,7 @@ export type SendMSTeamsMessageResult = {
 
 export type SendMSTeamsPollParams = {
   /** Full config (for credentials) */
-  cfg: ClawdbotConfig;
+  cfg: SurprisebotConfig;
   /** Conversation ID or user ID to send to */
   to: string;
   /** Poll question */

@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { canonicalizeMainSessionAlias, resolveAgentMainSessionKey } from "../../config/sessions.js";
 import { resolveSessionAgentId } from "../agent-scope.js";
 import { expandToolGroups } from "../tool-policy.js";
@@ -13,7 +13,7 @@ function shouldSandboxSession(cfg: SandboxConfig, sessionKey: string, mainSessio
 }
 
 function resolveMainSessionKeyForSandbox(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   agentId: string;
 }): string {
   if (params.cfg?.session?.scope === "global") return "global";
@@ -24,7 +24,7 @@ function resolveMainSessionKeyForSandbox(params: {
 }
 
 function resolveComparableSessionKeyForSandbox(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   agentId: string;
   sessionKey: string;
 }): string {
@@ -36,7 +36,7 @@ function resolveComparableSessionKeyForSandbox(params: {
 }
 
 export function resolveSandboxRuntimeStatus(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   sessionKey?: string;
 }): {
   agentId: string;
@@ -72,7 +72,7 @@ export function resolveSandboxRuntimeStatus(params: {
 }
 
 export function formatSandboxToolPolicyBlockedMessage(params: {
-  cfg?: ClawdbotConfig;
+  cfg?: SurprisebotConfig;
   sessionKey?: string;
   toolName: string;
 }): string | undefined {
@@ -115,7 +115,7 @@ export function formatSandboxToolPolicyBlockedMessage(params: {
   if (runtime.mode === "non-main") {
     lines.push(`- Use main session key (direct): ${runtime.mainSessionKey}`);
   }
-  lines.push(`- See: clawdbot sandbox explain --session ${runtime.sessionKey}`);
+  lines.push(`- See: surprisebot sandbox explain --session ${runtime.sessionKey}`);
 
   return lines.join("\n");
 }

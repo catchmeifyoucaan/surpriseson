@@ -1,10 +1,10 @@
 // Default service labels (for backward compatibility and when no profile specified)
-export const GATEWAY_LAUNCH_AGENT_LABEL = "com.clawdbot.gateway";
-export const GATEWAY_SYSTEMD_SERVICE_NAME = "clawdbot-gateway";
-export const GATEWAY_WINDOWS_TASK_NAME = "Clawdbot Gateway";
-export const GATEWAY_SERVICE_MARKER = "clawdbot";
+export const GATEWAY_LAUNCH_AGENT_LABEL = "com.surprisebot.gateway";
+export const GATEWAY_SYSTEMD_SERVICE_NAME = "surprisebot-gateway";
+export const GATEWAY_WINDOWS_TASK_NAME = "Surprisebot Gateway";
+export const GATEWAY_SERVICE_MARKER = "surprisebot";
 export const GATEWAY_SERVICE_KIND = "gateway";
-export const LEGACY_GATEWAY_LAUNCH_AGENT_LABELS = ["com.steipete.clawdbot.gateway"];
+export const LEGACY_GATEWAY_LAUNCH_AGENT_LABELS = ["com.steipete.surprisebot.gateway"];
 export const LEGACY_GATEWAY_SYSTEMD_SERVICE_NAMES: string[] = [];
 export const LEGACY_GATEWAY_WINDOWS_TASK_NAMES: string[] = [];
 
@@ -13,7 +13,7 @@ export function resolveGatewayLaunchAgentLabel(profile?: string): string {
   if (!trimmed || trimmed.toLowerCase() === "default") {
     return GATEWAY_LAUNCH_AGENT_LABEL;
   }
-  return `com.clawdbot.${trimmed}`;
+  return `com.surprisebot.${trimmed}`;
 }
 
 function normalizeGatewayProfile(profile?: string): string | null {
@@ -27,7 +27,7 @@ export function resolveGatewaySystemdServiceName(profile?: string): string {
   if (!trimmed || trimmed.toLowerCase() === "default") {
     return GATEWAY_SYSTEMD_SERVICE_NAME;
   }
-  return `clawdbot-gateway-${trimmed}`;
+  return `surprisebot-gateway-${trimmed}`;
 }
 
 export function resolveGatewayWindowsTaskName(profile?: string): string {
@@ -35,7 +35,7 @@ export function resolveGatewayWindowsTaskName(profile?: string): string {
   if (!trimmed || trimmed.toLowerCase() === "default") {
     return GATEWAY_WINDOWS_TASK_NAME;
   }
-  return `Clawdbot Gateway (${trimmed})`;
+  return `Surprisebot Gateway (${trimmed})`;
 }
 
 export function formatGatewayServiceDescription(params?: {
@@ -47,6 +47,6 @@ export function formatGatewayServiceDescription(params?: {
   const parts: string[] = [];
   if (profile) parts.push(`profile: ${profile}`);
   if (version) parts.push(`v${version}`);
-  if (parts.length === 0) return "Clawdbot Gateway";
-  return `Clawdbot Gateway (${parts.join(", ")})`;
+  if (parts.length === 0) return "Surprisebot Gateway";
+  return `Surprisebot Gateway (${parts.join(", ")})`;
 }

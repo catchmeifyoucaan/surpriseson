@@ -3,7 +3,7 @@ summary: "Agent loop lifecycle, streams, and wait semantics"
 read_when:
   - You need an exact walkthrough of the agent loop or lifecycle events
 ---
-# Agent Loop (Clawdbot)
+# Agent Loop (Surprisebot)
 
 Short, exact flow of one agent run.
 
@@ -23,7 +23,7 @@ Short, exact flow of one agent run.
    - streams assistant deltas + tool events
    - enforces timeout -> aborts run if exceeded
    - returns payloads + usage metadata
-4) `subscribeEmbeddedPiSession` bridges pi-agent-core events to Clawdbot `agent` stream:
+4) `subscribeEmbeddedPiSession` bridges pi-agent-core events to Surprisebot `agent` stream:
    - tool events => `stream: "tool"`
    - assistant deltas => `stream: "assistant"`
    - lifecycle events => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)

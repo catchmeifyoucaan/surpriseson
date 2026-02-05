@@ -1,6 +1,6 @@
 import { randomToken } from "../commands/onboard-helpers.js";
 import type { GatewayAuthChoice } from "../commands/onboard-types.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import { findTailscaleBinary } from "../infra/tailscale.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type {
@@ -12,8 +12,8 @@ import type { WizardPrompter } from "./prompts.js";
 
 type ConfigureGatewayOptions = {
   flow: WizardFlow;
-  baseConfig: ClawdbotConfig;
-  nextConfig: ClawdbotConfig;
+  baseConfig: SurprisebotConfig;
+  nextConfig: SurprisebotConfig;
   localPort: number;
   quickstartGateway: QuickstartGatewayDefaults;
   prompter: WizardPrompter;
@@ -21,7 +21,7 @@ type ConfigureGatewayOptions = {
 };
 
 type ConfigureGatewayResult = {
-  nextConfig: ClawdbotConfig;
+  nextConfig: SurprisebotConfig;
   settings: GatewayWizardSettings;
 };
 
@@ -149,7 +149,7 @@ export async function configureGatewayForOnboarding(
   let tailscaleResetOnExit = flow === "quickstart" ? quickstartGateway.tailscaleResetOnExit : false;
   if (tailscaleMode !== "off" && flow !== "quickstart") {
     await prompter.note(
-      ["Docs:", "https://docs.clawd.bot/gateway/tailscale", "https://docs.clawd.bot/web"].join(
+      ["Docs:", "https://docs.surprisebot.bot/gateway/tailscale", "https://docs.surprisebot.bot/web"].join(
         "\n",
       ),
       "Tailscale",

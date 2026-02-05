@@ -1,6 +1,6 @@
 import type { AssistantMessage } from "@mariozechner/pi-ai";
 
-import type { ClawdbotConfig } from "../../config/config.js";
+import type { SurprisebotConfig } from "../../config/config.js";
 import { formatSandboxToolPolicyBlockedMessage } from "../sandbox.js";
 import type { FailoverReason } from "./types.js";
 
@@ -168,7 +168,7 @@ export function formatRawAssistantErrorForUi(raw?: string): string {
 
 export function formatAssistantErrorText(
   msg: AssistantMessage,
-  opts?: { cfg?: ClawdbotConfig; sessionKey?: string },
+  opts?: { cfg?: SurprisebotConfig; sessionKey?: string },
 ): string | undefined {
   if (msg.stopReason !== "error") return undefined;
   const raw = (msg.errorMessage ?? "").trim();

@@ -24,7 +24,7 @@ const CATALOG: ChannelPluginCatalogEntry[] = [
       quickstartAllowFrom: true,
     },
     install: {
-      npmSpec: "@clawdbot/matrix",
+      npmSpec: "@surprisebot/matrix",
       localPath: "extensions/matrix",
       defaultChoice: "npm",
     },
@@ -43,7 +43,7 @@ const CATALOG: ChannelPluginCatalogEntry[] = [
       quickstartAllowFrom: true,
     },
     install: {
-      npmSpec: "@clawdbot/zalo",
+      npmSpec: "@surprisebot/zalo",
       localPath: "extensions/zalo",
     },
   },

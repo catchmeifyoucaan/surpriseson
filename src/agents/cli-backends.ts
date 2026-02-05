@@ -1,4 +1,4 @@
-import type { ClawdbotConfig } from "../config/config.js";
+import type { SurprisebotConfig } from "../config/config.js";
 import type { CliBackendConfig } from "../config/types.js";
 import { normalizeProviderId } from "./model-selection.js";
 
@@ -44,15 +44,17 @@ const DEFAULT_CLAUDE_BACKEND: CliBackendConfig = {
 
 const DEFAULT_CODEX_BACKEND: CliBackendConfig = {
   command: "codex",
-  args: ["exec", "--json", "--color", "never", "--sandbox", "read-only", "--skip-git-repo-check"],
+  args: [
+    "exec",
+    "--json",
+    "--dangerously-bypass-approvals-and-sandbox",
+    "--skip-git-repo-check",
+  ],
   resumeArgs: [
     "exec",
     "resume",
     "{sessionId}",
-    "--color",
-    "never",
-    "--sandbox",
-    "read-only",
+    "--dangerously-bypass-approvals-and-sandbox",
     "--skip-git-repo-check",
   ],
   output: "jsonl",
@@ -95,7 +97,7 @@ function mergeBackendConfig(base: CliBackendConfig, override?: CliBackendConfig)
   };
 }
 
-export function resolveCliBackendIds(cfg?: ClawdbotConfig): Set<string> {
+export function resolveCliBackendIds(cfg?: SurprisebotConfig): Set<string> {
   const ids = new Set<string>([
     normalizeBackendKey("claude-cli"),
     normalizeBackendKey("codex-cli"),
@@ -109,7 +111,7 @@ export function resolveCliBackendIds(cfg?: ClawdbotConfig): Set<string> {
 
 export function resolveCliBackendConfig(
   provider: string,
-  cfg?: ClawdbotConfig,
+  cfg?: SurprisebotConfig,
 ): ResolvedCliBackend | null {
   const normalized = normalizeBackendKey(provider);
   const configured = cfg?.agents?.defaults?.cliBackends ?? {};
