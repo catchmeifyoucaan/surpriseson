@@ -9,7 +9,10 @@ read_when:
 
 Goal: go from **zero** → **first working chat** (with sane defaults) as quickly as possible.
 
-Recommended path: use the **CLI onboarding wizard** (`clawdbot onboard`). It sets up:
+
+If you want a lighter install (no Docker/Neo4j/QMD), see [Minimal mode](/start/minimal).
+
+Recommended path: use **`surprisebot init`** (bootstrap + onboarding). It sets up:
 - model/auth (OAuth recommended)
 - gateway settings
 - channels (WhatsApp/Telegram/Discord/…)
@@ -28,7 +31,7 @@ run on host, set an explicit per-agent override:
   "routing": {
     "agents": {
       "main": {
-        "workspace": "~/clawd",
+        "workspace": "~/surprisebot",
         "sandbox": { "mode": "off" }
       }
     }
@@ -41,7 +44,7 @@ run on host, set an explicit per-agent override:
 - Node `>=22`
 - `pnpm` (optional; recommended if you build from source)
 - **Recommended:** Brave Search API key for web search. Easiest path:
-  `clawdbot configure --section web` (stores `tools.web.search.apiKey`).
+  `surprisebot configure --section web` (stores `tools.web.search.apiKey`).
   See [Web tools](/tools/web).
 
 macOS: if you plan to build the apps, install Xcode / CLT. For the CLI + gateway only, Node is enough.
@@ -50,7 +53,7 @@ Windows: use **WSL2** (Ubuntu recommended). WSL2 is strongly recommended; native
 ## 1) Install the CLI (recommended)
 
 ```bash
-curl -fsSL https://clawd.bot/install.sh | bash
+curl -fsSL https://surprisebot.bot/install.sh | bash
 ```
 
 Installer options (install method, non-interactive, from GitHub): [Install](/install).
@@ -58,23 +61,25 @@ Installer options (install method, non-interactive, from GitHub): [Install](/ins
 Windows (PowerShell):
 
 ```powershell
-iwr -useb https://clawd.bot/install.ps1 | iex
+iwr -useb https://surprisebot.bot/install.ps1 | iex
 ```
 
 Alternative (global install):
 
 ```bash
-npm install -g clawdbot@latest
+npm install -g surprisebot@latest
 ```
 
 ```bash
-pnpm add -g clawdbot@latest
+pnpm add -g surprisebot@latest
 ```
 
 ## 2) Run the onboarding wizard (and install the daemon)
 
 ```bash
-clawdbot onboard --install-daemon
+surprisebot init --quickstart --install-daemon
+# or (legacy)
+surprisebot onboard --install-daemon
 ```
 
 What you’ll choose:
@@ -91,8 +96,8 @@ Wizard doc: [Wizard](/start/wizard)
 
 - **Recommended Anthropic path:** set an API key (wizard can store it for daemon use). `claude setup-token` is also supported if you want to reuse Claude Code credentials.
 
-- OAuth credentials (legacy import): `~/.clawdbot/credentials/oauth.json`
-- Auth profiles (OAuth + API keys): `~/.clawdbot/agents/<agentId>/agent/auth-profiles.json`
+- OAuth credentials (legacy import): `~/.surprisebot/credentials/oauth.json`
+- Auth profiles (OAuth + API keys): `~/.surprisebot/agents/<agentId>/agent/auth-profiles.json`
 
 Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` to the gateway host.
 
@@ -101,13 +106,13 @@ Headless/server tip: do OAuth on a normal machine first, then copy `oauth.json` 
 If you installed the daemon during onboarding, the Gateway should already be running:
 
 ```bash
-clawdbot daemon status
+surprisebot daemon status
 ```
 
 Manual run (foreground):
 
 ```bash
-clawdbot gateway --port 18789 --verbose
+surprisebot gateway --port 18789 --verbose
 ```
 
 Dashboard (local loopback): `http://127.0.0.1:18789/`
@@ -121,7 +126,7 @@ channels. If you use WhatsApp or Telegram, run the Gateway with **Node**.
 ### WhatsApp (QR login)
 
 ```bash
-clawdbot channels login
+surprisebot channels login
 ```
 
 Scan via WhatsApp → Settings → Linked Devices.
@@ -142,23 +147,23 @@ Default posture: unknown DMs get a short code and messages are not processed unt
 If your first DM gets no reply, approve the pairing:
 
 ```bash
-clawdbot pairing list whatsapp
-clawdbot pairing approve whatsapp <code>
+surprisebot pairing list whatsapp
+surprisebot pairing approve whatsapp <code>
 ```
 
 Pairing doc: [Pairing](/start/pairing)
 
 ## From source (development)
 
-If you’re hacking on Clawdbot itself, run from source:
+If you’re hacking on Surprisebot itself, run from source:
 
 ```bash
-git clone https://github.com/clawdbot/clawdbot.git
-cd clawdbot
+git clone https://github.com/surprisebot/surprisebot.git
+cd surprisebot
 pnpm install
 pnpm ui:build # auto-installs UI deps on first run
 pnpm build
-pnpm clawdbot onboard --install-daemon
+pnpm surprisebot onboard --install-daemon
 ```
 
 Gateway (from this repo):
@@ -172,15 +177,15 @@ node dist/entry.js gateway --port 18789 --verbose
 In a new terminal:
 
 ```bash
-clawdbot status
-clawdbot health
-clawdbot message send --to +15555550123 --message "Hello from Clawdbot"
+surprisebot status
+surprisebot health
+surprisebot message send --to +15555550123 --message "Hello from Surprisebot"
 ```
 
 If `health` shows “no auth configured”, go back to the wizard and set OAuth/key auth — the agent won’t be able to respond without it.
 
-Tip: `clawdbot status --all` is the best pasteable, read-only debug report.
-Health probes: `clawdbot health` (or `clawdbot status --deep`) asks the running gateway for a health snapshot.
+Tip: `surprisebot status --all` is the best pasteable, read-only debug report.
+Health probes: `surprisebot health` (or `surprisebot status --deep`) asks the running gateway for a health snapshot.
 
 ## Next steps (optional, but great)
 

@@ -3,8 +3,9 @@ import path from "node:path";
 
 import JSON5 from "json5";
 
-import { DEFAULT_AGENT_WORKSPACE_DIR, ensureAgentWorkspace } from "../agents/workspace.js";
-import { type ClawdbotConfig, CONFIG_PATH_CLAWDBOT } from "../config/config.js";
+import { ensureAgentWorkspace, resolveDefaultAgentWorkspaceDir } from "../agents/workspace.js";
+import { type SurprisebotConfig } from "../config/config.js";
+import { resolveConfigPath } from "../config/paths.js";
 import { applyModelDefaults } from "../config/defaults.js";
 import { resolveSessionTranscriptsDir } from "../config/sessions.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -12,13 +13,14 @@ import { defaultRuntime } from "../runtime.js";
 
 async function readConfigFileRaw(): Promise<{
   exists: boolean;
-  parsed: ClawdbotConfig;
+  parsed: SurprisebotConfig;
 }> {
+  const configPath = resolveConfigPath();
   try {
-    const raw = await fs.readFile(CONFIG_PATH_CLAWDBOT, "utf-8");
+    const raw = await fs.readFile(configPath, "utf-8");
     const parsed = JSON5.parse(raw);
     if (parsed && typeof parsed === "object") {
-      return { exists: true, parsed: parsed as ClawdbotConfig };
+      return { exists: true, parsed: parsed as SurprisebotConfig };
     }
     return { exists: true, parsed: {} };
   } catch {
@@ -26,10 +28,11 @@ async function readConfigFileRaw(): Promise<{
   }
 }
 
-async function writeConfigFile(cfg: ClawdbotConfig) {
-  await fs.mkdir(path.dirname(CONFIG_PATH_CLAWDBOT), { recursive: true });
+async function writeConfigFile(cfg: SurprisebotConfig) {
+  const configPath = resolveConfigPath();
+  await fs.mkdir(path.dirname(configPath), { recursive: true });
   const json = JSON.stringify(applyModelDefaults(cfg), null, 2).trimEnd().concat("\n");
-  await fs.writeFile(CONFIG_PATH_CLAWDBOT, json, "utf-8");
+  await fs.writeFile(configPath, json, "utf-8");
 }
 
 export async function setupCommand(
@@ -45,9 +48,9 @@ export async function setupCommand(
   const cfg = existingRaw.parsed;
   const defaults = cfg.agents?.defaults ?? {};
 
-  const workspace = desiredWorkspace ?? defaults.workspace ?? DEFAULT_AGENT_WORKSPACE_DIR;
+  const workspace = desiredWorkspace ?? defaults.workspace ?? resolveDefaultAgentWorkspaceDir();
 
-  const next: ClawdbotConfig = {
+  const next: SurprisebotConfig = {
     ...cfg,
     agents: {
       ...cfg.agents,
@@ -60,13 +63,14 @@ export async function setupCommand(
 
   if (!existingRaw.exists || defaults.workspace !== workspace) {
     await writeConfigFile(next);
+    const configPath = resolveConfigPath();
     runtime.log(
       !existingRaw.exists
-        ? `Wrote ${CONFIG_PATH_CLAWDBOT}`
-        : `Updated ${CONFIG_PATH_CLAWDBOT} (set agents.defaults.workspace)`,
+        ? `Wrote ${configPath}`
+        : `Updated ${configPath} (set agents.defaults.workspace)`,
     );
   } else {
-    runtime.log(`Config OK: ${CONFIG_PATH_CLAWDBOT}`);
+    runtime.log(`Config OK: ${resolveConfigPath()}`);
   }
 
   const ws = await ensureAgentWorkspace({

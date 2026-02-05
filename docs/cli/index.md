@@ -1,5 +1,5 @@
 ---
-summary: "Clawdbot CLI reference for `clawdbot` commands, subcommands, and options"
+summary: "Surprisebot CLI reference for `surprisebot` commands, subcommands, and options"
 read_when:
   - Adding or modifying CLI commands or options
   - Documenting new command surfaces
@@ -12,6 +12,7 @@ This page describes the current CLI behavior. If commands change, update this do
 ## Command pages
 
 - [`setup`](/cli/setup)
+- [`init`](/cli/init)
 - [`onboard`](/cli/onboard)
 - [`configure`](/cli/configure) (alias: `config`)
 - [`doctor`](/cli/doctor)
@@ -27,9 +28,13 @@ This page describes the current CLI behavior. If commands change, update this do
 - [`sessions`](/cli/sessions)
 - [`gateway`](/cli/gateway)
 - [`daemon`](/cli/daemon)
+- [`install-service`](/cli/daemon) (alias: `daemon install`)
+- [`uninstall-service`](/cli/daemon) (alias: `daemon uninstall`)
 - [`logs`](/cli/logs)
 - [`models`](/cli/models)
 - [`memory`](/cli/memory)
+- [`artemis`](/cli/artemis)
+- [`mission-control`](/cli/mission-control)
 - [`nodes`](/cli/nodes)
 - [`sandbox`](/cli/sandbox)
 - [`tui`](/cli/tui)
@@ -48,10 +53,10 @@ This page describes the current CLI behavior. If commands change, update this do
 
 ## Global flags
 
-- `--dev`: isolate state under `~/.clawdbot-dev` and shift default ports.
-- `--profile <name>`: isolate state under `~/.clawdbot-<name>`.
+- `--dev`: isolate state under `~/.surprisebot-dev` and shift default ports.
+- `--profile <name>`: isolate state under `~/.surprisebot-<name>`.
 - `--no-color`: disable ANSI colors.
-- `--update`: shorthand for `clawdbot update` (source installs only).
+- `--update`: shorthand for `surprisebot update` (source installs only).
 - `-V`, `--version`, `-v`: print version and exit.
 
 ## Output styling
@@ -64,7 +69,7 @@ This page describes the current CLI behavior. If commands change, update this do
 
 ## Color palette
 
-Clawdbot uses a lobster palette for CLI output.
+Surprisebot uses a lobster palette for CLI output.
 
 - `accent` (#FF5A2D): headings, labels, primary highlights.
 - `accentBright` (#FF7A3D): command names, emphasis.
@@ -80,8 +85,9 @@ Palette source of truth: `src/terminal/palette.ts` (aka “lobster seam”).
 ## Command tree
 
 ```
-clawdbot [--dev] [--profile <name>] <command>
+surprisebot [--dev] [--profile <name>] <command>
   setup
+  init
   onboard
   configure (alias: config)
   doctor
@@ -113,6 +119,16 @@ clawdbot [--dev] [--profile <name>] <command>
     status
     index
     search
+  artemis
+    stanford:run
+    cert:ingest
+  mission-control
+    task:list
+    task:create
+    task:update
+    mirror
+    report
+    maintenance
   message
   agent
   agents
@@ -214,26 +230,27 @@ clawdbot [--dev] [--profile <name>] <command>
   docs
   dns
     setup
+  init
   tui
 ```
 
-Note: plugins can add additional top-level commands (for example `clawdbot voicecall`).
+Note: plugins can add additional top-level commands (for example `surprisebot voicecall`).
 
 ## Security
 
-- `clawdbot security audit` — audit config + local state for common security foot-guns.
-- `clawdbot security audit --deep` — best-effort live Gateway probe.
-- `clawdbot security audit --fix` — tighten safe defaults and chmod state/config.
+- `surprisebot security audit` — audit config + local state for common security foot-guns.
+- `surprisebot security audit --deep` — best-effort live Gateway probe.
+- `surprisebot security audit --fix` — tighten safe defaults and chmod state/config.
 
 ## Plugins
 
 Manage extensions and their config:
 
-- `clawdbot plugins list` — discover plugins (use `--json` for machine output).
-- `clawdbot plugins info <id>` — show details for a plugin.
-- `clawdbot plugins install <path|.tgz|npm-spec>` — install a plugin (or add a plugin path to `plugins.load.paths`).
-- `clawdbot plugins enable <id>` / `disable <id>` — toggle `plugins.entries.<id>.enabled`.
-- `clawdbot plugins doctor` — report plugin load errors.
+- `surprisebot plugins list` — discover plugins (use `--json` for machine output).
+- `surprisebot plugins info <id>` — show details for a plugin.
+- `surprisebot plugins install <path|.tgz|npm-spec>` — install a plugin (or add a plugin path to `plugins.load.paths`).
+- `surprisebot plugins enable <id>` / `disable <id>` — toggle `plugins.entries.<id>.enabled`.
+- `surprisebot plugins doctor` — report plugin load errors.
 
 Most plugin changes require a gateway restart. See [/plugin](/plugin).
 
@@ -241,9 +258,10 @@ Most plugin changes require a gateway restart. See [/plugin](/plugin).
 
 Vector search over `MEMORY.md` + `memory/*.md`:
 
-- `clawdbot memory status` — show index stats.
-- `clawdbot memory index` — reindex memory files.
-- `clawdbot memory search "<query>"` — semantic search over memory.
+- `surprisebot memory status` — show index stats.
+- `surprisebot memory index` — reindex memory files.
+- `surprisebot memory search "<query>"` — semantic search over memory.
+- One-shot flags: `--no-watch`, `--no-interval`, `--no-watch-interval`.
 
 ## Chat slash commands
 
@@ -260,7 +278,7 @@ Highlights:
 Initialize config + workspace.
 
 Options:
-- `--workspace <dir>`: agent workspace path (default `~/clawd`).
+- `--workspace <dir>`: agent workspace path (default `~/surprisebot`).
 - `--wizard`: run the onboarding wizard.
 - `--non-interactive`: run wizard without prompts.
 - `--mode <local|remote>`: wizard mode.
@@ -329,8 +347,8 @@ Manage chat channel accounts (WhatsApp/Telegram/Discord/Slack/Signal/iMessage/MS
 
 Subcommands:
 - `channels list`: show configured channels and auth profiles (Claude Code + Codex CLI OAuth sync included).
-- `channels status`: check gateway reachability and channel health (`--probe` runs extra checks; use `clawdbot health` or `clawdbot status --deep` for gateway health probes).
-- Tip: `channels status` prints warnings with suggested fixes when it can detect common misconfigurations (then points you to `clawdbot doctor`).
+- `channels status`: check gateway reachability and channel health (`--probe` runs extra checks; use `surprisebot health` or `surprisebot status --deep` for gateway health probes).
+- Tip: `channels status` prints warnings with suggested fixes when it can detect common misconfigurations (then points you to `surprisebot doctor`).
 - `channels logs`: show recent channel logs from the gateway log file.
 - `channels add`: wizard-style setup when no flags are passed; flags switch to non-interactive mode.
 - `channels remove`: disable by default; pass `--delete` to remove config entries without prompts.
@@ -370,11 +388,11 @@ More detail: [/concepts/oauth](/concepts/oauth)
 
 Examples:
 ```bash
-clawdbot channels add --channel telegram --account alerts --name "Alerts Bot" --token $TELEGRAM_BOT_TOKEN
-clawdbot channels add --channel discord --account work --name "Work Bot" --token $DISCORD_BOT_TOKEN
-clawdbot channels remove --channel discord --account work --delete
-clawdbot channels status --probe
-clawdbot status --deep
+surprisebot channels add --channel telegram --account alerts --name "Alerts Bot" --token $TELEGRAM_BOT_TOKEN
+surprisebot channels add --channel discord --account work --name "Work Bot" --token $DISCORD_BOT_TOKEN
+surprisebot channels remove --channel discord --account work --delete
+surprisebot channels status --probe
+surprisebot status --deep
 ```
 
 ### `skills`
@@ -390,7 +408,7 @@ Options:
 - `--json`: output JSON (no styling).
 - `-v`, `--verbose`: include missing requirements detail.
 
-Tip: use `npx clawdhub` to search, install, and sync skills.
+Tip: use `npx surprisebothub` to search, install, and sync skills.
 
 ### `pairing`
 Approve DM pairing requests across channels.
@@ -431,8 +449,8 @@ Subcommands:
 - `message event <list|create>`
 
 Examples:
-- `clawdbot message send --to +15555550123 --message "Hi"`
-- `clawdbot message poll --channel discord --to channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi`
+- `surprisebot message send --to +15555550123 --message "Hi"`
+- `surprisebot message poll --channel discord --to channel:123 --poll-question "Snack?" --poll-option Pizza --poll-option Sushi`
 
 ### `agent`
 Run one agent turn via the Gateway (or `--local` embedded).
@@ -494,11 +512,11 @@ Options:
 - `--debug` (alias for `--verbose`)
 
 ### Usage tracking
-Clawdbot can surface provider usage/quota when OAuth/API creds are available.
+Surprisebot can surface provider usage/quota when OAuth/API creds are available.
 
 Surfaces:
 - `/status` (alias: `/usage`; adds a short usage line when available)
-- `clawdbot status --usage` (prints full provider breakdown)
+- `surprisebot status --usage` (prints full provider breakdown)
 - macOS menu bar (Usage section under Context)
 
 Notes:
@@ -592,7 +610,7 @@ Subcommands:
 Notes:
 - `daemon status` probes the Gateway RPC by default using the daemon’s resolved port/config (override with `--url/--token/--password`).
 - `daemon status` supports `--no-probe`, `--deep`, and `--json` for scripting.
-- `daemon status` also surfaces legacy or extra gateway services when it can detect them (`--deep` adds system-level scans). Profile-named Clawdbot services are treated as first-class and aren't flagged as "extra".
+- `daemon status` also surfaces legacy or extra gateway services when it can detect them (`--deep` adds system-level scans). Profile-named Surprisebot services are treated as first-class and aren't flagged as "extra".
 - `daemon status` prints which config path the CLI uses vs which config the daemon likely uses (service env), plus the resolved probe target URL.
 - `daemon install` defaults to Node runtime; bun is **not recommended** (WhatsApp/Telegram bugs).
 - `daemon install` options: `--port`, `--runtime`, `--token`, `--force`.
@@ -606,11 +624,11 @@ Notes:
 
 Examples:
 ```bash
-clawdbot logs --follow
-clawdbot logs --limit 200
-clawdbot logs --plain
-clawdbot logs --json
-clawdbot logs --no-color
+surprisebot logs --follow
+surprisebot logs --limit 200
+surprisebot logs --plain
+surprisebot logs --json
+surprisebot logs --no-color
 ```
 
 ### `gateway <subcommand>`
@@ -638,11 +656,11 @@ Preferred Anthropic auth (CLI token, not API key):
 
 ```bash
 claude setup-token
-clawdbot models status
+surprisebot models status
 ```
 
 ### `models` (root)
-`clawdbot models` is an alias for `models status`.
+`surprisebot models` is an alias for `models status`.
 
 Root options:
 - `--status-json` (alias for `models status --json`)
@@ -785,7 +803,7 @@ Location:
 
 ## Browser
 
-Browser control CLI (dedicated Chrome/Chromium). See [`clawdbot browser`](/cli/browser) and the [Browser tool](/tools/browser).
+Browser control CLI (dedicated Chrome/Chromium). See [`surprisebot browser`](/cli/browser) and the [Browser tool](/tools/browser).
 
 Common options:
 - `--url <controlUrl>`

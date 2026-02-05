@@ -10,11 +10,17 @@ export function resolveDefaultAgentWorkspaceDir(
   env: NodeJS.ProcessEnv = process.env,
   homedir: () => string = os.homedir,
 ): string {
-  const profile = env.CLAWDBOT_PROFILE?.trim();
-  if (profile && profile.toLowerCase() !== "default") {
-    return path.join(homedir(), `clawd-${profile}`);
+  const profile = env.SURPRISEBOT_PROFILE?.trim();
+  const home = env.SURPRISEBOT_HOME?.trim();
+  if (home) {
+    const base = resolveUserPath(home);
+    const suffix = profile && profile.toLowerCase() !== "default" ? `workspace-${profile}` : "workspace";
+    return path.join(base, suffix);
   }
-  return path.join(homedir(), "clawd");
+  if (profile && profile.toLowerCase() !== "default") {
+    return path.join(homedir(), `surprisebot-${profile}`);
+  }
+  return path.join(homedir(), "surprisebot");
 }
 
 export const DEFAULT_AGENT_WORKSPACE_DIR = resolveDefaultAgentWorkspaceDir();
@@ -25,8 +31,15 @@ export const DEFAULT_IDENTITY_FILENAME = "IDENTITY.md";
 export const DEFAULT_USER_FILENAME = "USER.md";
 export const DEFAULT_HEARTBEAT_FILENAME = "HEARTBEAT.md";
 export const DEFAULT_BOOTSTRAP_FILENAME = "BOOTSTRAP.md";
+export const DEFAULT_MEMORY_FILENAME = "MEMORY.md";
+export const DEFAULT_MEMORY_PROFILE_FILENAME = "memory/profile.md";
+export const DEFAULT_MEMORY_PREFERENCES_FILENAME = "memory/preferences.md";
+export const DEFAULT_MEMORY_DECISIONS_FILENAME = "memory/decisions.md";
+export const DEFAULT_MEMORY_ACTIVE_FILENAME = "memory/active.md";
+export const DEFAULT_MEMORY_GLOBAL_FILENAME = "memory/shared.md";
+export const DEFAULT_MEMORY_PENDING_FILENAME = "memory/shared.pending.md";
 
-const DEFAULT_AGENTS_TEMPLATE = `# AGENTS.md - Clawdbot Workspace
+const DEFAULT_AGENTS_TEMPLATE = `# AGENTS.md - Surprisebot Workspace
 
 This folder is the assistant's working directory.
 
@@ -55,6 +68,11 @@ git commit -m "Add agent workspace"
 - On session start, read today + yesterday if present.
 - Capture durable facts, preferences, and decisions; avoid secrets.
 
+## Shared memory (teamwide)
+- Read memory/shared.md for durable cross-agent context.
+- Subagents: propose updates in memory/shared.pending.md (do not edit shared.md).
+- Core: mark approved lines with [APPROVED] and run /shared-review to merge.
+
 ## Heartbeats (optional)
 - HEARTBEAT.md can hold a tiny checklist for heartbeat runs; keep it small.
 
@@ -74,7 +92,7 @@ Describe who the assistant is, tone, and boundaries.
 const DEFAULT_TOOLS_TEMPLATE = `# TOOLS.md - User Tool Notes (editable)
 
 This file is for *your* notes about external tools and conventions.
-It does not define which tools exist; Clawdbot provides built-in tools internally.
+It does not define which tools exist; Surprisebot provides built-in tools internally.
 
 ## Examples
 
@@ -129,7 +147,7 @@ After the user chooses, update:
 - Timezone (optional)
 - Notes
 
-3) ~/.clawdbot/clawdbot.json
+3) ~/.surprisebot/surprisebot.json
 Set identity.name, identity.theme, identity.emoji to match IDENTITY.md.
 
 ## Cleanup
@@ -151,6 +169,48 @@ const DEFAULT_USER_TEMPLATE = `# USER.md - User Profile
 - Pronouns (optional):
 - Timezone (optional):
 - Notes:
+`;
+
+const DEFAULT_MEMORY_TEMPLATE = `# MEMORY.md
+
+This file anchors durable memory for this workspace.
+See memory/*.md for profile, preferences, decisions, and active goals.
+`;
+
+const DEFAULT_MEMORY_PROFILE_TEMPLATE = `# Profile
+- Name:
+- Role:
+- Constraints:
+
+## Preferences
+- (add current preferences here)
+
+## Notes
+- (durable notes)
+`;
+
+const DEFAULT_MEMORY_PREFERENCES_TEMPLATE = `# Preference History
+- YYYY-MM-DD PREF-YYYYMMDD-1 [ACTIVE]: (preference)
+`;
+
+const DEFAULT_MEMORY_DECISIONS_TEMPLATE = `# Decisions
+- YYYY-MM-DD: Decision + rationale
+`;
+
+const DEFAULT_MEMORY_ACTIVE_TEMPLATE = `# Active
+- Current goals and next steps
+`;
+
+export const DEFAULT_MEMORY_GLOBAL_TEMPLATE = `# Shared Memory (Global)
+- High-signal facts shared across agents.
+- Only the core agent should edit this file.
+- Keep entries stable, concise, and dated when possible.
+`;
+
+export const DEFAULT_MEMORY_PENDING_TEMPLATE = `# Shared Memory (Pending)
+- Subagents: propose shared memory updates here.
+- Core agent: mark approved lines with [APPROVED] and run /shared-review to merge into shared.md.
+- Keep proposals concise and dated.
 `;
 
 const TEMPLATE_DIR = path.resolve(
@@ -185,7 +245,14 @@ export type WorkspaceBootstrapFileName =
   | typeof DEFAULT_IDENTITY_FILENAME
   | typeof DEFAULT_USER_FILENAME
   | typeof DEFAULT_HEARTBEAT_FILENAME
-  | typeof DEFAULT_BOOTSTRAP_FILENAME;
+  | typeof DEFAULT_BOOTSTRAP_FILENAME
+  | typeof DEFAULT_MEMORY_FILENAME
+  | typeof DEFAULT_MEMORY_PROFILE_FILENAME
+  | typeof DEFAULT_MEMORY_PREFERENCES_FILENAME
+  | typeof DEFAULT_MEMORY_DECISIONS_FILENAME
+  | typeof DEFAULT_MEMORY_ACTIVE_FILENAME
+  | typeof DEFAULT_MEMORY_GLOBAL_FILENAME
+  | typeof DEFAULT_MEMORY_PENDING_FILENAME;
 
 export type WorkspaceBootstrapFile = {
   name: WorkspaceBootstrapFileName;
@@ -232,6 +299,14 @@ export async function ensureAgentWorkspace(params?: {
   const userPath = path.join(dir, DEFAULT_USER_FILENAME);
   const heartbeatPath = path.join(dir, DEFAULT_HEARTBEAT_FILENAME);
   const bootstrapPath = path.join(dir, DEFAULT_BOOTSTRAP_FILENAME);
+  const memoryPath = path.join(dir, DEFAULT_MEMORY_FILENAME);
+  const memoryDir = path.join(dir, "memory");
+  const memoryProfilePath = path.join(dir, DEFAULT_MEMORY_PROFILE_FILENAME);
+  const memoryPreferencesPath = path.join(dir, DEFAULT_MEMORY_PREFERENCES_FILENAME);
+  const memoryDecisionsPath = path.join(dir, DEFAULT_MEMORY_DECISIONS_FILENAME);
+  const memoryActivePath = path.join(dir, DEFAULT_MEMORY_ACTIVE_FILENAME);
+  const memoryGlobalPath = path.join(dir, DEFAULT_MEMORY_GLOBAL_FILENAME);
+  const memoryPendingPath = path.join(dir, DEFAULT_MEMORY_PENDING_FILENAME);
 
   const isBrandNewWorkspace = await (async () => {
     const paths = [agentsPath, soulPath, toolsPath, identityPath, userPath, heartbeatPath];
@@ -261,6 +336,31 @@ export async function ensureAgentWorkspace(params?: {
     DEFAULT_BOOTSTRAP_FILENAME,
     DEFAULT_BOOTSTRAP_TEMPLATE,
   );
+  const memoryTemplate = await loadTemplate(DEFAULT_MEMORY_FILENAME, DEFAULT_MEMORY_TEMPLATE);
+  const memoryProfileTemplate = await loadTemplate(
+    DEFAULT_MEMORY_PROFILE_FILENAME,
+    DEFAULT_MEMORY_PROFILE_TEMPLATE,
+  );
+  const memoryPreferencesTemplate = await loadTemplate(
+    DEFAULT_MEMORY_PREFERENCES_FILENAME,
+    DEFAULT_MEMORY_PREFERENCES_TEMPLATE,
+  );
+  const memoryDecisionsTemplate = await loadTemplate(
+    DEFAULT_MEMORY_DECISIONS_FILENAME,
+    DEFAULT_MEMORY_DECISIONS_TEMPLATE,
+  );
+  const memoryActiveTemplate = await loadTemplate(
+    DEFAULT_MEMORY_ACTIVE_FILENAME,
+    DEFAULT_MEMORY_ACTIVE_TEMPLATE,
+  );
+  const memoryGlobalTemplate = await loadTemplate(
+    DEFAULT_MEMORY_GLOBAL_FILENAME,
+    DEFAULT_MEMORY_GLOBAL_TEMPLATE,
+  );
+  const memoryPendingTemplate = await loadTemplate(
+    DEFAULT_MEMORY_PENDING_FILENAME,
+    DEFAULT_MEMORY_PENDING_TEMPLATE,
+  );
 
   await writeFileIfMissing(agentsPath, agentsTemplate);
   await writeFileIfMissing(soulPath, soulTemplate);
@@ -271,6 +371,14 @@ export async function ensureAgentWorkspace(params?: {
   if (isBrandNewWorkspace) {
     await writeFileIfMissing(bootstrapPath, bootstrapTemplate);
   }
+  await writeFileIfMissing(memoryPath, memoryTemplate);
+  await fs.mkdir(memoryDir, { recursive: true });
+  await writeFileIfMissing(memoryProfilePath, memoryProfileTemplate);
+  await writeFileIfMissing(memoryPreferencesPath, memoryPreferencesTemplate);
+  await writeFileIfMissing(memoryDecisionsPath, memoryDecisionsTemplate);
+  await writeFileIfMissing(memoryActivePath, memoryActiveTemplate);
+  await writeFileIfMissing(memoryGlobalPath, memoryGlobalTemplate);
+  await writeFileIfMissing(memoryPendingPath, memoryPendingTemplate);
 
   return {
     dir,
@@ -319,6 +427,34 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
       name: DEFAULT_BOOTSTRAP_FILENAME,
       filePath: path.join(resolvedDir, DEFAULT_BOOTSTRAP_FILENAME),
     },
+    {
+      name: DEFAULT_MEMORY_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_PROFILE_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_PROFILE_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_PREFERENCES_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_PREFERENCES_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_DECISIONS_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_DECISIONS_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_ACTIVE_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_ACTIVE_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_GLOBAL_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_GLOBAL_FILENAME),
+    },
+    {
+      name: DEFAULT_MEMORY_PENDING_FILENAME,
+      filePath: path.join(resolvedDir, DEFAULT_MEMORY_PENDING_FILENAME),
+    },
   ];
 
   const result: WorkspaceBootstrapFile[] = [];
@@ -338,7 +474,11 @@ export async function loadWorkspaceBootstrapFiles(dir: string): Promise<Workspac
   return result;
 }
 
-const SUBAGENT_BOOTSTRAP_ALLOWLIST = new Set([DEFAULT_AGENTS_FILENAME, DEFAULT_TOOLS_FILENAME]);
+const SUBAGENT_BOOTSTRAP_ALLOWLIST = new Set([
+  DEFAULT_AGENTS_FILENAME,
+  DEFAULT_TOOLS_FILENAME,
+  DEFAULT_MEMORY_GLOBAL_FILENAME,
+]);
 
 export function filterBootstrapFilesForSession(
   files: WorkspaceBootstrapFile[],

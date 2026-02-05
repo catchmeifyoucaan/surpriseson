@@ -1,13 +1,13 @@
 ---
-summary: "CLI reference for `clawdbot setup` (initialize config + workspace)"
+summary: "CLI reference for `surprisebot setup` (initialize config + workspace)"
 read_when:
   - You’re doing first-run setup without the full onboarding wizard
   - You want to set the default workspace path
 ---
 
-# `clawdbot setup`
+# `surprisebot setup`
 
-Initialize `~/.clawdbot/clawdbot.json` and the agent workspace.
+Initialize the Surprisebot config (state dir) and the agent workspace. Default state dir is `~/.surprisebot` or `$SURPRISEBOT_HOME/state`.
 
 Related:
 - Getting started: [Getting started](/start/getting-started)
@@ -16,13 +16,13 @@ Related:
 ## Examples
 
 ```bash
-clawdbot setup
-clawdbot setup --workspace ~/clawd
+surprisebot setup
+surprisebot setup --workspace ~/surprisebot
 ```
 
 To run the wizard via setup:
 
 ```bash
-clawdbot setup --wizard
+surprisebot setup --wizard
 ```
 

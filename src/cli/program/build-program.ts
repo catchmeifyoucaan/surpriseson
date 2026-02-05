@@ -5,11 +5,13 @@ import { configureProgramHelp } from "./help.js";
 import { registerPreActionHooks } from "./preaction.js";
 import { registerAgentCommands } from "./register.agent.js";
 import { registerConfigureCommand } from "./register.configure.js";
+import { registerInitCommand } from "./register.init.js";
 import { registerMaintenanceCommands } from "./register.maintenance.js";
 import { registerMessageCommands } from "./register.message.js";
 import { registerOnboardCommand } from "./register.onboard.js";
 import { registerSetupCommand } from "./register.setup.js";
 import { registerStatusHealthSessionsCommands } from "./register.status-health-sessions.js";
+import { registerServiceCommands } from "./register.service.js";
 import { registerSubCliCommands } from "./register.subclis.js";
 
 export function buildProgram() {
@@ -20,6 +22,7 @@ export function buildProgram() {
   registerPreActionHooks(program, ctx.programVersion);
 
   registerSetupCommand(program);
+  registerInitCommand(program);
   registerOnboardCommand(program);
   registerConfigureCommand(program);
   registerMaintenanceCommands(program);
@@ -29,6 +32,7 @@ export function buildProgram() {
   });
   registerSubCliCommands(program);
   registerStatusHealthSessionsCommands(program);
+  registerServiceCommands(program);
   registerBrowserCli(program);
 
   return program;
