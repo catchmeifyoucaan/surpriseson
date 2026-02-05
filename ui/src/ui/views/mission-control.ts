@@ -19,8 +19,8 @@ export type MissionControlViewProps = {
   paging: {
     tasks: { limit: number; offset: number };
     activities: { limit: number; offset: number };
-    ledger: { limit: number };
-    incidents: { limit: number };
+    ledger: { limit: number; runCursor?: string | null; budgetCursor?: string | null };
+    incidents: { limit: number; cursor?: string | null };
   };
   denseMode: boolean;
   quickOpen: boolean;
@@ -35,6 +35,8 @@ export type MissionControlViewProps = {
   onToggleDense: () => void;
   onToggleQuick: (force?: boolean) => void;
   onPageChange: (section: "tasks" | "activities", direction: -1 | 1) => void;
+  onPageJump: (section: "tasks" | "activities", page: number) => void;
+  onCursorChange: (section: "incidents" | "budget-ledger", cursor: string | null) => void;
 };
 
 const TASK_LIMIT = 80;
@@ -151,7 +153,15 @@ function renderBudgetRows(entries: MissionControlBudgetLedgerRecord[]) {
   `;
 }
 
-function renderPager(label: string, offset: number, limit: number, total: number, onPrev: () => void, onNext: () => void) {
+function renderPager(
+  label: string,
+  offset: number,
+  limit: number,
+  total: number,
+  onPrev: () => void,
+  onNext: () => void,
+  onJump?: (page: number) => void,
+) {
   const page = Math.floor(offset / limit) + 1;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   return html`
@@ -160,10 +170,52 @@ function renderPager(label: string, offset: number, limit: number, total: number
       <div class="row">
         <button class="btn btn-ghost" ?disabled=${offset === 0} @click=${onPrev}>Prev</button>
         <button class="btn btn-ghost" ?disabled=${offset + limit >= total} @click=${onNext}>Next</button>
+        <label class="mc-page-jump">
+          <span>Jump</span>
+          <input
+            type="number"
+            min="1"
+            max="${totalPages}"
+            .value=${String(page)}
+            @keydown=${(event: KeyboardEvent) => {
+              if (event.key !== "Enter") return;
+              const value = Number((event.target as HTMLInputElement).value);
+              if (!Number.isFinite(value) || !onJump) return;
+              const next = Math.max(1, Math.min(totalPages, Math.floor(value)));
+              onJump(next);
+            }}
+            @blur=${(event: FocusEvent) => {
+              const value = Number((event.target as HTMLInputElement).value);
+              if (!Number.isFinite(value) || !onJump) return;
+              const next = Math.max(1, Math.min(totalPages, Math.floor(value)));
+              onJump(next);
+            }}
+          />
+        </label>
       </div>
     </div>
   `;
 }
+
+function renderCursorPager(
+  label: string,
+  info: { cursor?: string | null; nextCursor?: string | null; hasMore?: boolean },
+  onOlder: (cursor: string) => void,
+  onLatest: () => void,
+) {
+  const hasMore = Boolean(info.hasMore && info.nextCursor);
+  const isPaged = Boolean(info.cursor);
+  return html`
+    <div class="mc-pager">
+      <div class="muted">${label} · ${isPaged ? "Paged" : "Latest"}</div>
+      <div class="row">
+        <button class="btn btn-ghost" ?disabled=${!hasMore} @click=${() => info.nextCursor && onOlder(info.nextCursor)}>Older</button>
+        <button class="btn btn-ghost" ?disabled=${!isPaged} @click=${onLatest}>Latest</button>
+      </div>
+    </div>
+  `;
+}
+
 
 export function renderMissionControl(props: MissionControlViewProps) {
   const snapshot = props.snapshot;
@@ -212,6 +264,20 @@ export function renderMissionControl(props: MissionControlViewProps) {
   const activitiesTotal = pageInfo.activities?.total ?? activities.length;
   const activitiesLimit = pageInfo.activities?.limit ?? props.paging.activities.limit;
   const activitiesOffset = pageInfo.activities?.offset ?? props.paging.activities.offset;
+
+  const incidentsPage = pageInfo.incidents ?? {
+    limit: props.paging.incidents.limit,
+    cursor: props.paging.incidents.cursor ?? null,
+    nextCursor: null,
+    hasMore: false,
+  };
+  const ledgerPage = pageInfo.ledger ?? { limit: props.paging.ledger.limit };
+  const budgetPage = ledgerPage.budget ?? {
+    cursor: props.paging.ledger.budgetCursor ?? null,
+    nextCursor: null,
+    hasMore: false,
+  };
+
 
   const activeTasks = tasks.filter((task) => ["in_progress", "review", "verified"].includes(task.status)).length;
   const backlogTasks = tasks.filter((task) => ["inbox", "assigned"].includes(task.status)).length;
@@ -353,6 +419,7 @@ export function renderMissionControl(props: MissionControlViewProps) {
             Math.max(tasksTotal, tasksLimit),
             () => props.onPageChange("tasks", -1),
             () => props.onPageChange("tasks", 1),
+            (page) => props.onPageJump("tasks", page),
           )}
           <div class="mc-list-meta">Showing ${Math.min(filteredTasks.length, TASK_LIMIT)} of ${filteredTasks.length} tasks</div>
           <div class="list mc-scroll" style="margin-top: 10px;">
@@ -473,6 +540,7 @@ export function renderMissionControl(props: MissionControlViewProps) {
             Math.max(activitiesTotal, activitiesLimit),
             () => props.onPageChange("activities", -1),
             () => props.onPageChange("activities", 1),
+            (page) => props.onPageJump("activities", page),
           )}
           <div class="mc-list-meta">Showing latest ${Math.min(activities.length, ACTIVITY_LIMIT)} entries</div>
           <div class="list mc-scroll" style="margin-top: 10px;">
@@ -496,6 +564,12 @@ export function renderMissionControl(props: MissionControlViewProps) {
         <div class="card">
           <div class="card-title">Budget & Decisions</div>
           <div class="card-sub">Blocked or throttled runs and their reasons.</div>
+          ${renderCursorPager(
+            "Budget Ledger",
+            budgetPage,
+            (cursor) => props.onCursorChange("budget-ledger", cursor),
+            () => props.onCursorChange("budget-ledger", null),
+          )}
           <div class="mc-list-meta">Showing latest ${Math.min(blockedBudgets.length, BUDGET_LIMIT)} entries</div>
           <div class="mc-scroll" style="margin-top: 10px;">
             ${renderBudgetRows(blockedBudgets.slice(0, BUDGET_LIMIT))}
@@ -506,6 +580,12 @@ export function renderMissionControl(props: MissionControlViewProps) {
       <section class="card">
         <div class="card-title">Incident Tail</div>
         <div class="card-sub">Latest incident entries for rapid triage.</div>
+        ${renderCursorPager(
+          "Incidents",
+          incidentsPage,
+          (cursor) => props.onCursorChange("incidents", cursor),
+          () => props.onCursorChange("incidents", null),
+        )}
         <div class="list mc-scroll" style="margin-top: 10px;">
           ${incidents.length === 0
             ? html`<div class="muted">No incidents recorded.</div>`

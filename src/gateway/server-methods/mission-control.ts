@@ -17,8 +17,8 @@ import {
   updateTask,
 } from "../../infra/mission-control/db.js";
 import {
-  readMissionControlRecords,
   resolveMissionControlDir,
+  resolveMissionControlPaths,
   type BudgetLedgerRecord,
   type RunLedgerRecord,
 } from "../../infra/mission-control/ledger.js";
@@ -41,6 +41,15 @@ function clampLimit(value: number | undefined, fallback = DEFAULT_LIMIT) {
 function clampOffset(value: number | undefined) {
   const raw = typeof value === "number" && Number.isFinite(value) ? Math.floor(value) : 0;
   return Math.max(0, raw);
+}
+
+
+type JsonlCursorPage<T> = { items: T[]; nextCursor: string | null; hasMore: boolean };
+
+function resolveCursorMs(cursor?: string | null): number | null {
+  if (!cursor || typeof cursor !== "string") return null;
+  const ms = Date.parse(cursor);
+  return Number.isFinite(ms) ? ms : null;
 }
 
 
@@ -80,10 +89,14 @@ async function readJsonlTail<T = Record<string, unknown>>(
   }
 }
 
-async function readIncidents(cfg: ReturnType<typeof loadConfig>, limit: number): Promise<IncidentRecord[]> {
+async function readIncidents(
+  cfg: ReturnType<typeof loadConfig>,
+  limit: number,
+  cursor?: string | null,
+): Promise<JsonlCursorPage<IncidentRecord>> {
   const workspaceDir = resolveWorkspaceDir(cfg);
   const filePath = path.join(workspaceDir, "memory", "incidents.jsonl");
-  return await readJsonlTail<IncidentRecord>(filePath, limit);
+  return await readJsonlCursor<IncidentRecord>(filePath, limit, cursor);
 }
 
 async function readRollupState(cfg: ReturnType<typeof loadConfig>) {
@@ -108,8 +121,8 @@ export const missionControlHandlers: GatewayRequestHandlers = {
       documents?: { limit?: number; offset?: number };
       subscriptions?: { limit?: number; offset?: number };
       notifications?: { limit?: number; offset?: number };
-      incidents?: { limit?: number };
-      ledger?: { limit?: number };
+      incidents?: { limit?: number; cursor?: string | null };
+      ledger?: { limit?: number; runCursor?: string | null; budgetCursor?: string | null };
     };
     const baseLimit = clampLimit(input?.limit);
     const tasksLimit = clampLimit(input?.tasks?.limit ?? baseLimit);
@@ -126,17 +139,21 @@ export const missionControlHandlers: GatewayRequestHandlers = {
     const notificationsOffset = clampOffset(input?.notifications?.offset ?? 0);
     const ledgerLimit = clampLimit(input?.ledger?.limit ?? baseLimit);
     const incidentsLimit = clampLimit(input?.incidents?.limit ?? baseLimit);
+    const incidentsCursor = input?.incidents?.cursor ?? null;
+    const ledgerRunCursor = input?.ledger?.runCursor ?? null;
+    const ledgerBudgetCursor = input?.ledger?.budgetCursor ?? null;
 
     try {
+      const ledgerPaths = resolveMissionControlPaths(cfg).files;
       const [
-        runLedger,
-        budgetLedger,
-        incidents,
+        runLedgerPage,
+        budgetLedgerPage,
+        incidentsPage,
         rollupState,
       ] = await Promise.all([
-        readMissionControlRecords<RunLedgerRecord>({ cfg, kind: "run-ledger", limit: ledgerLimit }),
-        readMissionControlRecords<BudgetLedgerRecord>({ cfg, kind: "budget-ledger", limit: ledgerLimit }),
-        readIncidents(cfg, incidentsLimit),
+        readJsonlCursor<RunLedgerRecord>(ledgerPaths["run-ledger"], ledgerLimit, ledgerRunCursor),
+        readJsonlCursor<BudgetLedgerRecord>(ledgerPaths["budget-ledger"], ledgerLimit, ledgerBudgetCursor),
+        readIncidents(cfg, incidentsLimit, incidentsCursor),
         readRollupState(cfg),
       ]);
 
@@ -148,9 +165,9 @@ export const missionControlHandlers: GatewayRequestHandlers = {
         documents: listDocuments(cfg, { limit: documentsLimit, offset: documentsOffset }),
         subscriptions: listSubscriptions(cfg, { limit: subscriptionsLimit, offset: subscriptionsOffset }),
         notifications: listNotifications(cfg, { limit: notificationsLimit, offset: notificationsOffset }),
-        runLedger,
-        budgetLedger,
-        incidents,
+        runLedger: runLedgerPage.items,
+        budgetLedger: budgetLedgerPage.items,
+        incidents: incidentsPage.items,
         rollupState,
         pageInfo: {
           tasks: {
@@ -162,6 +179,25 @@ export const missionControlHandlers: GatewayRequestHandlers = {
             limit: activitiesLimit,
             offset: activitiesOffset,
             total: countActivities(cfg),
+          },
+          incidents: {
+            limit: incidentsLimit,
+            cursor: incidentsCursor,
+            nextCursor: incidentsPage.nextCursor,
+            hasMore: incidentsPage.hasMore,
+          },
+          ledger: {
+            limit: ledgerLimit,
+            run: {
+              cursor: ledgerRunCursor,
+              nextCursor: runLedgerPage.nextCursor,
+              hasMore: runLedgerPage.hasMore,
+            },
+            budget: {
+              cursor: ledgerBudgetCursor,
+              nextCursor: budgetLedgerPage.nextCursor,
+              hasMore: budgetLedgerPage.hasMore,
+            },
           },
         },
         config: {
@@ -290,3 +326,56 @@ export const missionControlHandlers: GatewayRequestHandlers = {
     respond(true, { ok: true }, undefined);
   },
 };
+
+
+async function readJsonlCursor<T extends { ts?: string }>(
+  filePath: string,
+  limit: number,
+  cursor?: string | null,
+  maxBytes = DEFAULT_MAX_BYTES,
+): Promise<JsonlCursorPage<T>> {
+  const cursorMs = resolveCursorMs(cursor ?? null);
+  if (cursorMs === null) {
+    const items = await readJsonlTail<T>(filePath, limit, maxBytes);
+    const stat = await fs.stat(filePath).catch(() => null);
+    const hasMore = Boolean(stat && stat.size > maxBytes && items.length >= limit);
+    const nextCursor = items.length ? (items[0] as { ts?: string }).ts ?? null : null;
+    return { items, nextCursor, hasMore };
+  }
+
+  const stat = await fs.stat(filePath).catch(() => null);
+  if (!stat) return { items: [], nextCursor: null, hasMore: false };
+
+  const results: T[] = [];
+  let matched = 0;
+  const handle = await fs.open(filePath, "r");
+  const stream = handle.createReadStream({ encoding: "utf8" });
+  const rl = (await import("node:readline")).createInterface({ input: stream, crlfDelay: Infinity });
+  try {
+    for await (const line of rl) {
+      const trimmed = String(line ?? "").trim();
+      if (!trimmed) continue;
+      try {
+        const parsed = JSON.parse(trimmed) as T;
+        const ts = (parsed as { ts?: string }).ts;
+        const tsMs = Number.isFinite(Date.parse(ts ?? "")) ? Date.parse(ts ?? "") : null;
+        if (tsMs !== null && tsMs >= cursorMs) {
+          break;
+        }
+        if (tsMs === null) continue;
+        matched += 1;
+        results.push(parsed);
+        if (results.length > limit) results.shift();
+      } catch {
+        continue;
+      }
+    }
+  } finally {
+    await rl.close();
+    await stream.close();
+    await handle.close();
+  }
+  const nextCursor = results.length ? (results[0] as { ts?: string }).ts ?? null : null;
+  const hasMore = matched > results.length;
+  return { items: results, nextCursor, hasMore };
+}

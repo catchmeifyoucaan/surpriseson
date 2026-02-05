@@ -573,6 +573,12 @@ export type MissionControlSnapshot = {
   pageInfo?: {
     tasks?: { limit: number; offset: number; total: number };
     activities?: { limit: number; offset: number; total: number };
+    incidents?: { limit: number; cursor: string | null; nextCursor: string | null; hasMore: boolean };
+    ledger?: {
+      limit: number;
+      run?: { cursor: string | null; nextCursor: string | null; hasMore: boolean };
+      budget?: { cursor: string | null; nextCursor: string | null; hasMore: boolean };
+    };
   };
   config?: {
     missionControl?: Record<string, unknown> | null;

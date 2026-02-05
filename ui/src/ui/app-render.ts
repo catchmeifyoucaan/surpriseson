@@ -467,6 +467,8 @@ export function renderApp(state: AppViewState) {
               onToggleDense: () => state.handleMissionControlToggleDense(),
               onToggleQuick: (force) => state.handleMissionControlQuickToggle(force),
               onPageChange: (section, direction) => state.handleMissionControlPageChange(section, direction),
+              onPageJump: (section, page) => state.handleMissionControlPageJump(section, page),
+              onCursorChange: (section, cursor) => state.handleMissionControlCursorChange(section, cursor),
             })
           : nothing}
 

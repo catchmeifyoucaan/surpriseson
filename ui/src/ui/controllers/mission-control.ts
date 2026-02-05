@@ -9,8 +9,8 @@ const FILTER_KEY = "surprisebot.control.mission-control.filters.v1";
 export type MissionControlPaging = {
   tasks: { limit: number; offset: number };
   activities: { limit: number; offset: number };
-  ledger: { limit: number };
-  incidents: { limit: number };
+  ledger: { limit: number; runCursor?: string | null; budgetCursor?: string | null };
+  incidents: { limit: number; cursor?: string | null };
 };
 
 export type MissionControlFilters = {

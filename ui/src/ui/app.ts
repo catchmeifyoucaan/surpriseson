@@ -298,8 +298,8 @@ export class SurprisebotApp extends LitElement {
   @state() missionControlPaging = {
     tasks: { limit: 50, offset: 0 },
     activities: { limit: 25, offset: 0 },
-    ledger: { limit: 50 },
-    incidents: { limit: 25 },
+    ledger: { limit: 50, runCursor: null, budgetCursor: null },
+    incidents: { limit: 25, cursor: null },
   };
   @state() missionControlDenseMode = false;
   @state() missionControlQuickOpen = false;
@@ -567,6 +567,36 @@ export class SurprisebotApp extends LitElement {
     } as any;
     await this.handleLoadMissionControl();
   }
+
+  async handleMissionControlPageJump(section: "tasks" | "activities", page: number) {
+    const paging = this.missionControlPaging;
+    const entry = paging[section];
+    const nextPage = Math.max(1, Math.floor(page));
+    const nextOffset = Math.max(0, (nextPage - 1) * entry.limit);
+    if (nextOffset === entry.offset) return;
+    this.missionControlPaging = {
+      ...paging,
+      [section]: { ...entry, offset: nextOffset },
+    } as any;
+    await this.handleLoadMissionControl();
+  }
+
+  async handleMissionControlCursorChange(section: "incidents" | "budget-ledger", cursor: string | null) {
+    const paging = this.missionControlPaging;
+    if (section === "incidents") {
+      this.missionControlPaging = {
+        ...paging,
+        incidents: { ...paging.incidents, cursor },
+      } as any;
+    } else {
+      this.missionControlPaging = {
+        ...paging,
+        ledger: { ...paging.ledger, budgetCursor: cursor },
+      } as any;
+    }
+    await this.handleLoadMissionControl();
+  }
+
 
   async handleMissionControlTaskUpdate(taskId: string, patch: Record<string, unknown>) {
     await updateMissionControlTask(this as any, taskId, patch);
